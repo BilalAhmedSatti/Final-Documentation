@@ -1,0 +1,12 @@
+flowchart LR
+  Actor[Customer_System_Employee] --> API[API_Gateway]
+  API --> Svc[KYC_or_Onboarding_Service]
+  Svc --> SM[State_Transition]
+  SM --> Hist[kyc_status_history]
+  SM --> Aud[kyc_audit_logs_append_only]
+  SM --> Evt[Event_Bus]
+  Aud --> WORM[WORM_Object_Lock_Archive]
+  Aud --> SIEM[SIEM]
+  Evt --> Cons[Idempotent_Consumers]
+  Hist --> Pack[Inspection_Evidence_Pack]
+  Aud --> Pack

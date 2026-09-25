@@ -1,0 +1,560 @@
+[
+  {
+    "id": "UJ-E01",
+    "family": "A",
+    "title": "Verisys wallet 50k",
+    "persona": "Ayesha — first EMI wallet",
+    "classTag": "A EMI §12 / §14.II · A live photo / TAT",
+    "why": "Digital wallet opens on NADRA Verisys plus screening. Monthly load is PKR 50,000. This is e-money, not a bank deposit.",
+    "trigger": "Taps Open wallet. Eligible digital ID. Verisys and TFS clear.",
+    "success": "WALLET_ACTIVE · VERISYS. Load 50k/month. Cash-out 10k/day.",
+    "alternate": "Duplicate CNIC, OTP fail, sanctions, NADRA outage (UJ-E05–E11).",
+    "related": ["UJ-E02", "UJ-E05", "UJ-E06", "UJ-E09"],
+    "walk": ["open", "track", "otp", "sms", "consent", "id", "photo", "screen", "verisys", "home"],
+    "nodes": [
+      {"id": "open", "label": "Open wallet", "kind": "action", "customer": "Opens app or web and taps Open wallet.", "system": "Creates application. Channel, device hash, IP, geo if permitted. Not a bank CIF.", "state": "INITIATED"},
+      {"id": "track", "label": "Tracking ID on screen", "kind": "action", "customer": "Sees Tracking ID. Can copy it. No SMS yet.", "system": "Issues Tracking ID in-app only. No destination until OTP.", "state": "INITIATED"},
+      {"id": "otp", "label": "Mobile OTP · 2FA", "kind": "action", "customer": "Enters PTA-registered mobile and OTP.", "system": "2FA required (EMI §12). Does not skip state on wrong OTP.", "state": "CONTACT_VERIFIED"},
+      {"id": "sms", "label": "SMS Tracking ID", "kind": "action", "customer": "Receives SMS: wallet application started + Tracking ID.", "system": "First out-of-band notify only after OTP success.", "state": "CONTACT_VERIFIED"},
+      {"id": "consent", "label": "Consents and fees", "kind": "action", "customer": "Accepts T&Cs, privacy, NADRA/BV, fee schedule. Marketing off by default.", "system": "Versioned consents. Blocks continue until mandatory accepted.", "state": "CONSENT_CAPTURED"},
+      {"id": "id", "label": "Identity + Table-A", "kind": "action", "customer": "CNIC/NICOP/POC/POR/ARC. Two extra non-CNIC fields. Live CNIC image.", "system": "EMI §12 minimum + Consolidated Table-A. CNIC uniqueness check.", "state": "IDENTITY_CAPTURED"},
+      {"id": "photo", "label": "Live photo", "kind": "action", "customer": "Centers face. Captures live photo. Good light, no mask.", "system": "Encrypted upload. Face match vs ID. Liveness is not NADRA BV.", "state": "LIVE_PHOTO_CAPTURED"},
+      {"id": "screen", "label": "Sanctions / PEP", "kind": "success", "customer": "Sees Under review. Does not see list names.", "system": "UNSC + ATA + PEP + watchlist before payment-service use. Fail closed if provider down.", "state": "SCREENING_IN_PROGRESS → clear"},
+      {"id": "verisys", "label": "NADRA Verisys", "kind": "success", "customer": "Wallet ready — 50,000 per month.", "system": "Activate after §12 verify + pre-screen. limit_tier=VERISYS.", "state": "WALLET_ACTIVE · VERISYS"},
+      {"id": "home", "label": "Home + Increase limit", "kind": "success", "customer": "Balance, pay, IBFT in. Banner to complete biometric for 400k.", "system": "Ledger enforces 50k load and 10k/day cash-out. Trust posting at par when funded.", "state": "WALLET_ACTIVE"}
+    ],
+    "edges": [
+      {"from": "open", "to": "track", "label": ""},
+      {"from": "track", "to": "otp", "label": ""},
+      {"from": "otp", "to": "sms", "label": ""},
+      {"from": "sms", "to": "consent", "label": ""},
+      {"from": "consent", "to": "id", "label": ""},
+      {"from": "id", "to": "photo", "label": ""},
+      {"from": "photo", "to": "screen", "label": ""},
+      {"from": "screen", "to": "verisys", "label": ""},
+      {"from": "verisys", "to": "home", "label": ""}
+    ]
+  },
+  {
+    "id": "UJ-E02",
+    "family": "A",
+    "title": "NADRA BV upgrade 400k",
+    "persona": "Ayesha — needs higher load",
+    "classTag": "A EMI §14 · channel D",
+    "why": "Biometric verification raises commercial monthly load to PKR 400,000 (pilot: 200,000). Selfie is not BV.",
+    "trigger": "Taps Increase limit on a VERISYS wallet.",
+    "success": "limit_tier=BV. Banner shows new monthly load. Cash-out from CRP.",
+    "alternate": "BV fail → UJ-E07. NADRA down → UJ-E08.",
+    "related": ["UJ-E01", "UJ-E03", "UJ-E07"],
+    "walk": ["cta", "channel", "bv", "lift"],
+    "nodes": [
+      {"id": "cta", "label": "Increase limit", "kind": "action", "customer": "Taps Increase my limit. Told SBP 50k vs 400k.", "system": "Starts BV session. Reads licence_phase.", "state": "WALLET_ACTIVE · VERISYS"},
+      {"id": "channel", "label": "How to do BV", "kind": "decision", "customer": "In-app fingerprint/face, NADRA e-Sahulat, or partner ATM.", "system": "Same application. Authenticated BV channel.", "state": "IDENTITY_VERIFICATION_IN_PROGRESS"},
+      {"id": "app", "label": "In-app BVS", "kind": "action", "customer": "Scans fingerprint/face in Pakistan.", "system": "NADRA BV adapter. No raw template store.", "state": "IN_PROGRESS"},
+      {"id": "offline", "label": "e-Sahulat / ATM", "kind": "action", "customer": "Completes BV at NADRA agent or partner ATM (no card if offered).", "system": "Receipt/ATM adapter. Confirm BV not CNIC-only Verisys.", "state": "IN_PROGRESS"},
+      {"id": "bv", "label": "NADRA BV success", "kind": "success", "customer": "Limit increased.", "system": "400k commercial or 200k pilot. Cash-out from CRP.", "state": "WALLET_ACTIVE · BV"},
+      {"id": "lift", "label": "New limit banner", "kind": "success", "customer": "Sees 400,000 per month (or 200k if pilot).", "system": "Ledger policy switch. Alerts continue.", "state": "WALLET_ACTIVE · BV"},
+      {"id": "fail", "label": "BV fails", "kind": "fail", "customer": "Retry, e-Sahulat, or video KYC. Wallet stays 50k.", "system": "Do not fake BV. Stay VERISYS.", "state": "VERISYS"}
+    ],
+    "edges": [
+      {"from": "cta", "to": "channel", "label": ""},
+      {"from": "channel", "to": "app", "label": "in-app"},
+      {"from": "channel", "to": "offline", "label": "offline"},
+      {"from": "app", "to": "bv", "label": "success"},
+      {"from": "offline", "to": "bv", "label": "success"},
+      {"from": "app", "to": "fail", "label": "fail"},
+      {"from": "offline", "to": "fail", "label": "fail"},
+      {"from": "bv", "to": "lift", "label": ""}
+    ]
+  },
+  {
+    "id": "UJ-E03",
+    "family": "A",
+    "title": "Enhanced wallet 1M",
+    "persona": "Sana — SoF + PSP&OD product",
+    "classTag": "A EMI §14.III not outsourced",
+    "why": "After commercial licence, PSP&OD may allow up to PKR 1,000,000 if SoF, CNIC-SIM pairing, TMS, and CRP are done in-house.",
+    "trigger": "BV wallet. EMI has enhanced product approval. Customer requests.",
+    "success": "limit_tier=ENHANCED up to 1M.",
+    "alternate": "Missing SoF or pairing → remain BV.",
+    "related": ["UJ-E02", "UJ-E11"],
+    "walk": ["ask", "sof", "sim", "tms", "wait", "ok"],
+    "nodes": [
+      {"id": "ask", "label": "Request enhanced", "kind": "action", "customer": "Taps higher limit / enhanced wallet.", "system": "Checks commercial licence + PSP&OD flag.", "state": "WALLET_ACTIVE · BV"},
+      {"id": "sof", "label": "Annexure-J SoF", "kind": "action", "customer": "Uploads income / source of funds.", "system": "Stores artefacts. Verification not outsourced.", "state": "ADDITIONAL_INFORMATION_REQUIRED"},
+      {"id": "sim", "label": "CNIC–SIM pairing", "kind": "action", "customer": "Confirms mobile ownership on this device.", "system": "Pairs CNIC to SIM/device of the instrument.", "state": "verification"},
+      {"id": "tms", "label": "TMS + CRP", "kind": "wait", "customer": "Waits. Tracking ID visible.", "system": "Robust TMS scenarios + detailed risk profile. In-house.", "state": "EDD_REQUIRED / review"},
+      {"id": "wait", "label": "PSP&OD path already live", "kind": "decision", "customer": "Does not see regulator UI.", "system": "Product already approved; this is per-customer control check.", "state": "review"},
+      {"id": "ok", "label": "Enhanced live", "kind": "success", "customer": "Sees higher limit banner.", "system": "limit_tier=ENHANCED. Ledger cap 1M.", "state": "WALLET_ACTIVE · ENHANCED"},
+      {"id": "keep", "label": "Remain BV", "kind": "fail", "customer": "Told what is still missing.", "system": "No silent 1M.", "state": "WALLET_ACTIVE · BV"}
+    ],
+    "edges": [
+      {"from": "ask", "to": "sof", "label": ""},
+      {"from": "sof", "to": "sim", "label": ""},
+      {"from": "sim", "to": "tms", "label": ""},
+      {"from": "tms", "to": "wait", "label": ""},
+      {"from": "wait", "to": "ok", "label": "pass"},
+      {"from": "wait", "to": "keep", "label": "fail"}
+    ]
+  },
+  {
+    "id": "UJ-E04",
+    "family": "B",
+    "title": "One credit then unverified close + STR",
+    "persona": "Policy-enabled pre-verify credit",
+    "classTag": "A EMI §12.IV",
+    "why": "EMI may allow one credit before credentials are verified. If verification fails, close the instrument and file STR. Recommended default is off.",
+    "trigger": "Product flag allows one inbound before NADRA/screen complete.",
+    "success": "If later verified → continue UJ-E01. If not → closed + STR.",
+    "alternate": "Prefer disable this flag and verify first.",
+    "related": ["UJ-E01", "UJ-E10"],
+    "walk": ["flag", "credit", "timer", "failclose"],
+    "nodes": [
+      {"id": "flag", "label": "Pre-verify credit on", "kind": "decision", "customer": "May see pending wallet.", "system": "unverified_one_credit flag. Hard timeout.", "state": "INITIATED / pending"},
+      {"id": "credit", "label": "One inbound", "kind": "action", "customer": "Receives one credit/IBFT.", "system": "Ledger allows exactly one. No spend if policy stricter.", "state": "pending verify"},
+      {"id": "timer", "label": "Verify window", "kind": "wait", "customer": "Prompted to finish KYC.", "system": "NADRA + TFS still required.", "state": "pending verify"},
+      {"id": "ok", "label": "Credentials verified", "kind": "success", "customer": "Wallet becomes VERISYS/BV per path.", "system": "Clear flag. Continue UJ-E01.", "state": "WALLET_ACTIVE"},
+      {"id": "failclose", "label": "Close + STR", "kind": "fail", "customer": "Wallet closed. Support copy without extra PII.", "system": "CLOSED_UNVERIFIED. File STR with FMU.", "state": "CLOSED_UNVERIFIED"}
+    ],
+    "edges": [
+      {"from": "flag", "to": "credit", "label": "enabled"},
+      {"from": "credit", "to": "timer", "label": ""},
+      {"from": "timer", "to": "ok", "label": "verified"},
+      {"from": "timer", "to": "failclose", "label": "not verified"}
+    ]
+  },
+  {
+    "id": "UJ-E05",
+    "family": "B",
+    "title": "Duplicate CNIC — one wallet",
+    "persona": "Yasmin — already has this EMI wallet",
+    "classTag": "A EMI §12.VII",
+    "why": "A CNIC holder may open only one e-money instrument with this EMI. Copy must say You already have a wallet — not a vague reject.",
+    "trigger": "CNIC hash matches an open wallet at this EMI.",
+    "success": "Login / recovery to existing wallet.",
+    "alternate": "Closed wallet reopen policy — Legal.",
+    "related": ["UJ-E01", "UJ-E09"],
+    "walk": ["id", "hit", "copy", "login"],
+    "nodes": [
+      {"id": "id", "label": "Enter CNIC", "kind": "action", "customer": "Enters identity.", "system": "Hash vs uniqueness key.", "state": "IDENTITY_CAPTURED"},
+      {"id": "hit", "label": "Existing wallet", "kind": "decision", "customer": "Stopped from a second instrument.", "system": "Block issue-wallet.", "state": "blocked"},
+      {"id": "copy", "label": "Clear message", "kind": "action", "customer": "You already have a wallet — log in.", "system": "Redirect intent. Not Rejected by policy only.", "state": "existing"},
+      {"id": "login", "label": "Login existing", "kind": "success", "customer": "Goes to login/recovery.", "system": "No second instrument.", "state": "WALLET_ACTIVE existing"}
+    ],
+    "edges": [
+      {"from": "id", "to": "hit", "label": ""},
+      {"from": "hit", "to": "copy", "label": ""},
+      {"from": "copy", "to": "login", "label": ""}
+    ]
+  },
+  {
+    "id": "UJ-E06",
+    "family": "B",
+    "title": "OTP / 2FA fail",
+    "persona": "Ayesha — mistypes OTP",
+    "classTag": "A 2FA · B/C OTP security",
+    "why": "Wrong OTP never skips CONTACT_VERIFIED. After N fails, cool-down. Change number is a new attempt.",
+    "trigger": "Wrong OTP, expiry, or different mobile.",
+    "success": "Mobile verified → CONTACT_VERIFIED. Then SMS Tracking ID.",
+    "alternate": "Cool-down. Support via in-app Tracking ID.",
+    "related": ["UJ-E01", "UJ-E09"],
+    "walk": ["enter", "otp", "wrong", "retry", "ok"],
+    "nodes": [
+      {"id": "enter", "label": "Enter mobile", "kind": "action", "customer": "Types mobile. Helper: PTA-registered in own name.", "system": "Start OTP. Attempt counters.", "state": "INITIATED"},
+      {"id": "otp", "label": "Enter OTP", "kind": "decision", "customer": "Enters code from SMS.", "system": "No OTP in logs. 2FA confirm or fail.", "state": "INITIATED"},
+      {"id": "wrong", "label": "Wrong / expired", "kind": "fail", "customer": "Retry. Remaining attempts shown.", "system": "Does not advance state.", "state": "INITIATED"},
+      {"id": "retry", "label": "Retry", "kind": "action", "customer": "Requests new OTP.", "system": "Resend with limits.", "state": "INITIATED"},
+      {"id": "lock", "label": "Lockout cool-down", "kind": "wait", "customer": "Sees timer.", "system": "Cool-down. Still INITIATED.", "state": "INITIATED"},
+      {"id": "change", "label": "Change number", "kind": "action", "customer": "Optional new number. New attempt rules.", "system": "New OTP cycle. Fraud rules.", "state": "INITIATED"},
+      {"id": "ok", "label": "Verified", "kind": "success", "customer": "Mobile verified badge.", "system": "Bind MSISDN. SMS Tracking ID.", "state": "CONTACT_VERIFIED"}
+    ],
+    "edges": [
+      {"from": "enter", "to": "otp", "label": ""},
+      {"from": "otp", "to": "ok", "label": "correct"},
+      {"from": "otp", "to": "wrong", "label": "fail"},
+      {"from": "wrong", "to": "retry", "label": ""},
+      {"from": "retry", "to": "otp", "label": ""},
+      {"from": "wrong", "to": "lock", "label": "N fails"},
+      {"from": "lock", "to": "change", "label": ""},
+      {"from": "change", "to": "enter", "label": ""}
+    ]
+  },
+  {
+    "id": "UJ-E07",
+    "family": "B",
+    "title": "BV fail → stay 50k / video KYC",
+    "persona": "Bilal — unclear fingerprints",
+    "classTag": "A Consolidated no-branch EMI",
+    "why": "Greenfield EMI has no branches. Do not pretend BV succeeded. Keep Verisys 50k or use Verisys+MSISDN or recorded video KYC + Verisys.",
+    "trigger": "Live photo OK. BV fails for an eligible reason.",
+    "success": "Stay VERISYS 50k, or video+Verisys then BV upgrade later.",
+    "alternate": "No-show → reschedule. No debit-block bank product.",
+    "related": ["UJ-E02", "UJ-E08"],
+    "walk": ["bvfail", "explain", "choice", "stay"],
+    "nodes": [
+      {"id": "bvfail", "label": "BV eligible fail", "kind": "fail", "customer": "Fingerprint/face BV does not complete.", "system": "Eligible-reason check. Do not mark BV.", "state": "IDENTITY_VERIFICATION_IN_PROGRESS"},
+      {"id": "explain", "label": "We’ll verify another way", "kind": "action", "customer": "Plain EN/UR. Wallet can stay at 50k.", "system": "Record why BV not met.", "state": "IN_PROGRESS"},
+      {"id": "choice", "label": "Path", "kind": "decision", "customer": "Keep 50k, try e-Sahulat, or book video KYC.", "system": "No silent 400k.", "state": "IN_PROGRESS"},
+      {"id": "stay", "label": "Stay VERISYS 50k", "kind": "success", "customer": "Explicit 50k banner. Increase limit still available.", "system": "limit_tier=VERISYS. Not a bank debit-block.", "state": "WALLET_ACTIVE · VERISYS"},
+      {"id": "video", "label": "Video KYC + Verisys", "kind": "wait", "customer": "Books recorded session. Shows ID.", "system": "Retain recording. Verisys. EMI without presence path.", "state": "VIDEO_KYC_PENDING"},
+      {"id": "ok", "label": "Assured", "kind": "success", "customer": "May then retry BV for 400k.", "system": "Still not BV unless NADRA BV succeeds.", "state": "VERISYS or BV"}
+    ],
+    "edges": [
+      {"from": "bvfail", "to": "explain", "label": ""},
+      {"from": "explain", "to": "choice", "label": ""},
+      {"from": "choice", "to": "stay", "label": "keep 50k"},
+      {"from": "choice", "to": "video", "label": "video"},
+      {"from": "video", "to": "ok", "label": "pass"}
+    ]
+  },
+  {
+    "id": "UJ-E08",
+    "family": "B",
+    "title": "NADRA timeout / outage",
+    "persona": "Any — vendor down",
+    "classTag": "A fail-controlled",
+    "why": "NADRA 503 never becomes silent 400k or silent activate. Hold IN_PROGRESS. Resume ≤ 30 days.",
+    "trigger": "NADRA timeout or 503.",
+    "success": "Vendor recovers → UJ-E01 or UJ-E02.",
+    "alternate": "Max retries → video/case. Still no silent upgrade.",
+    "related": ["UJ-E01", "UJ-E02", "UJ-E19"],
+    "walk": ["call", "hold", "retry", "recover"],
+    "nodes": [
+      {"id": "call", "label": "NADRA call fails", "kind": "fail", "customer": "Verification taking longer + Tracking ID. No fake Wallet ready.", "system": "503/timeout. Stay IN_PROGRESS.", "state": "IDENTITY_VERIFICATION_IN_PROGRESS"},
+      {"id": "hold", "label": "Hold — no STP", "kind": "wait", "customer": "Retry CTA. Can leave and come back.", "system": "Backoff. Never activate on outage.", "state": "IN_PROGRESS"},
+      {"id": "retry", "label": "Customer retry", "kind": "action", "customer": "Taps retry.", "system": "Idempotent restart.", "state": "IN_PROGRESS"},
+      {"id": "recover", "label": "Vendor up", "kind": "success", "customer": "Verisys or BV continues.", "system": "Resume UJ-E01 / UJ-E02.", "state": "WALLET_ACTIVE or still in progress"},
+      {"id": "max", "label": "Max retries", "kind": "fail", "customer": "Video or wait for case.", "system": "Still no silent 400k.", "state": "alternate or case"}
+    ],
+    "edges": [
+      {"from": "call", "to": "hold", "label": ""},
+      {"from": "hold", "to": "retry", "label": ""},
+      {"from": "retry", "to": "recover", "label": "up"},
+      {"from": "retry", "to": "max", "label": "still down"}
+    ]
+  },
+  {
+    "id": "UJ-E09",
+    "family": "C",
+    "title": "Tracking ID + TAT 2 WD",
+    "persona": "Any in review",
+    "classTag": "A tracking · A TAT 2 WD",
+    "why": "Tracking ID on screen from Step 0. SMS after OTP. Individual decision TAT 2 working days. No silent stall.",
+    "trigger": "Any in-flight or delayed wallet application.",
+    "success": "Customer knows next action.",
+    "alternate": "Unknown ID → generic error. Entity TAT 5 WD is UJ-E17.",
+    "related": ["UJ-E01", "UJ-E06", "UJ-E11"],
+    "walk": ["have", "lookup", "status", "breach"],
+    "nodes": [
+      {"id": "have", "label": "Where the ID is", "kind": "action", "customer": "On-screen from Step 0. SMS after OTP. Email if captured.", "system": "Never SMS at Step 0.", "state": "any"},
+      {"id": "lookup", "label": "Enter Tracking ID", "kind": "action", "customer": "App/web status field.", "system": "GET tracking. Rate-limited. Minimal fields.", "state": "current"},
+      {"id": "status", "label": "Next step shown", "kind": "success", "customer": "Progress, limit tier, next action. No extra PII.", "system": "Non-sensitive status.", "state": "current"},
+      {"id": "unknown", "label": "Unknown ID", "kind": "fail", "customer": "Generic error.", "system": "No enumeration.", "state": "n/a"},
+      {"id": "breach", "label": "Day 3 no decision", "kind": "fail", "customer": "Notified still in review + support.", "system": "TAT comms. State unchanged.", "state": "unchanged"}
+    ],
+    "edges": [
+      {"from": "have", "to": "lookup", "label": ""},
+      {"from": "lookup", "to": "status", "label": "found"},
+      {"from": "lookup", "to": "unknown", "label": "not found"},
+      {"from": "status", "to": "breach", "label": "SLA breach"}
+    ]
+  },
+  {
+    "id": "UJ-E10",
+    "family": "C",
+    "title": "Sanctions / fraud true match",
+    "persona": "System decline — written reason",
+    "classTag": "A TFS · A written decline",
+    "why": "Confirmed UNSC/ATA hit or fraud lock is fail-closed. No e-money instrument. No STP retry.",
+    "trigger": "Confirmed sanctions/proscribed hit after adjudication, or fraud lock.",
+    "success": "Customer understands outcome. Support available.",
+    "alternate": "Potential hit first → Under review until adjudication.",
+    "related": ["UJ-E01", "UJ-E11"],
+    "walk": ["screen", "potential", "confirmed", "reject"],
+    "nodes": [
+      {"id": "screen", "label": "Sanctions screen", "kind": "action", "customer": "Sees Under review. Not lists.", "system": "UNSC + ATA + watchlist. Fail closed if provider down.", "state": "SCREENING_IN_PROGRESS"},
+      {"id": "potential", "label": "Potential hit", "kind": "wait", "customer": "Status Under review. Tracking ID.", "system": "SCREENING_HIT_REVIEW. Ops adjudicates.", "state": "SCREENING_HIT_REVIEW"},
+      {"id": "confirmed", "label": "True match / fraud", "kind": "fail", "customer": "Application rejected. No wallet.", "system": "No instrument. Audit. No STP retry.", "state": "REJECTED"},
+      {"id": "reject", "label": "Written reason", "kind": "fail", "customer": "Specific legal-approved wording + support.", "system": "Decline notice A.", "state": "REJECTED"},
+      {"id": "clear", "label": "False positive", "kind": "success", "customer": "Continues Verisys path.", "system": "Adjudicated clear.", "state": "IDENTITY_VERIFICATION_IN_PROGRESS"}
+    ],
+    "edges": [
+      {"from": "screen", "to": "potential", "label": ""},
+      {"from": "potential", "to": "confirmed", "label": "true match"},
+      {"from": "potential", "to": "clear", "label": "false positive"},
+      {"from": "confirmed", "to": "reject", "label": ""}
+    ]
+  },
+  {
+    "id": "UJ-E11",
+    "family": "C",
+    "title": "PEP / high-risk EDD + video",
+    "persona": "Sana — high CRP or PEP",
+    "classTag": "A EDD · A recorded video NFTF",
+    "why": "High CRP or PEP needs extra SoW/SoF and recorded video. Customer waits. Senior approval is ops-side.",
+    "trigger": "PEP yes / list hit, or CRP HIGH.",
+    "success": "Wallet with enhanced monitoring, or written decline.",
+    "alternate": "Missed interview → reschedule. Delay → UJ-E09.",
+    "related": ["UJ-E03", "UJ-E10"],
+    "walk": ["flag", "docs", "book", "interview", "out"],
+    "nodes": [
+      {"id": "flag", "label": "Extra verification needed", "kind": "action", "customer": "Told additional verification is required. Not 50k STP if policy EDD.", "system": "EDD_REQUIRED.", "state": "EDD_REQUIRED"},
+      {"id": "docs", "label": "Upload SoI / SoW", "kind": "action", "customer": "Uploads source of income/wealth.", "system": "Stores on EDD case.", "state": "EDD_REQUIRED"},
+      {"id": "book", "label": "Book video interview", "kind": "action", "customer": "Schedules recorded video KYC.", "system": "Session + retention.", "state": "VIDEO_KYC_PENDING"},
+      {"id": "interview", "label": "Recorded interview", "kind": "action", "customer": "Joins. Purpose, occupation, funds.", "system": "Recording retained. Senior path if PEP.", "state": "VIDEO_KYC_PENDING"},
+      {"id": "out", "label": "Decision", "kind": "decision", "customer": "Approve with monitoring or written reject.", "system": "Maker-checker invisible to customer.", "state": "WALLET_ACTIVE or REJECTED"},
+      {"id": "ok", "label": "Wallet + monitoring", "kind": "success", "customer": "Can use wallet. Limit tier per BV/Verisys.", "system": "edd monitoring flag. TMS on.", "state": "WALLET_ACTIVE"},
+      {"id": "rej", "label": "Rejected in writing", "kind": "fail", "customer": "Specific reason + support.", "system": "No instrument.", "state": "REJECTED"}
+    ],
+    "edges": [
+      {"from": "flag", "to": "docs", "label": ""},
+      {"from": "docs", "to": "book", "label": ""},
+      {"from": "book", "to": "interview", "label": ""},
+      {"from": "interview", "to": "out", "label": ""},
+      {"from": "out", "to": "ok", "label": "approve"},
+      {"from": "out", "to": "rej", "label": "reject"}
+    ]
+  },
+  {
+    "id": "UJ-E12",
+    "family": "D",
+    "title": "Agent cash-in / cash-out",
+    "persona": "Ayesha at an agent",
+    "classTag": "A EMI §15 / §17 no issuance",
+    "why": "Agents cash-in/out and redeem. They must not open wallets. Cash-in and cash redemption need BV. ATM cash-out needs 2FA.",
+    "trigger": "Existing wallet holder visits SBP-approved agent or ATM.",
+    "success": "Cash moved at par. Alerts fire.",
+    "alternate": "Agent tries to issue → blocked.",
+    "related": ["UJ-E01", "UJ-E02"],
+    "walk": ["exist", "cashin", "cashout", "redeem"],
+    "nodes": [
+      {"id": "exist", "label": "Existing wallet only", "kind": "action", "customer": "Already has this EMI wallet.", "system": "Agent channel cannot POST issue-wallet.", "state": "WALLET_ACTIVE"},
+      {"id": "cashin", "label": "Cash-in", "kind": "action", "customer": "Hands cash. Completes BV.", "system": "BV required. Credit e-money at par. Trust posting.", "state": "WALLET_ACTIVE"},
+      {"id": "cashout", "label": "Agent cash-out", "kind": "action", "customer": "Withdraws cash.", "system": "BV or 2FA if BVS is a major challenge. Limit engine.", "state": "WALLET_ACTIVE"},
+      {"id": "atm", "label": "ATM cash-out", "kind": "action", "customer": "ATM withdrawal.", "system": "2FA mandatory.", "state": "WALLET_ACTIVE"},
+      {"id": "redeem", "label": "Full cash redemption", "kind": "success", "customer": "Redeems at par, no charges.", "system": "BV required for cash redemption (§15).", "state": "WALLET_ACTIVE or closed after full redeem"},
+      {"id": "block", "label": "Agent cannot issue", "kind": "fail", "customer": "Told to open in the app.", "system": "AGENT_CANNOT_ISSUE.", "state": "n/a"}
+    ],
+    "edges": [
+      {"from": "exist", "to": "cashin", "label": ""},
+      {"from": "exist", "to": "cashout", "label": ""},
+      {"from": "exist", "to": "atm", "label": ""},
+      {"from": "exist", "to": "redeem", "label": ""},
+      {"from": "exist", "to": "block", "label": "try open"}
+    ]
+  },
+  {
+    "id": "UJ-E13",
+    "family": "D",
+    "title": "Minor basic linked wallet",
+    "persona": "Guardian + minor",
+    "classTag": "A EMI §14.IV",
+    "why": "Minor wallet opens only from the parent/guardian app, linked, funded only from parent wallet. 50k Verisys. Guardian undertaking. TMS.",
+    "trigger": "Guardian with active wallet starts Add child wallet.",
+    "success": "MINOR_BASIC. 50k load. 10k/day cash-out.",
+    "alternate": "Digital Form-B may be out of allow-list — confirm Legal.",
+    "related": ["UJ-E01", "UJ-E14"],
+    "walk": ["parent", "link", "id", "undertaking", "open"],
+    "nodes": [
+      {"id": "parent", "label": "Guardian wallet live", "kind": "action", "customer": "Adult already KYC’d.", "system": "Must be WALLET_ACTIVE parent.", "state": "parent ACTIVE"},
+      {"id": "link", "label": "Open from parent app", "kind": "action", "customer": "Cannot start minor signup standalone.", "system": "Linked instrument. Same app only.", "state": "minor application"},
+      {"id": "id", "label": "Minor identity", "kind": "action", "customer": "Minor details. Confirm Legal on Form-B vs CNIC family.", "system": "AML CDD. Screen minor + guardian.", "state": "IDENTITY_CAPTURED"},
+      {"id": "undertaking", "label": "Guardian undertaking", "kind": "action", "customer": "Accepts liability for minor actions (written/digital).", "system": "Stores undertaking.", "state": "CONSENT"},
+      {"id": "open", "label": "Minor 50k Verisys", "kind": "success", "customer": "Child wallet visible in parent app.", "system": "limit_tier=MINOR_BASIC. Fund only from parent. TMS on.", "state": "WALLET_ACTIVE · MINOR_BASIC"},
+      {"id": "block", "label": "Standalone blocked", "kind": "fail", "customer": "Told to use parent app.", "system": "No orphan minor wallet.", "state": "blocked"}
+    ],
+    "edges": [
+      {"from": "parent", "to": "link", "label": ""},
+      {"from": "link", "to": "id", "label": ""},
+      {"from": "id", "to": "undertaking", "label": ""},
+      {"from": "undertaking", "to": "open", "label": ""},
+      {"from": "link", "to": "block", "label": "no parent"}
+    ]
+  },
+  {
+    "id": "UJ-E14",
+    "family": "D",
+    "title": "Minor freelancer enhanced",
+    "persona": "Guardian + freelancer minor",
+    "classTag": "A EMI §14.V",
+    "why": "Freelancer minor may get 400k BV, still linked to parent app. Funding parent or verified income. Not adult 1M enhanced.",
+    "trigger": "Guardian requests freelancer limits. Minor NADRA BV.",
+    "success": "MINOR_FREELANCER. 400k. 10k/day cash-out.",
+    "alternate": "No BV → stay basic 50k.",
+    "related": ["UJ-E13", "UJ-E03"],
+    "walk": ["basic", "bv", "income", "ok"],
+    "nodes": [
+      {"id": "basic", "label": "Linked minor exists", "kind": "action", "customer": "Still only via parent app.", "system": "Same linkage rules.", "state": "MINOR_BASIC"},
+      {"id": "bv", "label": "Minor NADRA BV", "kind": "action", "customer": "Completes BV.", "system": "400k only on BV success.", "state": "verification"},
+      {"id": "income", "label": "Verify income source", "kind": "action", "customer": "Parent wallet and/or EMI-accepted freelance income evidence.", "system": "Source of income verified. TMS.", "state": "profile"},
+      {"id": "ok", "label": "Freelancer 400k", "kind": "success", "customer": "Higher minor load. Still not 1M adult enhanced.", "system": "limit_tier=MINOR_FREELANCER. §14.I–III adult enhanced N/A.", "state": "WALLET_ACTIVE · MINOR_FREELANCER"},
+      {"id": "keep", "label": "Stay 50k", "kind": "fail", "customer": "Told BV/income still required.", "system": "No silent 400k.", "state": "MINOR_BASIC"}
+    ],
+    "edges": [
+      {"from": "basic", "to": "bv", "label": ""},
+      {"from": "bv", "to": "income", "label": "pass"},
+      {"from": "bv", "to": "keep", "label": "fail"},
+      {"from": "income", "to": "ok", "label": ""}
+    ]
+  },
+  {
+    "id": "UJ-E15",
+    "family": "D",
+    "title": "Inward remittance exclusion",
+    "persona": "Ayesha — home remittance",
+    "classTag": "A EMI §13 / §14.VI",
+    "why": "After EPD approval via an Authorized Dealer, inward remittance up to PKR 1.5m may be excluded from load caps for BV holders if SBP granted the exclusion. Still CDD/TMS.",
+    "trigger": "BV wallet. EMI has AD arrangement. Inward PRI/home remittance.",
+    "success": "Credit posts; may not consume 400k load if exclusion granted.",
+    "alternate": "No SBP exclusion → counts toward monthly load.",
+    "related": ["UJ-E02", "UJ-E16"],
+    "walk": ["ad", "bv", "credit", "tms"],
+    "nodes": [
+      {"id": "ad", "label": "AD + EPD approval", "kind": "wait", "customer": "Does not see FX paperwork.", "system": "EMI licensed path via Authorized Dealer.", "state": "product live"},
+      {"id": "bv", "label": "BV holder", "kind": "decision", "customer": "Must already be biometrically verified for exclusion.", "system": "Exclusion is for BV wallets except minors.", "state": "WALLET_ACTIVE · BV"},
+      {"id": "credit", "label": "Remittance in PKR", "kind": "action", "customer": "Sees credit + alert.", "system": "IBFT/Raast via trust/settlement bank. Cap 1.5m if exclusion.", "state": "WALLET_ACTIVE"},
+      {"id": "tms", "label": "TMS still on", "kind": "success", "customer": "Normal use.", "system": "Exclusion is from load math, not from AML.", "state": "WALLET_ACTIVE"},
+      {"id": "count", "label": "Counts to 400k", "kind": "fail", "customer": "May hit monthly load.", "system": "No exclusion grant.", "state": "VERISYS or BV without exclusion"}
+    ],
+    "edges": [
+      {"from": "ad", "to": "bv", "label": ""},
+      {"from": "bv", "to": "credit", "label": "BV + grant"},
+      {"from": "bv", "to": "count", "label": "no grant"},
+      {"from": "credit", "to": "tms", "label": ""}
+    ]
+  },
+  {
+    "id": "UJ-E16",
+    "family": "D",
+    "title": "Salary credit exclusion",
+    "persona": "Ayesha — employer IBFT",
+    "classTag": "A EMI §14.VI.i",
+    "why": "Salary from employer’s nominated bank may be excluded from load limits for BV holders if SBP granted exclusion. EMI must verify the employer.",
+    "trigger": "Employer pays to EMI wallet via authorised FI.",
+    "success": "Salary posts; may sit outside monthly load.",
+    "alternate": "Unverified employer → counts as normal credit.",
+    "related": ["UJ-E15", "UJ-E02"],
+    "walk": ["bv", "employer", "pay", "ok"],
+    "nodes": [
+      {"id": "bv", "label": "BV wallet", "kind": "action", "customer": "Already upgraded.", "system": "Exclusion not for Verisys-only or minors.", "state": "WALLET_ACTIVE · BV"},
+      {"id": "employer", "label": "Verify employer", "kind": "action", "customer": "May confirm employer name.", "system": "EMI verifies employer via nominated bank path.", "state": "profile"},
+      {"id": "pay", "label": "Salary IBFT", "kind": "success", "customer": "Credit + real-time alert.", "system": "If exclusion granted, omit from load cap.", "state": "WALLET_ACTIVE"},
+      {"id": "ok", "label": "Recon", "kind": "wait", "customer": "Pays bills as usual.", "system": "TMS + trust recon.", "state": "WALLET_ACTIVE"},
+      {"id": "no", "label": "Not excluded", "kind": "fail", "customer": "May hit 400k load.", "system": "Employer not verified or no SBP grant.", "state": "BV"}
+    ],
+    "edges": [
+      {"from": "bv", "to": "employer", "label": ""},
+      {"from": "employer", "to": "pay", "label": "verified + grant"},
+      {"from": "employer", "to": "no", "label": "fail"},
+      {"from": "pay", "to": "ok", "label": ""}
+    ]
+  },
+  {
+    "id": "UJ-E17",
+    "family": "D",
+    "title": "Merchant / entity wallet",
+    "persona": "Phase 2 — business",
+    "classTag": "A TAT 5 WD · A one wallet per entity",
+    "why": "Entity wallets are Phase 2. Table-B / UBO. TAT 5 working days. One wallet per entity with this EMI. Not the individual state machine.",
+    "trigger": "Business / merchant onboarding.",
+    "success": "Merchant wallet. UBOs stored if legal person.",
+    "alternate": "Sanctions on BO → reject. Gaps → more info.",
+    "related": ["UJ-E01", "UJ-E09"],
+    "walk": ["intake", "ubo", "screen", "wait", "open"],
+    "nodes": [
+      {"id": "intake", "label": "Entity intake", "kind": "action", "customer": "Incorporation docs, addresses, consents.", "system": "entities table. Not v1 individual SM.", "state": "entity application"},
+      {"id": "ubo", "label": "Identify UBOs", "kind": "action", "customer": "Each UBO/controller identified.", "system": "20% / 10% EDD — confirm Legal.", "state": "UBO capture"},
+      {"id": "screen", "label": "Screen entity + BOs", "kind": "action", "customer": "Waits.", "system": "TFS each associated person.", "state": "screening"},
+      {"id": "wait", "label": "TAT ≤ 5 WD", "kind": "wait", "customer": "Tracking ID. Longer than individual 2 WD.", "system": "Entity TAT A.", "state": "review"},
+      {"id": "open", "label": "Merchant wallet", "kind": "success", "customer": "Business instrument live.", "system": "One wallet per entity. UBOs stored.", "state": "WALLET_ACTIVE entity"},
+      {"id": "rej", "label": "BO sanctions reject", "kind": "fail", "customer": "Written reason.", "system": "Fail closed.", "state": "REJECTED"}
+    ],
+    "edges": [
+      {"from": "intake", "to": "ubo", "label": ""},
+      {"from": "ubo", "to": "screen", "label": ""},
+      {"from": "screen", "to": "wait", "label": ""},
+      {"from": "wait", "to": "open", "label": "approve"},
+      {"from": "wait", "to": "rej", "label": "sanctions"}
+    ]
+  },
+  {
+    "id": "UJ-E18",
+    "family": "D",
+    "title": "Decline mandatory consents",
+    "persona": "Ayesha — refuses NADRA processing",
+    "classTag": "A consents",
+    "why": "T&Cs, privacy, NADRA/BV, and fees gate issuance. Marketing is optional and off by default.",
+    "trigger": "Leaves a mandatory box unchecked.",
+    "success": "If later accepted → CONSENT_CAPTURED.",
+    "alternate": "Save draft (UJ-E19).",
+    "related": ["UJ-E01", "UJ-E19"],
+    "walk": ["screen", "decline", "blocked", "draft"],
+    "nodes": [
+      {"id": "screen", "label": "Consent screen", "kind": "action", "customer": "Reads T&Cs, privacy, NADRA/BV, charges (EN/UR).", "system": "Mandatory vs optional visually.", "state": "CONTACT_VERIFIED"},
+      {"id": "decline", "label": "Decline mandatory", "kind": "decision", "customer": "Required box unchecked.", "system": "Continue disabled.", "state": "CONTACT_VERIFIED"},
+      {"id": "blocked", "label": "Cannot issue", "kind": "fail", "customer": "Explains which consent is required.", "system": "No CONSENT_CAPTURED. No wallet.", "state": "CONTACT_VERIFIED"},
+      {"id": "draft", "label": "Save draft", "kind": "wait", "customer": "Optional Save draft and exit.", "system": "30-day resume.", "state": "CONTACT_VERIFIED"},
+      {"id": "accept", "label": "Accept mandatory", "kind": "success", "customer": "Accepts required. Marketing still optional.", "system": "Timestamped consents.", "state": "CONSENT_CAPTURED"}
+    ],
+    "edges": [
+      {"from": "screen", "to": "decline", "label": "refuse"},
+      {"from": "screen", "to": "accept", "label": "accept"},
+      {"from": "decline", "to": "blocked", "label": ""},
+      {"from": "blocked", "to": "draft", "label": ""}
+    ]
+  },
+  {
+    "id": "UJ-E19",
+    "family": "D",
+    "title": "Abandon and resume ≤ 30 days",
+    "persona": "Ayesha — exits at live photo",
+    "classTag": "A 30-day resume",
+    "why": "Draft saved up to 30 days. Return to last incomplete step. Day 31+ expired; new application.",
+    "trigger": "Exits mid-flow.",
+    "success": "Resumes without re-collecting completed steps.",
+    "alternate": "Day 31 → EXPIRED. New Tracking ID.",
+    "related": ["UJ-E01", "UJ-E09"],
+    "walk": ["exit", "saved", "return", "resume"],
+    "nodes": [
+      {"id": "exit", "label": "Leaves mid-flow", "kind": "action", "customer": "Closes app at live photo (example).", "system": "Persists last successful state.", "state": "last successful state"},
+      {"id": "saved", "label": "Draft ≤ 30 days", "kind": "wait", "customer": "Tracking ID already on screen from Step 0.", "system": "Resume window A.", "state": "unchanged"},
+      {"id": "return", "label": "Return day ≤ 30", "kind": "action", "customer": "Deep link or Tracking ID.", "system": "Load application. Optional step-up OTP.", "state": "unchanged"},
+      {"id": "resume", "label": "Last incomplete step", "kind": "success", "customer": "Lands on live photo, not the start.", "system": "No skip forward.", "state": "continues spine"},
+      {"id": "expired", "label": "Day 31+ expired", "kind": "fail", "customer": "Application expired — start a new one.", "system": "EXPIRED. New POST application.", "state": "EXPIRED"}
+    ],
+    "edges": [
+      {"from": "exit", "to": "saved", "label": ""},
+      {"from": "saved", "to": "return", "label": "≤30"},
+      {"from": "saved", "to": "expired", "label": "day 31+"},
+      {"from": "return", "to": "resume", "label": ""}
+    ]
+  },
+  {
+    "id": "UJ-E20",
+    "family": "D",
+    "title": "Periodic / event KYC refresh",
+    "persona": "Ayesha — due by risk interval",
+    "classTag": "A ongoing CDD",
+    "why": "Scheduler marks REFRESH_DUE. Overdue restriction is explicit. Re-screen. BV may be re-required for high assurance.",
+    "trigger": "Calendar interval or ID expiry / adverse event.",
+    "success": "Next due set. Wallet operable.",
+    "alternate": "Ignore → explicit restrict. CTA back to refresh.",
+    "related": ["UJ-E02", "UJ-E11"],
+    "walk": ["due", "notify", "update", "screen", "done"],
+    "nodes": [
+      {"id": "due", "label": "REFRESH_DUE", "kind": "wait", "customer": "Not yet restricted if inside grace.", "system": "Scheduler by CRP.", "state": "WALLET_ACTIVE → REFRESH_DUE"},
+      {"id": "notify", "label": "Reminder", "kind": "action", "customer": "Update your KYC. Deep link.", "system": "Notification. Reason code if event-driven.", "state": "REFRESH_DUE"},
+      {"id": "update", "label": "Review profile / ID", "kind": "action", "customer": "Confirms fields. Uploads if asked. May re-BV.", "system": "Refresh application.", "state": "REFRESH_DUE"},
+      {"id": "screen", "label": "Re-screen + CRP", "kind": "wait", "customer": "Under review.", "system": "Fresh TFS/PEP + risk. Material change → EDD.", "state": "screening"},
+      {"id": "done", "label": "Complete", "kind": "success", "customer": "Limits unchanged unless upgrade path.", "system": "Schedule updated.", "state": "WALLET_ACTIVE"},
+      {"id": "restrict", "label": "Overdue restriction", "kind": "fail", "customer": "Explicit restrict copy — not a silent clamp.", "system": "Flags. CTA to complete refresh.", "state": "REFRESH_DUE / restricted"}
+    ],
+    "edges": [
+      {"from": "due", "to": "notify", "label": ""},
+      {"from": "notify", "to": "update", "label": ""},
+      {"from": "notify", "to": "restrict", "label": "ignored"},
+      {"from": "update", "to": "screen", "label": ""},
+      {"from": "screen", "to": "done", "label": ""}
+    ]
+  }
+]

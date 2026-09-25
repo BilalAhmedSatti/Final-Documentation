@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>8. Shared e-KYC and EMIs</title>
+<link rel="stylesheet" href="assets/doc.css">
+</head>
+<body>
+<nav class="top">
+  <div class="top-inner">
+    <a href="index.html">EMI pack home</a>
+    <span class="meta"><a href="05c-emi-interactive-journeys.html">Journeys</a> · <a href="03-shared-ekyc-and-emi.md">Source .md</a></span>
+  </div>
+</nav>
+<article class="page markdown-body">
+<h1 id="8-shared-e-kyc-and-emis">8. Shared e-KYC and EMIs</h1>
+<blockquote>
+<p>Primary: BPRD Circular Letter No. 22 of 2023 (18 Dec 2023); Consolidated Customer Onboarding Framework (2025).<br />
+Not legal advice. No proprietary shared-platform payloads in this pack.</p>
+</blockquote>
+<h2 id="what-is-settled">What is settled</h2>
+<ul>
+<li>SBP directed <strong>banks</strong> to implement the PBA-led <strong>Shared Electronic KYC Platform</strong> (CL 22 addressee: <strong>The Presidents/Chief Executives — All Banks</strong>).  </li>
+<li>Public descriptions: <strong>DLT</strong> coordination; KYC data <strong>stays with participating institutions</strong>; access with <strong>explicit customer consent</strong>.  </li>
+<li>Consolidated Framework (applies to <strong>EMIs</strong>) tells REs that branch digital AOF interfaces should be <strong>connected with the shared e-KYC platform once operationalised</strong>, and that existing KYC on the platform may be reused <strong>where available</strong>.</li>
+</ul>
+<h2 id="what-is-not-settled-open-with-legal-pba">What is not settled (open with Legal / PBA)</h2>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Working position</th>
+<th>Class</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Is CL 22 itself binding on EMIs?</td>
+<td>Text is to <strong>banks</strong>. Do not cite CL 22 alone as an EMI mandate.</td>
+<td>Confirm</td>
+</tr>
+<tr>
+<td>Must an EMI <strong>participate</strong> when the platform is live?</td>
+<td>Consolidated Framework language for SBP REs <strong>includes EMIs</strong>. Treat participation as <strong>likely A when operational + SBP/PBA onboarding exists</strong> — <strong>confirm</strong>.</td>
+<td><strong>A?</strong></td>
+</tr>
+<tr>
+<td>Can an EMI <strong>refuse</strong> shared e-KYC and still open wallets?</td>
+<td>Local NADRA + Table-A path must always work. Consent to share must <strong>not</strong> block local KYC (same principle as banks).</td>
+<td><strong>A</strong> local path</td>
+</tr>
+<tr>
+<td>Field dictionary</td>
+<td>Not public</td>
+<td>Blocker</td>
+</tr>
+</tbody>
+</table>
+<h2 id="architecture-pattern-same-as-bank-pack-emi-owned-data">Architecture pattern (same as bank pack, EMI-owned data)</h2>
+<pre><code class="language-text">Customer optional consent SHARED_EKYC_READ
+        → adapter query (when participant)
+        → prefill editable fields
+        → customer confirms
+        → still run live photo + NADRA Verisys/BV + sanctions
+        → miss/timeout: silent continue to local capture
+</code></pre>
+<p><strong>Never</strong> skip sanctions or NADRA because shared KYC “already exists.” The EMI remains responsible for CDD.</p>
+<h2 id="build-order">Build order</h2>
+<ol>
+<li>Local-first wallet KYC (this pack).  </li>
+<li>Consent versioning + adapter stub.  </li>
+<li>PBA/SBP participation when EMI onboarding pack exists.</li>
+</ol>
+</article>
+<div class="pager"><a href="02-sbp-emi-kyc-cdd-framework.html">← 02-sbp-emi-kyc-cdd-framework</a><span></span><a href="04-emi-benchmarks.html">04-emi-benchmarks →</a></div>
+<footer class="note">Rendered preview of 03-shared-ekyc-and-emi.md. Markdown remains the source of truth. Not legal advice.</footer>
+
+</body>
+</html>

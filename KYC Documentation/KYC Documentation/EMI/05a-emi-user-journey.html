@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>11a. EMI customer journey (screens)</title>
+<link rel="stylesheet" href="assets/doc.css">
+</head>
+<body>
+<nav class="top">
+  <div class="top-inner">
+    <a href="index.html">EMI pack home</a>
+    <span class="meta"><a href="05c-emi-interactive-journeys.html">Journeys</a> · <a href="05a-emi-user-journey.md">Source .md</a></span>
+  </div>
+</nav>
+<article class="page markdown-body">
+<h1 id="11a-emi-customer-journey-screens">11a. EMI customer journey (screens)</h1>
+<blockquote>
+<p>Illustrative UX (<strong>D</strong>). Regulatory steps <strong>A</strong> where marked. Fictional persona. Not legal advice.<br />
+Related: <a href="05b-emi-user-journeys-catalog.html">05b-emi-user-journeys-catalog</a>, <a href="diagrams/03-emi-kyc-spine.mmd">diagrams/03-emi-kyc-spine.mmd</a></p>
+</blockquote>
+<p><strong>Pack home:</strong> <a href="index.html">index.html</a><br />
+<strong>Interactive explorer:</strong> <a href="05c-emi-interactive-journeys.html">05c-emi-interactive-journeys.html</a><br />
+<strong>All 20 workflows (PDF):</strong> <a href="05c-emi-customer-journeys.pdf">05c-emi-customer-journeys.pdf</a></p>
+<p><strong>Persona:</strong> Ayesha — resident CNIC, first EMI wallet, wants to pay merchants and receive IBFT.</p>
+<h2 id="happy-path-verisys-wallet-then-bv-upgrade">Happy path — Verisys wallet then BV upgrade</h2>
+<h3 id="step-0-open-wallet-tracking-id-a-tracking-d-placement">Step 0 — Open wallet + Tracking ID (<strong>A</strong> tracking; <strong>D</strong> placement)</h3>
+<ul>
+<li>Customer taps <strong>Open wallet</strong>.  </li>
+<li>System creates application; <strong>shows Tracking ID in-app</strong>.  </li>
+<li><strong>Do not SMS yet</strong> — mobile not bound.  </li>
+<li>State: <code>INITIATED</code>.</li>
+</ul>
+<h3 id="step-1-mobile-otp-2fa-a">Step 1 — Mobile OTP / 2FA (<strong>A</strong>)</h3>
+<ul>
+<li>PTA-registered mobile; OTP.  </li>
+<li>Fail: stay <code>INITIATED</code>; lockout <strong>D</strong> with cool-down.  </li>
+<li>Success: <code>CONTACT_VERIFIED</code>; <strong>then</strong> SMS Tracking ID.</li>
+</ul>
+<h3 id="step-2-consents-a">Step 2 — Consents (<strong>A</strong>)</h3>
+<ul>
+<li>T&amp;Cs, privacy, fee schedule, NADRA/BV purpose (EN/UR).  </li>
+<li>Marketing off by default (<strong>C</strong>).  </li>
+<li>Mandatory unchecked → cannot continue.</li>
+</ul>
+<h3 id="step-3-identity-a">Step 3 — Identity (<strong>A</strong>)</h3>
+<ul>
+<li>CNIC/NICOP/POC/POR/ARC (digital allow-list).  </li>
+<li>EMI §12: name, father/spouse, ID, mobile, address, <strong>two extra non-CNIC fields</strong>, live CNIC image.  </li>
+<li>Consolidated Table-A: occupation, SoI, purpose, FATCA/CRS, PEP declare, addresses.  </li>
+<li>Uniqueness check on CNIC hash → if hit, <strong>You already have a wallet</strong> (UJ-E05).</li>
+</ul>
+<h3 id="step-4-live-photo-a-digital">Step 4 — Live photo (<strong>A</strong> digital)</h3>
+<ul>
+<li>Live digital photo vs ID portrait.  </li>
+<li>Encrypted upload; nothing stored on device (<strong>B/C</strong>).  </li>
+<li>Liveness optional anti-impersonation (<strong>B/C</strong>) — <strong>not</strong> NADRA BV.</li>
+</ul>
+<h3 id="step-5-screening-a">Step 5 — Screening (<strong>A</strong>)</h3>
+<ul>
+<li>Customer sees <strong>Under review</strong> / progress. <strong>Never</strong> list names.  </li>
+<li>UNSC + ATA + PEP + watchlist.  </li>
+<li>Provider down: <strong>hold</strong>, no activate.</li>
+</ul>
+<h3 id="step-6-nadra-verisys-a-for-50k-tier">Step 6 — NADRA Verisys (<strong>A</strong> for 50k tier)</h3>
+<ul>
+<li>Activate only after §12 verification <strong>and</strong> pre-screen.  </li>
+<li>Success → <code>WALLET_ACTIVE</code> · <code>limit_tier=VERISYS</code> · monthly load <strong>50,000</strong> · cash-out <strong>10,000/day</strong>.  </li>
+<li>Banner: <strong>Biometric verification increases your monthly limit</strong> (copy <strong>D</strong>; limit <strong>A</strong>).</li>
+</ul>
+<h3 id="step-7-optional-one-credit-a-if-enabled">Step 7 — Optional one-credit (<strong>A</strong> if enabled)</h3>
+<ul>
+<li>Product flag. If used: <code>unverified_one_credit</code> must already be cleared by Step 6 in the recommended path.  </li>
+<li><strong>Recommended:</strong> do <strong>not</strong> enable spend/receive until Verisys+screen pass (stricter than the allowed one-credit). If Legal enables it, enforce close+STR on fail.</li>
+</ul>
+<h3 id="step-8-home-d">Step 8 — Home (<strong>D</strong>)</h3>
+<ul>
+<li>Balance, IBAN-like / Raast proxy when live, debit card CTA.  </li>
+<li>Persistent <strong>Increase limit</strong> for BV.</li>
+</ul>
+<h2 id="bv-upgrade-uj-e02">BV upgrade (UJ-E02)</h2>
+<ol>
+<li>In-app fingerprint/face BV <strong>or</strong> NADRA e-Sahulat / partner ATM (<strong>D</strong> channels).  </li>
+<li>NADRA BV success → <code>limit_tier=BV</code> · <strong>400,000</strong>/month (commercial) or <strong>200,000</strong> (pilot).  </li>
+<li>Cash-out limit from CRP (<strong>A</strong>).  </li>
+<li>Fail: retry cap; video KYC / e-Sahulat (<strong>A/C</strong>).</li>
+</ol>
+<h2 id="enhanced-1m-uj-e03-after-commercial-pspod">Enhanced 1M (UJ-E03) — after commercial + PSP&amp;OD</h2>
+<ul>
+<li>Upload Annexure-J SoF/income.  </li>
+<li>CNIC–SIM pairing on the device.  </li>
+<li>CRP + TMS scenarios.  </li>
+<li><strong>Do not outsource</strong> this verification.  </li>
+<li>Customer waits; outcome written.</li>
+</ul>
+<h2 id="qa-happy-path">QA (happy path)</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>J-E01</td>
+<td>Tracking ID visible before OTP</td>
+</tr>
+<tr>
+<td>J-E02</td>
+<td>SMS only after OTP</td>
+</tr>
+<tr>
+<td>J-E03</td>
+<td>Duplicate CNIC blocked with login copy</td>
+</tr>
+<tr>
+<td>J-E04</td>
+<td>Verisys wallet cannot load above 50k</td>
+</tr>
+<tr>
+<td>J-E05</td>
+<td>BV upgrades to 400k only after NADRA BV, not selfie</td>
+</tr>
+<tr>
+<td>J-E06</td>
+<td>Sanctions hit never STP</td>
+</tr>
+<tr>
+<td>J-E07</td>
+<td>Agent channel cannot call issue-wallet</td>
+</tr>
+</tbody>
+</table>
+</article>
+<div class="pager"><a href="05-recommended-emi-kyc-process.html">← 05-recommended-emi-kyc-process</a><span></span><a href="05b-emi-user-journeys-catalog.html">05b-emi-user-journeys-catalog →</a></div>
+<footer class="note">Rendered preview of 05a-emi-user-journey.md. Markdown remains the source of truth. Not legal advice.</footer>
+
+</body>
+</html>

@@ -1,0 +1,11 @@
+flowchart TD
+  Trig[HighRisk_or_PEP_Trigger] --> Case[Open_EDD_Case]
+  Case --> Docs[Request_Additional_Docs_SoW_SoF]
+  Docs --> Video[Recorded_Video_KYC_Interview]
+  Video --> Senior{PEP_or_Policy_Needs_Senior_Approval}
+  Senior -->|yes| Appr[Senior_Management_Approval]
+  Senior -->|no| Review[Senior_KYC_Review]
+  Appr --> Dec{Approve_or_Reject}
+  Review --> Dec
+  Dec -->|approve| Flag[Activate_with_Enhanced_Monitoring]
+  Dec -->|reject| Rej[Reject_Written_Reason]

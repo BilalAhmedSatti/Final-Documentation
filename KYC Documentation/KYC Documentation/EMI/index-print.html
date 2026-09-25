@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EMI KYC / CDD documentation pack</title>
+<style>
+  :root {
+    --ink: #122033;
+    --muted: #5c6b80;
+    --line: #d8dee8;
+    --paper: #ffffff;
+    --bg: #f3f5f8;
+    --accent: #1e4e8c;
+    --accent-deep: #0f2744;
+    --accent-soft: #e8f0fa;
+    --success: #0f6b45;
+    --warn: #8a5a00;
+    --wait: #5b4aa8;
+    --danger: #b42318;
+    --shadow: 0 10px 30px rgba(15, 39, 68, 0.07);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    color: var(--ink);
+    background: var(--bg);
+    font: 16px/1.5 "Segoe UI", system-ui, sans-serif;
+  }
+  a { color: var(--accent); }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 22px; }
+  header.site {
+    background: linear-gradient(160deg, var(--accent-deep) 0%, #16375f 58%, #1e4e8c 100%);
+    color: #fff;
+    padding: 28px 0 56px;
+  }
+  .eyebrow {
+    margin: 0 0 10px;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 650;
+    opacity: 0.78;
+  }
+  header.site h1 {
+    margin: 0 0 8px;
+    font-size: clamp(28px, 4vw, 40px);
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    font-weight: 650;
+  }
+  header.site .lede {
+    max-width: 640px;
+    margin: 0 0 22px;
+    color: #d7e4f4;
+    font-size: 16px;
+  }
+  .notice {
+    display: inline-block;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 12px;
+    color: #f0f5fb;
+    margin-bottom: 18px;
+  }
+  .cta { display: flex; flex-wrap: wrap; gap: 10px; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    border-radius: 10px;
+    padding: 11px 16px;
+    font-weight: 650;
+    font-size: 14px;
+    border: 1px solid transparent;
+  }
+  .btn-primary { background: #fff; color: var(--accent-deep); }
+  .btn-ghost { background: transparent; color: #fff; border-color: rgba(255,255,255,0.28); }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: -28px;
+    position: relative;
+  }
+  .stat, .card, .doc, .role {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+  }
+  .stat { padding: 16px 18px; }
+  .stat b { display: block; font-size: 22px; color: var(--accent); letter-spacing: -0.03em; }
+  .stat span { color: var(--muted); font-size: 12px; }
+  section { padding: 36px 0 8px; }
+  h2 {
+    margin: 0 0 8px;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+  }
+  .section-lede { margin: 0 0 18px; color: var(--muted); max-width: 680px; }
+  .ladder {
+    display: grid;
+    grid-template-columns: 1fr 18px 1fr 18px 1fr;
+    gap: 0;
+    align-items: stretch;
+  }
+  .rung { padding: 18px 18px 16px; }
+  .rung .tag {
+    font-size: 11px;
+    font-weight: 650;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 6px;
+  }
+  .rung h3 { margin: 0 0 6px; font-size: 18px; }
+  .rung p { margin: 0; color: var(--muted); font-size: 13px; }
+  .rung .cite { margin-top: 10px; font-size: 12px; color: var(--ink); }
+  .arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 22px;
+  }
+  .roles, .groups { display: grid; gap: 12px; }
+  .roles { grid-template-columns: repeat(3, 1fr); }
+  .role { padding: 16px 18px; text-decoration: none; color: inherit; display: block; }
+  .role:hover { border-color: var(--accent); }
+  .role h3 { margin: 0 0 6px; font-size: 15px; }
+  .role p { margin: 0; font-size: 13px; color: var(--muted); }
+  .groups { grid-template-columns: 1fr 1fr; }
+  .group { padding: 18px; }
+  .group h3 {
+    margin: 0 0 12px;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+  }
+  .group a {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--ink);
+    padding: 8px 0;
+    border-bottom: 1px solid #eef1f5;
+    font-size: 14px;
+  }
+  .group a:last-child { border-bottom: 0; }
+  .group a:hover { color: var(--accent); }
+  .group em { color: var(--muted); font-style: normal; font-size: 12px; white-space: nowrap; }
+  .legend {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  .chip { padding: 14px 16px; }
+  .chip b {
+    display: inline-flex;
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    align-items: center;
+    justify-content: center;
+    margin-right: 8px;
+    font-size: 12px;
+    color: #fff;
+  }
+  .chip.a b { background: var(--accent); }
+  .chip.b b { background: var(--wait); }
+  .chip.c b { background: var(--success); }
+  .chip.d b { background: var(--warn); }
+  .chip span { display: block; margin-top: 6px; font-size: 13px; color: var(--muted); }
+  .sources { display: grid; gap: 8px; }
+  .sources a { font-size: 14px; }
+  footer.site {
+    margin-top: 40px;
+    padding: 22px 0 36px;
+    color: var(--muted);
+    font-size: 13px;
+    border-top: 1px solid var(--line);
+  }
+  @media (max-width: 860px) {
+    .stats, .roles, .groups, .legend, .ladder { grid-template-columns: 1fr; }
+    .arrow { display: none; }
+  }
+  @media print {
+    header.site { background: #fff; color: #000; padding: 12px 0; }
+    header.site .lede, .notice { color: #333; }
+    header.site {
+      background: #0f2744 !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .btn, .stats, .cta { display: revert !important; }
+    .stats { display: grid !important; }
+    .cta { display: flex !important; }
+    .card, .stat, .role, .group { box-shadow: none; }
+    a[href] { text-decoration: underline; }
+    .btn, .role, .group a { text-decoration: none; }
+  }
+
+  @page { size: A4; margin: 12mm 11mm 14mm; }
+  a[href] { color: #1e4e8c !important; text-decoration: underline; }
+  .btn { text-decoration: none !important; }
+  .role, .group a { text-decoration: none !important; }
+  @media print {
+    header.site {
+      background: #0f2744 !important;
+      color: #fff !important;
+      padding: 22px 0 28px !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    header.site .lede, .notice { color: #d7e4f4 !important; }
+    .btn, .stats { display: revert !important; }
+    .stats { display: grid !important; }
+    .cta { display: flex !important; }
+    .btn-primary { background: #fff !important; color: #0f2744 !important; }
+    .btn-ghost { color: #fff !important; border-color: rgba(255,255,255,0.4) !important; }
+    .card, .stat, .role, .group { box-shadow: none; }
+    a[href]::after { content: none !important; }
+  }
+
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <p class="eyebrow">Pakistan · Electronic Money Institution · September 2026</p>
+    <p class="notice">Research pack — not legal advice. Confirm with Compliance, Legal, and SBP before go-live.</p>
+    <h1>EMI wallet KYC / CDD documentation</h1>
+    <p class="lede">Customer-facing onboarding for an SBP-licensed e-money issuer. Wallet is not a bank deposit. Limits follow EMI Regulations §14. Process follows the Consolidated Customer Onboarding Framework.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="file:///D:/KYC%20Documentation/EMI/docs/index.html">Guided docs</a>
+      <a class="btn btn-ghost" href="file:///D:/KYC%20Documentation/EMI/index.pdf">Pack home (PDF)</a>
+      <a class="btn btn-ghost" href="file:///D:/KYC%20Documentation/EMI/05c-emi-interactive-journeys.html">Journey explorer</a>
+      <a class="btn btn-ghost" href="file:///D:/KYC%20Documentation/EMI/05c-emi-customer-journeys.pdf">All 20 journeys (PDF)</a>
+      <a class="btn btn-ghost" href="file:///D:/KYC%20Documentation/EMI/00-executive-summary.html">Executive summary</a>
+    </div>
+  </div>
+</header>
+<div class="wrap">
+  <div class="stats">
+    <div class="stat"><b>20</b><span>Customer journeys UJ-E01–E20</span></div>
+    <div class="stat"><b>§12 / §14</b><span>CDD at issuance, then limit ladder</span></div>
+    <div class="stat"><b>2 WD</b><span>Individual wallet decision TAT</span></div>
+    <div class="stat"><b>A–D</b><span>Classified throughout the pack</span></div>
+  </div>
+
+  <section>
+    <h2>Onboarding ladder</h2>
+    <p class="section-lede">The first three journeys are one instrument with rising verification — not three products. SBP: EMI §12 issuance, §14 limits, Consolidated Framework §F.1 for opening or category upgrade.</p>
+    <div class="ladder">
+      <article class="card rung">
+        <p class="tag">UJ-E01</p>
+        <h3>Verisys wallet</h3>
+        <p>Digital open, 2FA, consents, live photo, TFS, NADRA Verisys.</p>
+        <p class="cite">50k / month · 10k cash-out/day · EMI §12 + §14.II</p>
+      </article>
+      <div class="arrow" aria-hidden="true">→</div>
+      <article class="card rung">
+        <p class="tag">UJ-E02</p>
+        <h3>NADRA BV upgrade</h3>
+        <p>Same wallet. Biometric verification. No silent 400k. Selfie is not BV.</p>
+        <p class="cite">400k commercial / 200k pilot · EMI §14.II</p>
+      </article>
+      <div class="arrow" aria-hidden="true">→</div>
+      <article class="card rung">
+        <p class="tag">UJ-E03</p>
+        <h3>Enhanced 1M</h3>
+        <p>Commercial licence + PSP&amp;OD. Annexure-J, CNIC–SIM pairing, TMS, CRP. Not outsourced.</p>
+        <p class="cite">Up to 1,000,000 · EMI §14.III</p>
+      </article>
+    </div>
+  </section>
+
+  <section>
+    <h2>Start by role</h2>
+    <p class="section-lede">Do not treat Digital Retail Bank deposit rules as EMI wallet rules.</p>
+    <div class="roles">
+      <a class="role" href="file:///D:/KYC%20Documentation/EMI/02-sbp-emi-kyc-cdd-framework.html">
+        <h3>Compliance / Legal</h3>
+        <p>SBP CDD framework, then compliance mapping and the clause catalog.</p>
+      </a>
+      <a class="role" href="file:///D:/KYC%20Documentation/EMI/05a-emi-user-journey.html">
+        <h3>Product / UX</h3>
+        <p>Happy-path screens, then the 20-journey catalog and explorer.</p>
+      </a>
+      <a class="role" href="file:///D:/KYC%20Documentation/EMI/05c-emi-interactive-journeys.html">
+        <h3>QA</h3>
+        <p>Click each path in the explorer. Cross-check state machine and QA IDs.</p>
+      </a>
+      <a class="role" href="file:///D:/KYC%20Documentation/EMI/06-architecture-and-services.html">
+        <h3>Solution / Backend</h3>
+        <p>Services, state machine, then API specification.</p>
+      </a>
+      <a class="role" href="file:///D:/KYC%20Documentation/EMI/07-database-and-erd.html">
+        <h3>Data</h3>
+        <p>Model and diagrams. Limits live in policy, not only in the app UI.</p>
+      </a>
+      <a class="role" href="file:///D:/KYC%20Documentation/EMI/11-security-fraud-audit.html">
+        <h3>Security</h3>
+        <p>2FA, alerts, audit. Device bind is C until enhanced SIM pairing (A).</p>
+      </a>
+    </div>
+  </section>
+
+  <section>
+    <h2>Document library</h2>
+    <p class="section-lede">Open these in the browser as formatted pages. Markdown files remain the editable source.</p>
+    <div class="groups">
+      <div class="card group">
+        <h3>Regulation &amp; research</h3>
+        <a href="file:///D:/KYC%20Documentation/EMI/index.pdf">Pack home PDF <em>index.pdf</em></a>
+        <a href="file:///D:/KYC%20Documentation/EMI/docs/index.html">Guided docs (start here) <em>docs/</em></a>
+        <a href="file:///D:/KYC%20Documentation/EMI/00-executive-summary.html">Executive summary <em>00</em></a>
+        <a href="file:///D:/KYC%20Documentation/EMI/01-regulatory-landscape-and-emis.html">Landscape &amp; licensed EMIs <em>01</em></a>
+        <a href="file:///D:/KYC%20Documentation/EMI/02-sbp-emi-kyc-cdd-framework.html">SBP KYC / CDD / limits <em>02</em></a>
+        <a href="file:///D:/KYC%20Documentation/EMI/03-shared-ekyc-and-emi.html">Shared e-KYC <em>03</em></a>
+        <a href="file:///D:/KYC%20Documentation/EMI/04-emi-benchmarks.html">Public EMI benchmarks <em>04</em></a>
+        <a href="file:///D:/KYC%20Documentation/EMI/appendices/A-regulatory-requirement-catalog.html">Clause catalog <em>A</em></a>
+        <a href="file:///D:/KYC%20Documentation/EMI/appendices/B-comparative-emi-matrix.html">Comparative matrix <em>B</em></a>
+      </div>
+      <div class="card group">
+        <h3>Customer journeys</h3>
+        <a href="file:///D:/KYC%20Documentation/EMI/05-recommended-emi-kyc-process.html">Recommended KYC process <em>05</em></a>
+        <a href="file:///D:/KYC%20Documentation/EMI/05a-emi-user-journey.html">Happy path screens <em>05a</em></a>
+        <a href="file:///D:/KYC%20Documentation/EMI/05b-emi-user-journeys-catalog.html">All 20 journeys <em>05b</em></a>
+        <a href="file:///D:/KYC%20Documentation/EMI/05c-emi-interactive-journeys.html">Interactive explorer <em>05c</em></a>
+        <a href="file:///D:/KYC%20Documentation/EMI/05c-emi-customer-journeys.pdf">Printable PDF <em>05c</em></a>
+        <a href="file:///D:/KYC%20Documentation/EMI/08-state-machine.html">State machine <em>08</em></a>
+      </div>
+      <div class="card group">
+        <h3>Build</h3>
+        <a href="file:///D:/KYC%20Documentation/EMI/06-architecture-and-services.html">Architecture <em>06</em></a>
+        <a href="file:///D:/KYC%20Documentation/EMI/07-database-and-erd.html">Database &amp; ERD <em>07</em></a>
+        <a href="file:///D:/KYC%20Documentation/EMI/09-api-specification.html">API specification <em>09</em></a>
+        <a href="file:///D:/KYC%20Documentation/EMI/diagrams">Mermaid diagrams <em>diagrams/</em></a>
+      </div>
+      <div class="card group">
+        <h3>Operate &amp; comply</h3>
+        <a href="file:///D:/KYC%20Documentation/EMI/10-aml-risk-edd-ops.html">AML, TMS, EDD, agents <em>10</em></a>
+        <a href="file:///D:/KYC%20Documentation/EMI/11-security-fraud-audit.html">Security, fraud, audit <em>11</em></a>
+        <a href="file:///D:/KYC%20Documentation/EMI/12-sbp-compliance-mapping.html">Compliance mapping <em>12</em></a>
+        <a href="file:///D:/KYC%20Documentation/EMI/13-implementation-gaps-references.html">Gaps &amp; references <em>13</em></a>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>How tags are used</h2>
+    <div class="legend">
+      <div class="card chip a"><b>A</b> Mandatory SBP / law<div><span>Must implement. Do not weaken in UX.</span></div></div>
+      <div class="card chip b"><b>B</b> Regulatory expectation<div><span>Effective AML-KYC control even if not a named widget.</span></div></div>
+      <div class="card chip c"><b>C</b> Industry practice<div><span>Common among EMIs; not a specific SBP tech mandate.</span></div></div>
+      <div class="card chip d"><b>D</b> EMI choice<div><span>Channel, copy, or product flag for this issuer.</span></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Primary SBP sources</h2>
+    <div class="sources">
+      <a href="https://www.sbp.org.pk/assets/documents/circulars/psd/2023/C3-Enclosure-Regulations-EMIs.pdf">Regulations for EMIs (revised 21 Jun 2023) — PDF</a>
+      <a href="https://www.sbp.org.pk/psd/2023/C3.htm">PSP&amp;OD Circular No. 03 of 2023</a>
+      <a href="https://www.sbp.org.pk/bprd/2025/C1.htm">BPRD Circular No. 01 of 2025 — Consolidated Customer Onboarding Framework</a>
+    </div>
+  </section>
+
+  <footer class="site">
+    Separate from the Conventional Digital Retail Bank pack in the parent folder. Do not invent NADRA APIs. Tracking ID is shown in-app at Step 0; SMS only after OTP success.
+  </footer>
+</div>
+</body>
+</html>

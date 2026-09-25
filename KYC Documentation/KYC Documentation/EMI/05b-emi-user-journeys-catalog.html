@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>11b. EMI customer journeys catalog</title>
+<link rel="stylesheet" href="assets/doc.css">
+</head>
+<body>
+<nav class="top">
+  <div class="top-inner">
+    <a href="index.html">EMI pack home</a>
+    <span class="meta"><a href="05c-emi-interactive-journeys.html">Journeys</a> · <a href="05b-emi-user-journeys-catalog.md">Source .md</a></span>
+  </div>
+</nav>
+<article class="page markdown-body">
+<h1 id="11b-emi-customer-journeys-catalog">11b. EMI customer journeys catalog</h1>
+<blockquote>
+<p>Customer-facing wallet journeys only. Ops queues: <a href="10-aml-risk-edd-ops.html">10-aml-risk-edd-ops</a>.<br />
+<strong>A/B/C/D</strong> as in the pack README. Not legal advice. Fictional personas.</p>
+</blockquote>
+<ul>
+<li>Pack home: <a href="index.html">index.html</a></li>
+<li>Interactive explorer (browser): <a href="05c-emi-interactive-journeys.html">05c-emi-interactive-journeys.html</a></li>
+<li>All 20 workflows (PDF): <a href="05c-emi-customer-journeys.pdf">05c-emi-customer-journeys.pdf</a></li>
+</ul>
+<h2 id="index">Index</h2>
+<pre class="mermaid">flowchart TD
+  subgraph core [Core]
+    E01[E01_Verisys_50k]
+    E02[E02_BV_400k]
+    E03[E03_Enhanced_1M]
+  end
+  subgraph id [Identity]
+    E04[E04_OneCredit_STR]
+    E05[E05_Duplicate_CNIC]
+    E06[E06_OTP]
+    E07[E07_BV_fail_video]
+    E08[E08_NADRA_outage]
+  end
+  subgraph aml [AML]
+    E09[E09_Tracking_TAT]
+    E10[E10_Sanctions]
+    E11[E11_PEP_EDD]
+  end
+  subgraph life [Lifecycle]
+    E12[E12_Agent_cash]
+    E13[E13_Minor]
+    E14[E14_Minor_freelancer]
+    E15[E15_Remittance_exclusion]
+    E16[E16_Salary_exclusion]
+    E17[E17_Merchant]
+    E18[E18_Decline_consent]
+    E19[E19_Resume_30d]
+    E20[E20_Refresh]
+  end
+  E01 --&gt; E02 --&gt; E03
+  E01 --&gt; id
+  E01 --&gt; aml</pre>
+
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Journey</th>
+<th>Persona</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UJ-E01</td>
+<td>Verisys wallet 50k</td>
+<td>Ayesha — first wallet</td>
+</tr>
+<tr>
+<td>UJ-E02</td>
+<td>NADRA BV upgrade 400k</td>
+<td>Ayesha — needs higher load</td>
+</tr>
+<tr>
+<td>UJ-E03</td>
+<td>Enhanced 1M</td>
+<td>Sana — SoF + PSP&amp;OD</td>
+</tr>
+<tr>
+<td>UJ-E04</td>
+<td>One-credit then unverified close + STR</td>
+<td>Policy-enabled pre-verify credit</td>
+</tr>
+<tr>
+<td>UJ-E05</td>
+<td>Duplicate CNIC</td>
+<td>Yasmin — already has wallet</td>
+</tr>
+<tr>
+<td>UJ-E06</td>
+<td>OTP / 2FA fail</td>
+<td>Ayesha — mistype</td>
+</tr>
+<tr>
+<td>UJ-E07</td>
+<td>BV fail → Verisys stay / video KYC</td>
+<td>Bilal — unclear prints</td>
+</tr>
+<tr>
+<td>UJ-E08</td>
+<td>NADRA timeout</td>
+<td>Any</td>
+</tr>
+<tr>
+<td>UJ-E09</td>
+<td>Tracking ID + TAT 2 WD</td>
+<td>Any in review</td>
+</tr>
+<tr>
+<td>UJ-E10</td>
+<td>Sanctions true match</td>
+<td>System decline</td>
+</tr>
+<tr>
+<td>UJ-E11</td>
+<td>PEP / high-risk EDD + video</td>
+<td>Sana</td>
+</tr>
+<tr>
+<td>UJ-E12</td>
+<td>Agent cash-in/out</td>
+<td>Ayesha at agent</td>
+</tr>
+<tr>
+<td>UJ-E13</td>
+<td>Minor basic linked wallet</td>
+<td>Guardian + minor</td>
+</tr>
+<tr>
+<td>UJ-E14</td>
+<td>Minor freelancer enhanced</td>
+<td>Guardian + freelancer minor</td>
+</tr>
+<tr>
+<td>UJ-E15</td>
+<td>Inward remittance exclusion</td>
+<td>Ayesha — home remittance</td>
+</tr>
+<tr>
+<td>UJ-E16</td>
+<td>Salary credit exclusion</td>
+<td>Ayesha — employer IBFT</td>
+</tr>
+<tr>
+<td>UJ-E17</td>
+<td>Merchant / entity wallet</td>
+<td>Phase 2</td>
+</tr>
+<tr>
+<td>UJ-E18</td>
+<td>Decline mandatory consents</td>
+<td>Ayesha</td>
+</tr>
+<tr>
+<td>UJ-E19</td>
+<td>Abandon / resume ≤ 30 days</td>
+<td>Ayesha</td>
+</tr>
+<tr>
+<td>UJ-E20</td>
+<td>Periodic / event KYC refresh</td>
+<td>Ayesha</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="uj-e01-verisys-wallet-commercial-50k">UJ-E01 — Verisys wallet (commercial 50k)</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Trigger</td>
+<td>Open wallet; digital ID; Verisys + screening pass</td>
+</tr>
+<tr>
+<td>Customer</td>
+<td>OTP, consents, identity, live photo, under review, <strong>Wallet ready — 50,000/month</strong></td>
+</tr>
+<tr>
+<td>System</td>
+<td>Tracking ID in-app; SMS after OTP; uniqueness; TFS; Verisys; issue instrument at par when funded</td>
+</tr>
+<tr>
+<td>State</td>
+<td><code>INITIATED</code> → <code>WALLET_ACTIVE</code> / <code>VERISYS</code></td>
+</tr>
+<tr>
+<td>Class</td>
+<td><strong>A</strong> EMI §12, §14.II.a, Consolidated TAT/live photo</td>
+</tr>
+<tr>
+<td>Success</td>
+<td>Can receive/pay within 50k load and 10k/day cash-out</td>
+</tr>
+<tr>
+<td>Alternate</td>
+<td>UJ-E05–E11</td>
+</tr>
+<tr>
+<td>QA</td>
+<td>J-E01–J-E04</td>
+</tr>
+</tbody>
+</table>
+<h3 id="uj-e02-bv-upgrade-400k-commercial-200k-pilot">UJ-E02 — BV upgrade (400k commercial / 200k pilot)</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Trigger</td>
+<td>Taps Increase limit</td>
+</tr>
+<tr>
+<td>Customer</td>
+<td>In-app BV or e-Sahulat/ATM instructions</td>
+</tr>
+<tr>
+<td>System</td>
+<td>NADRA BV adapter; <code>licence_phase</code> selects 400k vs 200k</td>
+</tr>
+<tr>
+<td>State</td>
+<td><code>VERISYS</code> → <code>BV</code></td>
+</tr>
+<tr>
+<td>Class</td>
+<td><strong>A</strong> EMI §14; channel <strong>D</strong></td>
+</tr>
+<tr>
+<td>Success</td>
+<td>Banner shows new monthly load</td>
+</tr>
+<tr>
+<td>Alternate</td>
+<td>UJ-E07, UJ-E08</td>
+</tr>
+</tbody>
+</table>
+<h3 id="uj-e03-enhanced-1m">UJ-E03 — Enhanced 1M</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Trigger</td>
+<td>Commercial EMI; PSP&amp;OD approved product; customer requests</td>
+</tr>
+<tr>
+<td>Customer</td>
+<td>Uploads income/SoF; may wait</td>
+</tr>
+<tr>
+<td>System</td>
+<td>Annexure-J; <strong>CNIC/SIM pairing</strong>; TMS scenarios; CRP; <strong>no outsourcing</strong> of this verification</td>
+</tr>
+<tr>
+<td>State</td>
+<td><code>BV</code> → <code>ENHANCED</code> or remain BV</td>
+</tr>
+<tr>
+<td>Class</td>
+<td><strong>A</strong> EMI §14.III</td>
+</tr>
+</tbody>
+</table>
+<h3 id="uj-e04-one-credit-then-fail">UJ-E04 — One credit then fail</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Trigger</td>
+<td>Product enables §12.IV one credit before verification</td>
+</tr>
+<tr>
+<td>Customer</td>
+<td>May see a pending wallet; then closed if ID fails</td>
+</tr>
+<tr>
+<td>System</td>
+<td>Close instrument; <strong>STR</strong></td>
+</tr>
+<tr>
+<td>Class</td>
+<td><strong>A</strong></td>
+</tr>
+<tr>
+<td>Recommended</td>
+<td>Prefer not enabling; if enabled, hard timeout</td>
+</tr>
+</tbody>
+</table>
+<h3 id="uj-e05-duplicate-cnic">UJ-E05 — Duplicate CNIC</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Trigger</td>
+<td>CNIC already has an instrument at <strong>this</strong> EMI</td>
+</tr>
+<tr>
+<td>Customer</td>
+<td><strong>You already have a wallet</strong> — login/recovery. Not a vague reject</td>
+</tr>
+<tr>
+<td>System</td>
+<td>Block second issue</td>
+</tr>
+<tr>
+<td>Class</td>
+<td><strong>A</strong> EMI §12.VII + Consolidated one-wallet</td>
+</tr>
+</tbody>
+</table>
+<h3 id="uj-e06-otp-2fa-fail">UJ-E06 — OTP / 2FA fail</h3>
+<p>Wrong OTP never skips <code>CONTACT_VERIFIED</code>. Cool-down <strong>D</strong>. Change number = new attempt rules.</p>
+<h3 id="uj-e07-bv-fail-no-branch">UJ-E07 — BV fail / no branch</h3>
+<p>Eligible BV fail → keep Verisys 50k <strong>or</strong> Verisys+MSISDN+OTP <strong>or</strong> recorded video KYC + Verisys (Consolidated for EMIs without presence). Debit-block <strong>bank</strong> product is not an e-money construct; use <strong>limit_tier=VERISYS</strong> + explicit banner instead of pretending BV succeeded.</p>
+<h3 id="uj-e08-nadra-outage">UJ-E08 — NADRA outage</h3>
+<p>Stay in progress. Retry. <strong>No</strong> silent 400k. Resume ≤ 30 days.</p>
+<h3 id="uj-e09-tracking-tat">UJ-E09 — Tracking + TAT</h3>
+<p>Tracking ID from Step 0; status without extra PII. If decision &gt; 2 WD after complete file, notify (<strong>A</strong> TAT comms).</p>
+<h3 id="uj-e10-sanctions-fraud-true-match">UJ-E10 — Sanctions / fraud true match</h3>
+<p>Fail closed. No instrument. Written reason. No STP retry.</p>
+<h3 id="uj-e11-pep-high-crp">UJ-E11 — PEP / high CRP</h3>
+<p>Customer waits. SoW/SoF + recorded video as EDD. Senior approval is <strong>ops-side</strong>.</p>
+<h3 id="uj-e12-agent-cash-inout">UJ-E12 — Agent cash-in/out</h3>
+<p>Agent <strong>cannot</strong> open wallet. Cash-in: BV. Cash-out: BV or 2FA if BVS challenged. ATM cash-out: 2FA. Cash <strong>redemption</strong>: BV (<strong>A</strong> §15).</p>
+<h3 id="uj-e13-minor-basic">UJ-E13 — Minor basic</h3>
+<p>Opened <strong>only</strong> from parent app, linked. 50k Verisys. Funded <strong>only</strong> from parent wallet. Guardian undertaking. TMS.</p>
+<h3 id="uj-e14-minor-freelancer-enhanced">UJ-E14 — Minor freelancer enhanced</h3>
+<p>Same linkage. 400k <strong>BV</strong>. Funding parent <strong>or</strong> verified income. Still <strong>not</strong> adult enhanced 1M. Confirm digital eligibility with Legal.</p>
+<h3 id="uj-e15-remittance-exclusion">UJ-E15 — Remittance exclusion</h3>
+<p>After SBP FX + AD arrangement. BV holder. Inward AD remittance up to <strong>1.5m</strong> may be <strong>excluded</strong> from load cap <strong>if SBP granted</strong> the exclusion. Still CDD/TMS.</p>
+<h3 id="uj-e16-salary-exclusion">UJ-E16 — Salary exclusion</h3>
+<p>Employer credit via nominated bank; EMI verifies employer. BV holders; SBP exclusion granted.</p>
+<h3 id="uj-e17-merchant-entity">UJ-E17 — Merchant / entity</h3>
+<p>Phase 2. Table-B / UBO if legal person. TAT 5 WD. One wallet per entity with this EMI. EPS public signal: merchant wallets exist.</p>
+<h3 id="uj-e18-decline-consents">UJ-E18 — Decline consents</h3>
+<p>Mandatory T&amp;Cs/NADRA → cannot issue. Draft save <strong>D</strong>.</p>
+<h3 id="uj-e19-resume-30-days">UJ-E19 — Resume ≤ 30 days</h3>
+<p>Last incomplete step. Day 31+ expired; new application.</p>
+<h3 id="uj-e20-refresh">UJ-E20 — Refresh</h3>
+<p>Scheduler by CRP; overdue restriction <strong>explicit</strong>; re-screen; BV may be re-required for high assurance.</p>
+</article>
+<div class="pager"><a href="05a-emi-user-journey.html">← 05a-emi-user-journey</a><span></span><a href="06-architecture-and-services.html">06-architecture-and-services →</a></div>
+<footer class="note">Rendered preview of 05b-emi-user-journeys-catalog.md. Markdown remains the source of truth. Not legal advice.</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: "neutral", darkMode: false, flowchart: { useMaxWidth: true }, er: { useMaxWidth: false } });</script>
+
+</body>
+</html>

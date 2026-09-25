@@ -1,0 +1,15 @@
+flowchart TD
+  O[Open wallet + Tracking ID on screen] --> OTP[Mobile OTP 2FA]
+  OTP --> C[Consents]
+  C --> ID[Identity Table-A plus EMI section 12]
+  ID --> DUP{CNIC already has wallet?}
+  DUP -->|yes| LOGIN[Login existing]
+  DUP -->|no| PHOTO[Live photo]
+  PHOTO --> SCR[Sanctions PEP]
+  SCR -->|hit| REJ[Reject written]
+  SCR -->|clear| V[NADRA Verisys]
+  V --> A50[WALLET_ACTIVE VERISYS 50k]
+  A50 --> BV[NADRA BV]
+  BV --> A400[limit_tier BV 400k commercial]
+  A400 --> ENH[Enhanced SoF SIM TMS]
+  ENH --> A1M[limit_tier ENHANCED up to 1M]

@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KYC Journey Docs · J1–J19</title>
+  <meta name="description" content="Standalone Pakistan EMI KYC documentation with side menu — master spine, ladder, journeys J1–J19, limits, Annexure-J, glossary, workflows." />
+  <link rel="stylesheet" href="css/site.css?v=11" />
+</head>
+<body>
+  <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu">Menu</button>
+  <div class="backdrop" id="backdrop"></div>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar" aria-label="Documentation side menu">
+      <div class="brand">
+        <div class="brand-mark">K</div>
+        <div>
+          <strong>KYC Journey Docs</strong>
+          <small>Pakistan EMI · standalone site</small>
+        </div>
+      </div>
+      <input class="nav-search" id="nav-search" type="search" placeholder="Search menu…" aria-label="Search side menu" />
+      <nav id="nav-root" aria-label="Primary"></nav>
+    </aside>
+
+    <main class="main">
+      <!-- OVERVIEW -->
+      <section class="page" id="page-overview">
+        <p class="eyebrow">Start here · for newcomers</p>
+        <h1>What is this documentation about?</h1>
+        <p class="lede">
+          This site explains how a person in Pakistan opens and uses an <strong>EMI e-money wallet</strong>
+          (digital money app) — legally and safely. It is written so a new team member can understand
+          the path before learning the jargon.
+        </p>
+
+        <div class="eli5">
+          <h3>The one-sentence idea</h3>
+          <p>
+            Before someone can send or spend digital money, the company must prove
+            <strong>who they are</strong>, check they are <strong>not banned</strong>,
+            and only then give them a <strong>wallet number</strong> — after a short security wait.
+          </p>
+        </div>
+
+        <div id="overview-flow"></div>
+        <p class="prose">The happy path above is called <strong>J1</strong> (clean biometric). If fingerprint is impossible, or the customer is high risk, or something fails, other journeys (J2–J19) describe what happens instead.</p>
+
+        <div class="callout ok">
+          <strong>Three things people mix up</strong>
+          <ul>
+            <li><strong>Tracking ID</strong> = “your application is in progress” (like a ticket number).</li>
+            <li><strong>Debit-blocked wallet (J3)</strong> = file opened, but the customer still cannot spend.</li>
+            <li><strong>Wallet number</strong> = real account they can use — only after checks + 2-hour wait.</li>
+          </ul>
+        </div>
+
+        <div class="callout">
+          <strong>Wallet vs bank account</strong>
+          <p>
+            This product is an <strong>EMI wallet</strong> (electronic money). Money is safeguarded at a trustee bank.
+            It is <strong>not</strong> a normal bank deposit and <strong>not</strong> a Roshan Digital Account (RDA).
+          </p>
+        </div>
+
+        <h2>Where should a new reader go next?</h2>
+        <div class="toc-jump">
+          <a class="pill blue" href="#how-to-read" data-page="how-to-read">1. How to read</a>
+          <a class="pill amber" href="#audit" data-page="audit">2. SBP audit readiness</a>
+          <a class="pill violet" href="#domain" data-page="domain">3. Domain Learning</a>
+          <a class="pill blue" href="#domain-srs" data-page="domain-srs">4. SRS · Onboarding</a>
+          <a class="pill" href="#glossary" data-page="glossary">5. Vocabulary</a>
+          <a class="pill green" href="#spine" data-page="spine">6. Master spine</a>
+          <a class="pill green" href="#ladder" data-page="ladder">7. Identity ladder</a>
+          <a class="pill violet" href="#J1" data-page="J1">8. Start with J1</a>
+          <a class="pill amber" href="#journeys" data-page="journeys">9. KYC Journeys</a>
+        </div>
+      </section>
+
+      <!-- HOW TO READ -->
+      <section class="page" id="page-how-to-read">
+        <p class="eyebrow">Start here</p>
+        <h1>How to read these docs (easy mode)</h1>
+        <p class="lede">You do not need to memorise regulations first. Follow the pictures, then read the short “plain English” box on each page.</p>
+
+        <div class="eli5">
+          <h3>On every journey page you will see</h3>
+          <p>1) <strong>Plain English</strong> — what it means in everyday language.<br>
+             2) <strong>Flow arrows</strong> — the steps left to right.<br>
+             3) <strong>Remember</strong> — 2–3 must-know points.<br>
+             4) Optional extra detail for compliance / engineering.</p>
+        </div>
+
+        <div class="callout">
+          <strong>Only one set of journeys: J1–J19</strong>
+          <p>This doc is one EMI wallet story told as nineteen named paths. Extra cases (wrong OTP, refuse terms, rare early credit, salary/remittance rules, business wallets later) are <em>steps inside</em> those journeys — not a second menu with different codes.</p>
+        </div>
+
+        <h2>What the colours on flows mean</h2>
+        <ul class="detail-list">
+          <li><strong>Blue border</strong> — start</li>
+          <li><strong>Grey</strong> — normal step</li>
+          <li><strong>Purple</strong> — something saved in the system</li>
+          <li><strong>Orange</strong> — waiting / blocked / cooling-off</li>
+          <li><strong>Amber diamond-ish</strong> — decision / question</li>
+          <li><strong>Green</strong> — success / wallet ready</li>
+          <li><strong>Red</strong> — stop / decline / danger</li>
+        </ul>
+
+        <h2>Suggested reading order for a new joiner</h2>
+        <ol class="story-steps">
+          <li>Overview — big picture of opening a wallet</li>
+          <li><strong>SBP audit readiness</strong> — rules, sanctions, and what auditors will ask</li>
+          <li><strong>Domain Learning</strong> — ledger, rails, fees, multi-market pillars (wider platform)</li>
+          <li>Vocabulary &amp; details — learn the words (glossary, states, limits)</li>
+          <li>Master spine — the shared path everyone starts on</li>
+          <li>Activation &amp; cooling-off — when the wallet number appears</li>
+          <li>Verification ladder — what if fingerprint fails</li>
+          <li>J1 first, then skim J2–J8 (onboarding problems)</li>
+          <li>Then J9–J19 (life after the wallet exists)</li>
+        </ol>
+
+        <h2>Side menu</h2>
+        <p class="prose">Use the left menu (or <strong>Menu</strong> on mobile). Search filters journey names. Open any <strong>J1…J19</strong> item — that is the full set. Where a detail lives:</p>
+        <ul class="detail-list">
+          <li><strong>Wrong OTP / refuse terms</strong> → inside <strong>J1</strong> (opening path)</li>
+          <li><strong>Early credit before KYC</strong> → inside <strong>J3</strong></li>
+          <li><strong>Salary / remittance / business later</strong> → inside <strong>J10</strong></li>
+          <li><strong>Raise limits</strong> → <strong>J13</strong></li>
+        </ul>
+      </section>
+
+      <!-- SBP AUDIT READINESS -->
+      <section class="page" id="page-audit">
+        <p class="eyebrow">Start here</p>
+        <h1>SBP audit readiness</h1>
+        <p class="lede">
+          This page is for people who are new to banking compliance.
+          It explains — in everyday language — what rules we follow, what “sanctions” means,
+          what we must keep for State Bank of Pakistan (SBP) reviewers, and how to keep every
+          KYC journey reconstructible so an audit does not fall apart.
+        </p>
+
+        <div class="eli5">
+          <h3>In plain English</h3>
+          <p>
+            Opening a wallet is not only “fill a form.” It is a controlled process that can be
+            <strong>replayed later</strong> like a black-box recording of a flight.
+            When SBP (or an approved systems auditor) asks “show me this customer,”
+            we must show the full story: who did what, when, with which evidence,
+            and why the wallet was allowed — or refused.
+          </p>
+          <p class="analogy">
+            <strong>Simple analogy:</strong> Airport security keeps camera footage, boarding passes, and screening logs.
+            If something goes wrong, investigators rebuild the passenger’s path. KYC works the same way.
+          </p>
+        </div>
+
+        <div class="callout warn">
+          <strong>Important</strong>
+          <p>
+            This documentation explains how <em>we design the product</em>. It is not legal advice.
+            Official circulars on <a href="https://www.sbp.org.pk" target="_blank" rel="noopener">sbp.org.pk</a> always prevail.
+          </p>
+        </div>
+
+        <h2>1. What is an SBP audit here?</h2>
+        <p class="prose">
+          SBP (and firms on SBP-approved audit panels) check whether our EMI wallet follows
+          Pakistan’s rules for e-money, digital onboarding, AML (anti-money laundering),
+          and customer protection. They do not only read policy PDFs — they pick real cases and ask:
+        </p>
+        <ol class="detail-list">
+          <li>Can you find this application by Tracking ID?</li>
+          <li>Was identity proven the right way (fingerprint / Verisys / video)?</li>
+          <li>Was the person screened against banned lists before money could move?</li>
+          <li>Was the wallet number given only after all gates + the 2-hour wait?</li>
+          <li>If something failed (NADRA down, sanctions hit), did the system stop safely?</li>
+          <li>Can you show evidence, timestamps, and who approved special cases?</li>
+        </ol>
+        <div class="callout ok">
+          <strong>Pass mindset</strong>
+          <p>
+            Every live wallet should have a complete time-ordered story.
+            Every decline should have a clear reason and a kept Tracking ID.
+            Mystery gaps (“we approved it somehow”) are what get audits into trouble.
+          </p>
+        </div>
+
+        <h2>2. The rule books (what “compliance” means)</h2>
+        <p class="prose">Four main rule families drive this product. You do not need to memorise section numbers — learn what each family <em>forces the app to do</em>.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Rule family</th><th>In simple words</th><th>What the product must do</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>EMI Regulations 2023</strong></td>
+                <td>Rules for electronic money institutions (wallets), not full banks.</td>
+                <td>Collect CDD data &amp; consent; one CNIC → one wallet; set limits by verification strength; cash-in needs biometric; agents cannot open wallets; keep records.</td>
+              </tr>
+              <tr>
+                <td><strong>CCOF 2025</strong><br><span style="color:#93a0b8;font-size:0.85em">Consolidated digital onboarding</span></td>
+                <td>How digital KYC must work in Pakistan.</td>
+                <td>Table-A fields; live ID/photo; verification ladder (try strongest proof first); save/resume 30 days; raising limits = verify again.</td>
+              </tr>
+              <tr>
+                <td><strong>BPRD Circular 04 of 2023</strong></td>
+                <td>Digital security &amp; customer controls for banking channels.</td>
+                <td>Short-code OTP; bind the device; 2-hour cooling-off; protect against “does this CNIC already have an account?” probing; re-check on new phone / contact change.</td>
+              </tr>
+              <tr>
+                <td><strong>AML / CFT + TFS</strong></td>
+                <td>Stop criminals and sanctioned persons from using finance.</td>
+                <td>Screen against designated lists; file STR when required; monitor after issuance; never tip the customer off about a suspicion report.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="prose muted-lead">Also related in operations: systems audit before pilot and annually; breach notice timelines to PSP&amp;OD; consumer-protection and agent-complaint tracks. See <a href="#regulatory" data-page="regulatory">Regulatory foundations</a>.</p>
+
+        <h2>3. Sanctions — explained simply</h2>
+        <div class="eli5">
+          <h3>What is a sanctions check?</h3>
+          <p>
+            Before (and after) someone uses the wallet, we check whether their name / identity matches
+            people or groups that Pakistan or the UN have designated as banned or restricted.
+            In our docs this is often called <strong>pre-screening</strong>, <strong>TFS</strong> (targeted financial sanctions),
+            or “lists.”
+          </p>
+        </div>
+        <h3>Which lists?</h3>
+        <ul class="detail-list">
+          <li><strong>UNSC</strong> — United Nations Security Council designated lists</li>
+          <li><strong>ATA 1997</strong> — Pakistan’s Anti-Terrorism Act proscribed lists</li>
+          <li>Plus designed watchlists / <strong>PEP</strong> (politically exposed persons) checks as part of risk</li>
+        </ul>
+        <h3>What can happen?</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Result</th><th>What we do</th><th>Journey</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Clear</strong></td><td>Continue onboarding / keep operating</td><td>Spine → J1 / J2 …</td></tr>
+              <tr><td><strong>Possible hit</strong></td><td>Hold. Investigate internally. Do not tell the customer “you are on a list.”</td><td>Hold → then clear or J5</td></tr>
+              <tr><td><strong>True match</strong></td><td>No wallet. Written decline. Internal TFS / possible STR. Customer gets a safe generic message.</td><td><a href="#J5" data-page="J5">J5</a> then <a href="#J8" data-page="J8">J8</a></td></tr>
+              <tr><td><strong>List service down</strong></td><td>Wait / retry. Never mark “clear” because the checker was offline.</td><td><a href="#J11" data-page="J11">J11</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout danger">
+          <strong>No tipping-off</strong>
+          <p>
+            The customer must not be told “you matched a sanctions list” or “we filed a suspicious transaction report.”
+            That warning could help criminals destroy evidence. Decline messages stay truthful but generic.
+            Internal reason codes can be richer than the customer-facing text.
+          </p>
+        </div>
+        <h3>What auditors will ask about sanctions</h3>
+        <ul class="detail-list">
+          <li>Did screening run <strong>before</strong> payment services were allowed?</li>
+          <li>Did we store the <strong>list version and timestamp</strong> with the decision?</li>
+          <li>If lists were down, did we fail closed (J11) instead of silently approving?</li>
+          <li>After the wallet is live, does monitoring continue (<a href="#J10" data-page="J10">J10</a>)?</li>
+        </ul>
+
+        <h2>4. The non‑negotiable product rules</h2>
+        <p class="prose">These are the rules that most often decide whether a sample case looks compliant.</p>
+        <ol class="story-steps">
+          <li><strong>Tracking ID is not a wallet.</strong> The case file opens first. The spendable wallet number comes late — after verification, screening, CDD, and cooling-off.</li>
+          <li><strong>Fail closed.</strong> If NADRA, lists, or OTP systems are down, we wait or retry (<a href="#J11" data-page="J11">J11</a>). We never invent a silent “approved.”</li>
+          <li><strong>One active wallet per CNIC</strong> with this EMI (<a href="#J12" data-page="J12">J12</a>). Returning customers are told clearly to log in; strangers do not get answers that help them probe who is a customer.</li>
+          <li><strong>Strongest identity proof first.</strong> NADRA biometric (fingerprint / face BV) is primary. Lower options (Verisys, debit-block, video) only for listed genuine reasons — not because someone is in a hurry (<a href="#ladder" data-page="ladder">ladder</a>).</li>
+          <li><strong>A selfie is not biometric verification.</strong> Live photo fights impersonation; NADRA BV proves identity against the national registry.</li>
+          <li><strong>Limits follow how strongly we verified.</strong> Example bands: Verisys ~ PKR 50,000 / month; biometric ~ PKR 400,000 commercial (pilot often 200,000); enhanced up to ~1,000,000 only with extra controls (<a href="#limits" data-page="limits">limits</a>, <a href="#J13" data-page="J13">J13</a>).</li>
+          <li><strong>2-hour cooling-off</strong> before the wallet can operate after activation — and again on new device, contact change, or limit upgrade (<a href="#activation" data-page="activation">activation</a>).</li>
+          <li><strong>High risk needs extra work.</strong> HIGH CRP / PEP → more documents and senior approval before activate (<a href="#J6" data-page="J6">J6</a>).</li>
+          <li><strong>Agents never open wallets.</strong> They may do cash-in/out under rules; cash-in needs BV (<a href="#J19" data-page="J19">J19</a>).</li>
+          <li><strong>Keep the evidence.</strong> Applications, screening decisions, video KYC, and key artefacts are retained for the AML / EMI retention period (commonly spoken of as about 10 years in these docs).</li>
+        </ol>
+
+        <h2>5. The “audit story” every wallet must have</h2>
+        <p class="prose">If you remember only one picture, remember this chain:</p>
+        <div id="audit-story-flow" class="flow-board" aria-label="Audit story flow"></div>
+        <p class="prose">
+          Or in words:
+          <strong>Tracking ID → evidence uploaded → sanctions screen → risk rating → identity verify (BV or Verisys) → cooling-off ends → wallet number</strong>.
+          If the path stops early, the story must end clearly at decline / hold — not in a blank.
+        </p>
+        <div class="callout">
+          <strong>Four green lights before cooling-off</strong>
+          <ol class="detail-list">
+            <li>Identity proven (BV or full Verisys bundle)</li>
+            <li>Sanctions / lists clear (or we are still waiting — not fake-clear)</li>
+            <li>Required CDD / consents complete</li>
+            <li>If HIGH risk — senior EDD approval done</li>
+          </ol>
+        </div>
+
+        <h2>6. What the system must store (audit checklist)</h2>
+        <p class="prose">For each onboarding or major change, reviewers expect a reconstructible record. Use this as a build-and-ops checklist.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Keep this</th><th>Why it matters</th><th>Beginner tip</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Tracking ID / application ID</strong></td><td>Find the case years later</td><td>Like a ticket number — not the wallet IBAN</td></tr>
+              <tr><td><strong>Actor</strong> (customer / system / employee)</td><td>Who caused each step</td><td>No anonymous “someone approved”</td></tr>
+              <tr><td><strong>State before → state after</strong></td><td>Prove the journey order</td><td>e.g. INITIATED → … → WALLET_ACTIVE</td></tr>
+              <tr><td><strong>Timestamps (UTC)</strong></td><td>Order and cooling-off proof</td><td>Include cool-off start and end</td></tr>
+              <tr><td><strong>Device / IP context</strong></td><td>Fraud and BPRD controls</td><td>Hashed device id is enough in many designs</td></tr>
+              <tr><td><strong>Consent versions</strong></td><td>Informed consent proof</td><td>Which T&amp;Cs text they accepted, and when</td></tr>
+              <tr><td><strong>Live CNIC + live photo evidence</strong></td><td>Digital onboarding proof</td><td>Server is source of truth — not phone gallery</td></tr>
+              <tr><td><strong>NADRA / Verisys reference</strong></td><td>Prove real vendor check</td><td>Never store raw biometric templates carelessly</td></tr>
+              <tr><td><strong>Screening result + list version</strong></td><td>Sanctions defensibility</td><td>Clear / hit / unavailable + which list build</td></tr>
+              <tr><td><strong>Risk score + EDD pack</strong></td><td>HIGH risk justification</td><td>Who approved, with what documents</td></tr>
+              <tr><td><strong>Limit band (verification strength)</strong></td><td>EMI §14 adherence</td><td>VERISYS vs BV vs ENHANCED is first-class</td></tr>
+              <tr><td><strong>Decline: internal code + customer text</strong></td><td>TAT + no tip-off</td><td>Two different texts on purpose</td></tr>
+              <tr><td><strong>STR / TFS internal trail</strong> (when required)</td><td>AML duty</td><td>Never shown in the customer app</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>7. How J1–J19 help in an audit walkthrough</h2>
+        <p class="prose">Auditors often pick one happy path and a few failure paths. Use journeys as the shared language.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>If they ask about…</th><th>Show journey</th><th>What “good” looks like</th></tr></thead>
+            <tbody>
+              <tr><td>Normal successful open</td><td><a href="#J1" data-page="J1">J1</a></td><td>Full spine + BV + cool-off + late wallet number</td></tr>
+              <tr><td>Fingerprint not possible</td><td><a href="#J2" data-page="J2">J2</a></td><td>Listed reason + Verisys bundle + lower limits + upgrade path</td></tr>
+              <tr><td>Opened but cannot spend</td><td><a href="#J3" data-page="J3">J3</a></td><td>Debit blocked until verification finishes (or closed)</td></tr>
+              <tr><td>Last-resort remote verify</td><td><a href="#J4" data-page="J4">J4</a></td><td>Video/partner with retention — still not fake BV</td></tr>
+              <tr><td>Sanctions / banned person</td><td><a href="#J5" data-page="J5">J5</a></td><td>No wallet, no tip-off, internal TFS/STR path</td></tr>
+              <tr><td>High risk / PEP</td><td><a href="#J6" data-page="J6">J6</a></td><td>Extra evidence + senior approval before activate</td></tr>
+              <tr><td>Customer left mid-way</td><td><a href="#J7" data-page="J7">J7</a></td><td>Same Tracking ID ≤ 30 days; server holds state</td></tr>
+              <tr><td>Any final “no”</td><td><a href="#J8" data-page="J8">J8</a></td><td>Specific written reason; Tracking ID still works</td></tr>
+              <tr><td>New phone after live</td><td><a href="#J9" data-page="J9">J9</a></td><td>BV + notify old channels + cool-off</td></tr>
+              <tr><td>After go-live monitoring</td><td><a href="#J10" data-page="J10">J10</a></td><td>Ongoing lists + TMS; salary/remittance rules if any</td></tr>
+              <tr><td>NADRA / lists timeout</td><td><a href="#J11" data-page="J11">J11</a></td><td>Hold and retry — never silent 400k</td></tr>
+              <tr><td>Second wallet attempt</td><td><a href="#J12" data-page="J12">J12</a></td><td>“You already have a wallet” when authenticated</td></tr>
+              <tr><td>Raise monthly limit</td><td><a href="#J13" data-page="J13">J13</a></td><td>New verification case + re-screen + cool-off</td></tr>
+              <tr><td>Change mobile / email / password</td><td><a href="#J14" data-page="J14">J14</a></td><td>Step-up / BV + notify + cool-off</td></tr>
+              <tr><td>Child wallet</td><td><a href="#J15" data-page="J15">J15</a></td><td>Only from guardian app; linked; agents do not issue</td></tr>
+              <tr><td>Close / redeem</td><td><a href="#J16" data-page="J16">J16</a></td><td>Redeem at par; cash redeem needs BV; retain records</td></tr>
+              <tr><td>Periodic refresh</td><td><a href="#J17" data-page="J17">J17</a></td><td>Explicit overdue message — not a silent clamp</td></tr>
+              <tr><td>NICOP / overseas IDs</td><td><a href="#J18" data-page="J18">J18</a></td><td>Class-specific verify; same screening gates</td></tr>
+              <tr><td>Agent / ATM cash</td><td><a href="#J19" data-page="J19">J19</a></td><td>Existing wallet only; BV / 2FA; no agent issuance</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>8. What usually fails an audit sample</h2>
+        <ul class="detail-list">
+          <li>Wallet number issued <strong>before</strong> screening, BV/Verisys, or cooling-off</li>
+          <li>“Approved” while NADRA or sanctions lists were <strong>down</strong></li>
+          <li>Second active wallet for the same CNIC</li>
+          <li>Verisys-only customer given biometric-tier limits without NADRA BV</li>
+          <li>Treating a selfie / liveness score as if it were NADRA BV</li>
+          <li>Agent channel created a wallet</li>
+          <li>No list version / timestamp on a screening decision</li>
+          <li>Customer message that tips off sanctions or STR</li>
+          <li>HIGH risk activated without senior approval trail</li>
+          <li>Missing evidence: photos, consents, or vendor references gone</li>
+          <li>Staff can override to “APPROVED” without named maker-checker reason</li>
+        </ul>
+
+        <h2>9. Day-to-day habits so audits stay calm</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Team</th><th>Habit</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Product / UX</strong></td><td>Never design “skip KYC” shortcuts. Show Tracking ID early. Separate mandatory vs marketing consents.</td></tr>
+              <tr><td><strong>Engineering</strong></td><td>Write immutable audit events for state changes. Fail closed on vendor errors. Keep server as source of truth.</td></tr>
+              <tr><td><strong>Operations</strong></td><td>Use catalogue decline reasons. No free-typed tip-off language. Escalate true matches to compliance.</td></tr>
+              <tr><td><strong>Compliance</strong></td><td>Own STR/TFS. Review list-provider freshness. Spot-check J5/J6/J11 samples monthly.</td></tr>
+              <tr><td><strong>QA</strong></td><td>Test the failure paths (timeout, duplicate, sanctions hold) as hard as the happy path.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>10. Quick self-check before you call a build “audit ready”</h2>
+        <ul class="detail-list">
+          <li>☐ Can we export one customer’s full timeline from Tracking ID to wallet number (or decline)?</li>
+          <li>☐ Does every CLEAR / HIT / UNAVAILABLE screening row store list version + time?</li>
+          <li>☐ Can we prove cooling-off prevented spend too early?</li>
+          <li>☐ Do decline screens stay free of sanctions/STR tip-off language?</li>
+          <li>☐ Do Verisys and BV customers get different limit enforcement in the ledger?</li>
+          <li>☐ Is agent “open wallet” blocked in API and UI?</li>
+          <li>☐ Are J11 timeouts impossible to mark as APPROVED in any environment (including stubs)?</li>
+          <li>☐ Is retention / legal-hold understood for KYC evidence?</li>
+        </ul>
+
+        <div class="toc-jump" style="margin-top:1.25rem">
+          <a class="pill blue" href="#regulatory" data-page="regulatory">Regulatory foundations</a>
+          <a class="pill green" href="#spine" data-page="spine">Master spine</a>
+          <a class="pill green" href="#activation" data-page="activation">Activation &amp; cooling-off</a>
+          <a class="pill violet" href="#J5" data-page="J5">J5 Sanctions</a>
+          <a class="pill violet" href="#J11" data-page="J11">J11 Fail closed</a>
+          <a class="pill amber" href="#journeys" data-page="journeys">All journeys</a>
+        </div>
+      </section>
+
+      <!-- REGULATORY -->
+      <section class="page" id="page-regulatory">
+        <p class="eyebrow">Start here</p>
+        <h1>Regulatory foundations</h1>
+        <p class="lede">These instruments shape the spine, ladder, limits, and post-issuance journeys. This page is a map — not legal advice.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Instrument</th><th>What it drives in this product</th></tr></thead>
+            <tbody>
+              <tr><td><strong>CCOF 2025</strong></td><td>Digital onboarding fields (Table-A), remote verification ladder F.1.v, save/resume 30 days, category upgrade = re-verification, ID classes (C.5), evidence retention.</td></tr>
+              <tr><td><strong>EMI Regulations 2023</strong></td><td>§12 CDD/consent/one-CNIC; §14 limits &amp; minors; §14.VI exclusions; §15 par issuance/redemption &amp; cash-in BV; §17 agents cannot issue; Annexure-J; record retention.</td></tr>
+              <tr><td><strong>BPRD Circular 04 of 2023</strong></td><td>Device bind, short-code OTP, 2-hour cooling-off, BV for mobile/email change, enumeration protection. Applied via CCOF K.</td></tr>
+              <tr><td><strong>AML/CFT + TFS</strong></td><td>UNSC/ATA pre-screening, STR/CTR, ongoing monitoring, no tipping-off, EDD for high risk.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout danger">
+          <strong>Fail closed</strong>
+          <p>Screening timeout, NADRA timeout, or OTP/pairing outage must never become a silent APPROVED. Those paths are J11 (pending/retry) or HOLD — not CLEAR.</p>
+        </div>
+      </section>
+
+      <!-- SPINE -->
+      <section class="page" id="page-spine">
+        <p class="eyebrow">Capture &amp; gates</p>
+        <h1>Master spine — the shared path (steps 1–10)</h1>
+        <div class="eli5">
+          <h3>In plain English</h3>
+          <p>
+            Everyone who opens a wallet starts on the <strong>same road</strong> (the spine).
+            Later they may take a side road (J2, J5, J12…), but they do not get a completely different app.
+          </p>
+          <p class="analogy">Think of airport security: everyone queues the same way first; only some people get extra screening.</p>
+        </div>
+        <p class="lede">Scroll the flow left → right, then read each step in simple words.</p>
+        <div id="spine-detail"></div>
+      </section>
+
+      <!-- ACTIVATION -->
+      <section class="page" id="page-activation">
+        <p class="eyebrow">Capture &amp; gates</p>
+        <h1>When does the wallet number appear?</h1>
+        <div class="eli5">
+          <h3>In plain English</h3>
+          <p>
+            The wallet number is given <strong>late</strong>. First prove identity, clear safety checks, finish the form,
+            get senior approval if high risk — then wait <strong>2 hours</strong>. Only then can the customer spend.
+          </p>
+        </div>
+        <div id="activation-flow"></div>
+
+        <h2>Four green lights (all required)</h2>
+        <ol class="detail-list">
+          <li><strong>Identity proven</strong> — fingerprint OK, or full Verisys bundle OK.</li>
+          <li><strong>Not on banned list</strong> — sanctions check clear (if the check is down, wait — do not approve).</li>
+          <li><strong>Form complete</strong> — name, address, purpose, and required ID fields collected.</li>
+          <li><strong>High risk approved</strong> — if risk is HIGH, a senior person must approve first (J6).</li>
+        </ol>
+
+        <div class="callout warn">
+          <strong>The 2-hour wait (cooling-off)</strong>
+          <p>
+            After those four lights are green, the app still waits 2 hours before money can move.
+            Same wait applies when adding a new phone (J9), changing mobile/email/password (J14), or raising limits (J13).
+          </p>
+        </div>
+
+        <div class="remember-box">
+          <h4>Remember</h4>
+          <ul class="detail-list">
+            <li>Application number ≠ wallet number.</li>
+            <li>Debit-blocked (J3) is not a spending wallet.</li>
+            <li>Never skip the 2-hour wait for convenience.</li>
+            <li>Never auto-approve if NADRA or lists timed out.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- LADDER -->
+      <section class="page" id="page-ladder">
+        <p class="eyebrow">Capture &amp; gates</p>
+        <h1>How do we prove identity? (the ladder)</h1>
+        <div class="eli5">
+          <h3>In plain English</h3>
+          <p>
+            Always try <strong>fingerprint / face with NADRA</strong> first (best proof, higher limits).
+            Only if that is truly impossible for an allowed reason, move to weaker options.
+            You cannot skip down the ladder just because it is easier.
+          </p>
+        </div>
+        <div id="ladder-cards"></div>
+      </section>
+
+      <!-- JOURNEYS INDEX -->
+      <section class="page" id="page-journeys">
+        <p class="eyebrow">KYC Journeys</p>
+        <h1>All KYC journeys (J1–J19)</h1>
+        <div class="eli5">
+          <h3>In plain English</h3>
+          <p>
+            <strong>J1</strong> is the normal success path. Other “J” numbers are named situations
+            (fingerprint not possible, banned person, new phone, cash at agent, and so on).
+            Click a journey for a picture flow + simple explanation.
+          </p>
+        </div>
+        <p class="lede">Tip: start with J1, then open any journey you need from the left menu.</p>
+        <div id="journeys-index"></div>
+      </section>
+
+      <!-- Dynamic journey pages inject here -->
+      <div id="dynamic-pages"></div>
+
+<!-- DOMAIN LEARNING — inserted into index.html -->
+<section class="page" id="page-domain">
+  <p class="eyebrow">Domain Learning</p>
+  <h1>Unified Digital Banking &amp; EMI Domain Master Specification</h1>
+  <p class="lede">
+    The complete domain picture for our multi-tenant, multi-region Digital Banking &amp; EMI platform —
+    accounting, regulation, KYC, payments, fees, risk, cards, reporting, and FX — in one place for the whole team.
+  </p>
+
+  <div class="eli5">
+    <h3>In plain English</h3>
+    <p>
+      An EMI wallet is digital money. Customers hold a balance; we hold matching reserves at a trustee bank.
+      Every payment moves value with double-entry bookkeeping. Every market (Pakistan → UAE → Saudi) has its own
+      central bank rules, ID system, and payment rails — but the same eleven capability pillars.
+    </p>
+    <p class="analogy">
+      <strong>Analogy:</strong> Think of a city. The ledger is the electricity grid (power must balance).
+      KYC is the ID checkpoint. Payment rails are the highways to other cities. Fees and tax are tolls.
+      Fraud rules are traffic police. Audit logs are CCTV that never forgets.
+    </p>
+  </div>
+
+  <div class="callout warn">
+    <strong>How this relates to J1–J19</strong>
+    <p>
+      <strong>Journeys J1–J19</strong> are the Pakistan EMI KYC companion paths (CCOF / map).
+      <strong>Domain Learning</strong> is the wider platform blueprint (ledger, rails, fees, multi-market).
+      Where numbers differ (for example licence limit bands vs commercial EMI §14 bands), confirm the
+      active <code>licence_phase</code> / product config — official circulars always prevail.
+    </p>
+  </div>
+
+  <h2>Jump to a section</h2>
+  <div class="toc-jump">
+    <a class="pill blue" href="#domain-pillars" data-page="domain-pillars">11 pillars glance</a>
+    <a class="pill" href="#domain" data-page="domain">1 · Scope</a>
+    <a class="pill green" href="#domain" data-page="domain">2 · Ledger</a>
+    <a class="pill green" href="#domain" data-page="domain">3 · Regulators</a>
+    <a class="pill violet" href="#audit" data-page="audit">SBP audit page</a>
+    <a class="pill amber" href="#domain-practice" data-page="domain-practice">Team exercises</a>
+  </div>
+
+  <h2 id="dl-scope">1. Executive summary &amp; domain scope</h2>
+  <p class="prose">
+    This specification synthesizes core banking capabilities, regulatory frameworks, compliance rules,
+    financial accounting mechanics, and operational workflows into a single authoritative reference for
+    the multi-tenant, multi-region platform.
+  </p>
+  <div class="callout ok">
+    <strong>Launch sequence</strong>
+    <p><strong>Pakistan (SBP)</strong> → <strong>UAE (CBUAE)</strong> → <strong>Saudi Arabia (SAMA)</strong>.</p>
+  </div>
+  <ul class="detail-list">
+    <li><strong>Multi-tenant</strong> — one platform serving multiple institutions / brands with isolation.</li>
+    <li><strong>Multi-region</strong> — country packs for ID, rails, tax, residency, and limits.</li>
+    <li><strong>EMI / digital banking</strong> — e-money and payment services under central-bank licences (not a generic fintech toy).</li>
+  </ul>
+
+  <h2 id="dl-p1">2. Pillar 1 — Double-entry ledger (TigerBeetle + PostgreSQL)</h2>
+  <div class="eli5">
+    <h3>In plain English</h3>
+    <p>
+      Money is never “created from thin air” inside the ledger. Every move is a pair:
+      something is debited and something is credited by the same amount.
+      Formula: <strong>sum of debits = sum of credits</strong>.
+    </p>
+  </div>
+  <h3>Non‑negotiable invariants</h3>
+  <ol class="detail-list">
+    <li><strong>Integer minor units only</strong> — store paisa / fils / cents as <code>bigint</code> (e.g. <code>@platform/money</code>). Floating point (<code>float</code>/<code>double</code>) is forbidden.</li>
+    <li><strong>Account types</strong>
+      <ul>
+        <li><em>Asset</em> (↑ debit, ↓ credit) — e.g. commercial bank escrow balances we hold.</li>
+        <li><em>Liability</em> (↑ credit, ↓ debit) — customer wallets (our obligation to the customer).</li>
+        <li><em>Equity / Income / Expense</em> — fees revenue and operating costs.</li>
+      </ul>
+    </li>
+    <li><strong>Reversals over edits</strong> — ledgers are append-only. Mistakes get an opposite reversing post — never delete or overwrite history.</li>
+    <li><strong>TigerBeetle</strong> — authoritative posting engine for balances and 2-phase holds (debits = credits). <strong>PostgreSQL</strong> keeps append-only journal metadata (ADR-0004).</li>
+  </ol>
+  <div class="callout danger">
+    <strong>Fail closed for money math</strong>
+    <p>If a transfer cannot balance, do not post a one-sided entry. Hold, reverse, or leave in-flight for reconciliation — never “fix” the balance.</p>
+  </div>
+
+  <h2 id="dl-p2">3. Pillar 2 — Regulatory frameworks (SBP, CBUAE, SAMA)</h2>
+  <p class="prose">EMIs operate under central-bank licences that define verification tiers, limits, and reserve backing.</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Aspect</th>
+          <th>Pakistan (SBP EMI)</th>
+          <th>UAE (CBUAE SVF)</th>
+          <th>Saudi (SAMA PSP)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Level 0 limit</strong></td>
+          <td>25,000 PKR / month</td>
+          <td>Basic Wallet tier</td>
+          <td>Basic Sandbox tier</td>
+        </tr>
+        <tr>
+          <td><strong>Level 1 limit</strong></td>
+          <td>200,000 PKR / month (CNIC + NADRA eKYC)</td>
+          <td>Standard SVF tier</td>
+          <td>Standard PSP tier</td>
+        </tr>
+        <tr>
+          <td><strong>Level 2 limit</strong></td>
+          <td>1,000,000 PKR / month (Video KYC path in this matrix)</td>
+          <td>Enhanced tier</td>
+          <td>Enhanced tier</td>
+        </tr>
+        <tr>
+          <td><strong>National digital ID</strong></td>
+          <td>NADRA eKYC / CNIC</td>
+          <td>UAE PASS</td>
+          <td>Yakeen / Nafath</td>
+        </tr>
+        <tr>
+          <td><strong>Credit bureau</strong></td>
+          <td>eCIB</td>
+          <td>AECB</td>
+          <td>SIMAH</td>
+        </tr>
+        <tr>
+          <td><strong>Data residency</strong></td>
+          <td>Local cloud region</td>
+          <td>Local cloud region</td>
+          <td>Strict KSA residency (no cross-border processing)</td>
+        </tr>
+        <tr>
+          <td><strong>Reserve backing</strong></td>
+          <td>100% escrow at SBP bank</td>
+          <td>100% ring-fenced escrow</td>
+          <td>100% safeguarded escrow at SAMA bank</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="prose muted-lead">
+    Pakistan day-to-day KYC bands in <a href="#limits" data-page="limits">Limits &amp; EMI 14.VI</a> and journeys
+    (e.g. Verisys / biometric commercial bands) may use the CCOF companion numbers — treat this matrix as the
+    multi-market learning frame and confirm product config for production.
+  </p>
+
+  <h2 id="dl-p3">4. Pillar 3 — Onboarding, eKYC &amp; compliance screening</h2>
+  <div class="eli5">
+    <h3>In plain English</h3>
+    <p>
+      Nobody gets a working wallet until identity and sanctions checks finish safely.
+      If a check times out or fails, the case goes to <strong>HOLD / MANUAL_REVIEW</strong> —
+      it is never auto-approved “optimistically.”
+    </p>
+  </div>
+  <pre class="mermaid">flowchart TD
+    A[Open wallet / application] --> B[Capture ID + live evidence]
+    B --> C[Sanctions / PEP / watchlist]
+    C -->|Clear| D[eKYC / NADRA or market ID]
+    C -->|Hit| E[Decline / TFS path]
+    C -->|Timeout| F[HOLD · fail closed]
+    D -->|Pass| G[Risk rating]
+    D -->|Fail / timeout| F
+    G -->|Low/Med| H[Activate after cool-off]
+    G -->|High| I[EDD + senior approval]
+    I -->|Approved| H
+    I -->|Refused| E
+    F --> J[Retry or manual review]
+    J --> C
+  </pre>
+  <div class="callout danger">
+    <strong>Fail-closed rule</strong>
+    <p>Screening timeout or eKYC failure → MANUAL_REVIEW / HOLD. An account is <strong>never</strong> auto-cleared optimistically. Same spirit as journeys <a href="#J5" data-page="J5">J5</a>, <a href="#J11" data-page="J11">J11</a>, and the <a href="#audit" data-page="audit">SBP audit readiness</a> page.</p>
+  </div>
+
+  <h2 id="dl-p4">5. Pillar 4 — Payment rails, clearing &amp; settlement sagas</h2>
+  <p class="prose">External money movement uses national instant rails through SPI adapters.</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Jurisdiction</th><th>Instant rail</th><th>RTGS / clearing</th><th>SPI adapter</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Pakistan</td><td>Raast (SBP)</td><td>PRISM</td><td>PayoutRailPort (Raast)</td></tr>
+        <tr><td>UAE</td><td>Aani (CBUAE)</td><td>UAEFT</td><td>PayoutRailPort (Aani)</td></tr>
+        <tr><td>Saudi Arabia</td><td>Sarie (SAMA)</td><td>SARIE RTGS</td><td>PayoutRailPort (Sarie)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>Transfer saga lifecycle</h3>
+  <ol class="story-steps">
+    <li><strong>Authorize</strong> — Lock customer funds on TigerBeetle (pending hold).</li>
+    <li><strong>Execute</strong> — Submit payload to the national rail via SPI adapter.</li>
+    <li><strong>Settle / confirm</strong>
+      <ul>
+        <li><strong>SUCCESS</strong> — Commit hold → Debit customer wallet, Credit outbound settlement account.</li>
+        <li><strong>FAILURE</strong> — Void hold → funds return to customer.</li>
+        <li><strong>TIMEOUT</strong> — Leave <code>IN_FLIGHT</code>; run automated reconciliation query.</li>
+      </ul>
+    </li>
+  </ol>
+
+  <h2 id="dl-p5">6. Pillar 5 — Dynamic fee engine &amp; tax withholding</h2>
+  <p class="prose">Pricing (service 10) calculates revenue fees and government tax.</p>
+  <h3>Fee structures</h3>
+  <ul class="detail-list">
+    <li><strong>Fixed</strong> — flat amount (e.g. 15 PKR ATM fee).</li>
+    <li><strong>Percentage</strong> — e.g. 0.5% international spend.</li>
+    <li><strong>Slab</strong> — tiered ranges (0–25k free, above that fee applies).</li>
+  </ul>
+  <h3>Tax withholding (examples)</h3>
+  <ul class="detail-list">
+    <li><strong>Pakistan (FBR)</strong> — WHT for non-filers + provincial sales tax (about 13–16% SST/PST).</li>
+    <li><strong>Saudi Arabia (ZATCA)</strong> — 15% VAT on processing fees.</li>
+    <li><strong>UAE (FTA)</strong> — 5% VAT on processing fees.</li>
+  </ul>
+  <div class="callout danger">
+    <strong>Fail closed</strong>
+    <p>Missing tax rate pack <strong>halts startup</strong> — never silently process as zero-tax.</p>
+  </div>
+
+  <h2 id="dl-p6">7. Pillar 6 — Three-way reconciliation &amp; settlement</h2>
+  <div class="eli5">
+    <h3>In plain English</h3>
+    <p>Every day we prove our books match the outside world — three statements must tell the same story.</p>
+  </div>
+  <pre class="mermaid">flowchart LR
+    A[Internal ledger postings] --- B[Rail gateway settlement file]
+    B --- C[Partner bank escrow statement]
+    A --- C
+  </pre>
+  <p class="prose"><strong>Breakage:</strong> unmatched debits/credits go to automated <em>Suspense</em> accounts for ops to resolve — they are not ignored.</p>
+
+  <h2 id="dl-p7">8. Pillar 7 — Transaction risk, fraud &amp; velocity</h2>
+  <ul class="detail-list">
+    <li><strong>Velocity</strong> — e.g. max 3 transactions / minute → automated 15-minute cool-off.</li>
+    <li><strong>PIN failures</strong> — 5 wrong PINs in a row → <code>LOCKED_FAILED_PIN</code>.</li>
+    <li><strong>Mule patterns</strong> — detect rapid pass-through (money in and straight out within seconds).</li>
+  </ul>
+  <p class="prose muted-lead">Related KYC journeys: new device <a href="#J9" data-page="J9">J9</a>, monitoring <a href="#J10" data-page="J10">J10</a>, cash channels <a href="#J19" data-page="J19">J19</a>.</p>
+
+  <h2 id="dl-p8">9. Pillar 8 — Support, disputes &amp; account holds</h2>
+  <ul class="detail-list">
+    <li><strong>Judicial / administrative freeze</strong> — court or central-bank order → <code>FROZEN_JUDICIAL</code> (blocks outbound transfers).</li>
+    <li><strong>Erroneous transfer reversals</strong> — recipient consent required before reversing misdirected transfers, unless proven fraud.</li>
+  </ul>
+
+  <h2 id="dl-p9">10. Pillar 9 — Card management (CMS &amp; 3DS)</h2>
+  <p class="prose">Virtual and physical debit cards (Visa, Mastercard, PayPak, mada):</p>
+  <ol class="detail-list">
+    <li>Instant virtual card</li>
+    <li>Physical personalization</li>
+    <li>Courier delivery</li>
+    <li>In-app activation</li>
+  </ol>
+  <p class="prose"><strong>Controls:</strong> dynamic CVV, channel toggles (POS / ATM / e-commerce), 3-D Secure OTP.</p>
+
+  <h2 id="dl-p10">11. Pillar 10 — Regulatory reporting (STR / CTR)</h2>
+  <ul class="detail-list">
+    <li><strong>STR</strong> — Suspicious Transaction Reports to FIUs (e.g. FMU in Pakistan, SAFIU in Saudi) when structuring / laundering patterns appear.</li>
+    <li><strong>CTR</strong> — Currency Transaction Reports for large amounts (example threshold: &gt; 2,000,000 PKR).</li>
+    <li><strong>10-year retention</strong> — keep compliance logs and verification cases immutably for ~10 years.</li>
+  </ul>
+  <p class="prose">Deep dive for Pakistan auditors: <a href="#audit" data-page="audit">SBP audit readiness</a>.</p>
+
+  <h2 id="dl-p11">12. Pillar 11 — Multi-currency &amp; FX treasury</h2>
+  <ul class="detail-list">
+    <li><strong>FX quote</strong> — FX Lib mid-market → Pricing spread → immutable <code>quote_id</code> valid ~60 seconds (scale-8 precision).</li>
+    <li><strong>Position accounts</strong> — FX position accounts in the ledger keep multi-currency double-entry balanced.</li>
+  </ul>
+
+  <div class="toc-jump" style="margin-top:1.5rem">
+    <a class="pill blue" href="#domain-pillars" data-page="domain-pillars">11 pillars at a glance →</a>
+    <a class="pill amber" href="#domain-practice" data-page="domain-practice">Team exercises →</a>
+    <a class="pill green" href="#J1" data-page="J1">Back to KYC J1 →</a>
+  </div>
+</section>
+
+<section class="page" id="page-domain-pillars">
+  <p class="eyebrow">Domain Learning</p>
+  <h1>The 11 master domain pillars</h1>
+  <p class="lede">One diagram for the whole platform. Click through to the full specification for detail.</p>
+
+  <div class="eli5">
+    <h3>Why eleven pillars?</h3>
+    <p>
+      KYC alone does not make a licensed EMI. Money must balance, rails must settle, fees must tax correctly,
+      fraud must be watched, and reports must reach the regulator. These eleven pillars are that map.
+    </p>
+  </div>
+
+  <pre class="mermaid">flowchart TB
+    subgraph core [Money core]
+      P1[1 Ledger · TigerBeetle + PG]
+      P6[6 3-way reconciliation]
+      P11[11 FX &amp; multi-currency]
+    end
+    subgraph trust [Trust &amp; licence]
+      P2[2 Regulators SBP/CBUAE/SAMA]
+      P3[3 Onboarding eKYC screening]
+      P10[10 STR / CTR reporting]
+    end
+    subgraph move [Move money]
+      P4[4 Rails · Raast/Aani/Sarie]
+      P5[5 Fees &amp; tax]
+      P9[9 Cards CMS &amp; 3DS]
+    end
+    subgraph protect [Protect]
+      P7[7 Fraud &amp; velocity]
+      P8[8 Support · disputes · freezes]
+    end
+    P3 --> P1
+    P1 --> P4
+    P4 --> P5
+    P4 --> P6
+    P3 --> P10
+    P7 --> P4
+    P8 --> P1
+    P9 --> P4
+    P11 --> P1
+    P2 -.-> P3
+    P2 -.-> P10
+  </pre>
+
+  <div class="detail-grid">
+    <div class="detail-box"><h4>1 · Ledger</h4><p>Double-entry, integer money, TigerBeetle posts, PG journal.</p></div>
+    <div class="detail-box"><h4>2 · Regulators</h4><p>SBP → CBUAE → SAMA; tiers, ID, residency, escrow.</p></div>
+    <div class="detail-box"><h4>3 · eKYC</h4><p>Fail-closed screening; HOLD not optimistic clear.</p></div>
+    <div class="detail-box"><h4>4 · Rails</h4><p>Raast / Aani / Sarie sagas: authorize → execute → settle.</p></div>
+    <div class="detail-box"><h4>5 · Fees &amp; tax</h4><p>Fixed / % / slab; WHT/VAT packs required at startup.</p></div>
+    <div class="detail-box"><h4>6 · Recon</h4><p>Ledger ⇔ rail file ⇔ escrow statement; suspense for breaks.</p></div>
+    <div class="detail-box"><h4>7 · Fraud</h4><p>Velocity, PIN lock, mule pass-through detection.</p></div>
+    <div class="detail-box"><h4>8 · Support</h4><p>Judicial freeze; careful erroneous reversals.</p></div>
+    <div class="detail-box"><h4>9 · Cards</h4><p>Virtual → physical → activate; 3DS &amp; channel controls.</p></div>
+    <div class="detail-box"><h4>10 · Reporting</h4><p>STR / CTR + ~10-year immutable retention.</p></div>
+    <div class="detail-box full"><h4>11 · FX treasury</h4><p>Quoted FX with short TTL; position accounts keep books balanced across currencies.</p></div>
+  </div>
+
+  <div class="toc-jump">
+    <a class="pill violet" href="#domain" data-page="domain">Open full master specification →</a>
+    <a class="pill amber" href="#domain-practice" data-page="domain-practice">Practice exercises →</a>
+  </div>
+</section>
+
+<section class="page" id="page-domain-practice">
+  <p class="eyebrow">Domain Learning</p>
+  <h1>Practical team learning exercises</h1>
+  <p class="lede">Build fluency across engineering and product — not by memorising acronyms, but by tracing real flows.</p>
+
+  <div class="eli5">
+    <h3>How to use this page</h3>
+    <p>Pick one exercise per week. Whiteboard it. Then map the same story onto <strong>J1–J19</strong> (KYC) and the <strong>11 pillars</strong> (platform).</p>
+  </div>
+
+  <div class="step-block">
+    <h3>Exercise 1 — Real-world app reverse engineering</h3>
+    <p class="prose">Download SadaPay / NayaPay / STC Pay (or similar). Audit onboarding screens, limit banners, error messages, and PDF statements.</p>
+    <ul class="detail-list">
+      <li>Where is the Tracking ID / application status shown?</li>
+      <li>What happens when verification is delayed?</li>
+      <li>How are limits explained after KYC?</li>
+    </ul>
+  </div>
+
+  <div class="step-block">
+    <h3>Exercise 2 — Monorepo design-spec audits</h3>
+    <p class="prose">Deep-dive design docs such as <code>02_identity.design.md</code>, <code>04_ledger.design.md</code>, <code>05_payments.design.md</code>, <code>06_wallets.design.md</code>, and <code>AGENTS.md</code>.</p>
+    <ul class="detail-list">
+      <li>Find the money invariant (integer minor units).</li>
+      <li>Find the fail-closed KYC rule.</li>
+      <li>Find how holds / reversals are described.</li>
+    </ul>
+  </div>
+
+  <div class="step-block">
+    <h3>Exercise 3 — Central bank rulebook review</h3>
+    <p class="prose">Read SBP EMI Regulations, CBUAE SVF Rules, and SAMA PSP Guidelines (official sources).</p>
+    <ul class="detail-list">
+      <li>Compare ID systems: NADRA vs UAE PASS vs Nafath/Yakeen.</li>
+      <li>Compare reserve / escrow wording.</li>
+      <li>Note data-residency differences (especially KSA).</li>
+    </ul>
+  </div>
+
+  <div class="step-block">
+    <h3>Exercise 4 — Weekly flow whiteboarding (45 minutes)</h3>
+    <p class="prose">Trace end-to-end, for example:</p>
+    <pre class="mermaid">flowchart LR
+      A[Customer registration] --> B[NADRA / market eKYC]
+      B --> C[Screening fail-closed]
+      C --> D[Cooling-off]
+      D --> E[TigerBeetle CoA / wallet liability]
+      E --> F[First funded credit]
+      F --> G[Raast / rail payout saga]
+    </pre>
+    <ul class="detail-list">
+      <li>Mark every fail-closed gate.</li>
+      <li>Mark every ledger posting (which account debit/credit).</li>
+      <li>Mark what an auditor would ask for at each step.</li>
+    </ul>
+  </div>
+
+  <div class="callout ok">
+    <strong>Suggested pairing</strong>
+    <p>
+      After whiteboarding, open <a href="#J1" data-page="J1">J1</a> + <a href="#audit" data-page="audit">SBP audit readiness</a> +
+      Pillar 1 (ledger) on the <a href="#domain" data-page="domain">master specification</a> — connect customer story ↔ money story ↔ audit story.
+    </p>
+  </div>
+
+  <div class="toc-jump">
+    <a class="pill violet" href="#domain" data-page="domain">Master specification</a>
+    <a class="pill blue" href="#domain-pillars" data-page="domain-pillars">11 pillars</a>
+    <a class="pill green" href="#spine" data-page="spine">KYC master spine</a>
+  </div>
+</section>
+
+
+<!-- DOMAIN SRS — EMI Onboarding / KYC Engine / Compliance Admin -->
+<section class="page" id="page-domain-srs">
+  <p class="eyebrow">Domain Learning · SRS</p>
+  <h1>System Requirements &amp; Architecture (SRS)</h1>
+  <p class="lede">
+    EMI onboarding, KYC engine, and compliance admin portal —
+    written for the Zeki EMI digital wallet model (NayaPay / SadaPay style).
+    Phase 1: Pakistan. Phase 2: global expansion.
+  </p>
+
+  <div class="eli5">
+    <h3>In plain English</h3>
+    <p>
+      This SRS explains <strong>what the product must do</strong>: screens the customer sees,
+      APIs the backend runs, how incomplete sign-ups are saved, how high-risk (PEP) people are reviewed,
+      and what the compliance admin portal looks like.
+    </p>
+    <p class="analogy">
+      <strong>Analogy:</strong> KYC Journeys (J1–J19) are the “airport security story.”
+      This SRS is the “terminal blueprint” — counters, cameras, queues, and staff rooms.
+    </p>
+  </div>
+
+  <div class="callout warn">
+    <strong>Align with Pakistan rules</strong>
+    <p>
+      Some product tier examples below (e.g. Tier 0 without selfie) are <em>product SRS illustrations</em>.
+      For licensed Pakistan EMI behaviour, prefer <a href="#limits" data-page="limits">EMI §14 limits</a>,
+      <a href="#ladder" data-page="ladder">verification ladder</a>, and journey rules
+      (live photo, NADRA BV vs Verisys, cooling-off). Official circulars on sbp.org.pk prevail.
+    </p>
+  </div>
+
+  <h2>What this SRS covers</h2>
+  <div class="toc-jump">
+    <a class="pill blue" href="#domain-srs" data-page="domain-srs">1 · Domain &amp; tiers</a>
+    <a class="pill green" href="#domain-screens" data-page="domain-screens">2 · Screens &amp; APIs</a>
+    <a class="pill amber" href="#domain-dropout" data-page="domain-dropout">3 · Drop-off recovery</a>
+    <a class="pill violet" href="#domain-pep" data-page="domain-pep">4 · PEP / EDD</a>
+    <a class="pill" href="#domain-admin" data-page="domain-admin">5 · Admin &amp; security</a>
+  </div>
+
+  <h2>Executive summary</h2>
+  <ul class="detail-list">
+    <li><strong>End-to-end domain knowledge</strong> — regulatory foundations, operational rules, tiered accounts for a licensed EMI.</li>
+    <li><strong>User onboarding screen flows</strong> — UI sequence from mobile auth to final approval.</li>
+    <li><strong>Backend API orchestrations</strong> — services and endpoints behind each screen.</li>
+    <li><strong>Identity verification</strong> — OCR on CNIC, telco SIM ownership (PMD), NADRA validation.</li>
+    <li><strong>Biometric &amp; facial checks</strong> — active liveness + face match against official records.</li>
+    <li><strong>Drop-off recovery</strong> — draft state, TTL purge, resume with re-auth when needed.</li>
+    <li><strong>PEP workflows</strong> — fuzzy match, EDD forms, MLRO sign-off (no auto-approve).</li>
+    <li><strong>Admin portal</strong> — review queues, cases, alerts, immutable audit logs.</li>
+  </ul>
+
+  <h2>Section 1 — What is an EMI?</h2>
+  <p class="prose">
+    An <strong>Electronic Money Institution (EMI)</strong> is a non-bank financial entity regulated by the central bank
+    (in Pakistan: State Bank of Pakistan under EMI Regulations). It issues electronic money, stores customer funds
+    in digital wallets, processes payments, and may issue branded debit cards (Visa / Mastercard / PayPak).
+  </p>
+
+  <h3>1.1 Key operational constraints</h3>
+  <div class="detail-grid">
+    <div class="detail-box">
+      <h4>Stored value — no interest</h4>
+      <p>EMI wallets are non-interest-bearing stored-value accounts. Funds are safeguarded — not bank deposits earning return.</p>
+    </div>
+    <div class="detail-box">
+      <h4>No lending from deposits</h4>
+      <p>EMIs cannot issue credit cards, overdrafts, or loans funded from customer e-money balances.</p>
+    </div>
+  </div>
+
+  <h3>1.2 Tiered account structure (product SRS model)</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Tier</th><th>What the customer completes</th><th>Example limits (illustrative)</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Tier 0 · Basic</strong></td>
+          <td>Mobile OTP + CNIC data validation (OCR / Verisys-style). Product note: may allow start without live selfie in this SRS.</td>
+          <td>~ PKR 50,000 / month</td>
+        </tr>
+        <tr>
+          <td><strong>Tier 1 · Upgraded</strong></td>
+          <td>Tier 0 + live selfie / liveness face match</td>
+          <td>~ PKR 200,000 – 500,000+ / month</td>
+        </tr>
+        <tr>
+          <td><strong>Tier 2 · Pro</strong></td>
+          <td>Tier 1 + NADRA biometric (fingerprint) integration</td>
+          <td>Higher band (product config; align with EMI §14 / licence)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout">
+    <strong>Map to KYC journeys</strong>
+    <p>
+      In J1–J19 language: Verisys-class ≈ lower band (<a href="#J2" data-page="J2">J2</a>),
+      NADRA BV ≈ biometric band (<a href="#J1" data-page="J1">J1</a> / upgrade <a href="#J13" data-page="J13">J13</a>),
+      high risk / PEP ≈ <a href="#J6" data-page="J6">J6</a>. Live photo is required on the CCOF digital spine even when BV is later.
+    </p>
+  </div>
+
+  <div class="toc-jump">
+    <a class="pill green" href="#domain-screens" data-page="domain-screens">Next: Screens &amp; APIs →</a>
+    <a class="pill violet" href="#domain" data-page="domain">11-pillar master spec</a>
+  </div>
+</section>
+
+<section class="page" id="page-domain-screens">
+  <p class="eyebrow">Domain Learning · SRS</p>
+  <h1>Onboarding screens &amp; backend APIs</h1>
+  <p class="lede">Step-by-step UI sequence and the APIs that run behind each screen.</p>
+
+  <div class="eli5">
+    <h3>In plain English</h3>
+    <p>
+      The customer walks through phone → OTP → PIN → CNIC camera → silent government/telco checks →
+      liveness selfie → profile form → approved or “under review.” Each screen has one clear backend job.
+    </p>
+  </div>
+
+  <pre class="mermaid">flowchart TD
+    A[1.1 Mobile number] --> B[1.2 OTP verify]
+    B --> C[2.1 Set MPIN]
+    C --> D[3.1 CNIC front/back OCR]
+    D --> E[4.1 Silent NADRA + PMD]
+    E --> F[5.1 Liveness + face match]
+    F --> G[6.1 Profile + AML screen]
+    G --> H{Clean?}
+    H -->|Yes| I[6.2 Approved · wallet]
+    H -->|Flagged| J[Under review · EDD/PEP]
+  </pre>
+
+  <h2>Phase 1 — Authentication &amp; ownership</h2>
+  <div class="step-block">
+    <h3>Screen 1.1 — Mobile number input</h3>
+    <ul class="detail-list">
+      <li><strong>UI:</strong> Phone field with country code (+92).</li>
+      <li><strong>Backend:</strong> Create cryptographically secure 6-digit OTP; send via licensed SMS gateway (Infobip / Twilio / local aggregator).</li>
+      <li><strong>API:</strong> <code>POST /api/v1/auth/send-otp</code></li>
+    </ul>
+  </div>
+  <div class="step-block">
+    <h3>Screen 1.2 — OTP verification</h3>
+    <ul class="detail-list">
+      <li><strong>UI:</strong> 6-digit OTP, auto-focus, 60-second resend timer.</li>
+      <li><strong>Backend:</strong> Validate OTP against stored hash; issue temporary JWT <code>registration_token</code>; register device fingerprint.</li>
+      <li><strong>API:</strong> <code>POST /api/v1/auth/verify-otp</code></li>
+      <li><strong>Rule:</strong> Wrong OTP never advances state (see <a href="#J1" data-page="J1">J1</a> / fail-closed habits).</li>
+    </ul>
+  </div>
+
+  <h2>Phase 2 — Credentials &amp; PIN</h2>
+  <div class="step-block">
+    <h3>Screen 2.1 — MPIN creation</h3>
+    <ul class="detail-list">
+      <li><strong>UI:</strong> 4- or 6-digit PIN + confirm.</li>
+      <li><strong>Backend:</strong> Salted hash with Argon2id or bcrypt (work factor ≥ 12). Plain-text PIN never stored or logged.</li>
+      <li><strong>API:</strong> <code>POST /api/v1/user/set-pin</code></li>
+    </ul>
+  </div>
+
+  <h2>Phase 3 — Identity document capture (OCR)</h2>
+  <div class="step-block">
+    <h3>Screen 3.1 — CNIC front &amp; back</h3>
+    <ul class="detail-list">
+      <li><strong>UI:</strong> Camera frame with glare/edge feedback and auto-capture.</li>
+      <li><strong>Backend:</strong> Encrypt upload to object storage (e.g. S3); OCR parses CNIC number, name, DOB, issue &amp; expiry dates.</li>
+      <li><strong>API:</strong> <code>POST /api/v1/kyc/cnic-ocr</code></li>
+    </ul>
+  </div>
+
+  <h2>Phase 4 — Government &amp; telco verification (silent)</h2>
+  <div class="step-block">
+    <h3>Screen 4.1 — Background processing / read-only review</h3>
+    <ul class="detail-list">
+      <li><strong>UI:</strong> Progress (“Verifying with official databases…”). Optionally show non-editable OCR fields for sanity check before paid lookups.</li>
+      <li><strong>Backend:</strong>
+        <ol>
+          <li><strong>NADRA Verisys</strong> — authenticity, demographics / official photo.</li>
+          <li><strong>PMD telco match</strong> — mobile number owned by that CNIC.</li>
+        </ol>
+      </li>
+      <li><strong>API:</strong> <code>POST /api/v1/kyc/verify-identity</code></li>
+    </ul>
+  </div>
+
+  <h2>Phase 5 — Liveness &amp; facial biometrics</h2>
+  <div class="step-block">
+    <h3>Screen 5.1 — Active liveness &amp; selfie</h3>
+    <ul class="detail-list">
+      <li><strong>UI:</strong> Oval guide; blink / turn head / keep steady.</li>
+      <li><strong>Backend:</strong>
+        <ol>
+          <li><strong>Liveness engine</strong> — block masks, screen replays, paper photos.</li>
+          <li><strong>Face match</strong> — CNN embeddings vs NADRA/CNIC face; example threshold ≥ 85%.</li>
+        </ol>
+      </li>
+      <li><strong>API:</strong> <code>POST /api/v1/kyc/liveness-facematch</code></li>
+      <li><strong>Product tiering (SRS):</strong> Completing this may upgrade Tier 0 → Tier 1. Skipping may leave Tier 0 — confirm against CCOF live-photo requirements for digital EMI.</li>
+      <li><strong>Important:</strong> Face match / liveness is <em>not</em> NADRA fingerprint BV. Fingerprint BV is the biometric ladder for higher EMI bands (<a href="#ladder" data-page="ladder">ladder</a>).</li>
+    </ul>
+  </div>
+
+  <h2>Phase 6 — Compliance screening &amp; provisioning</h2>
+  <div class="step-block">
+    <h3>Screen 6.1 — Additional profile details</h3>
+    <ul class="detail-list">
+      <li><strong>UI:</strong> Address, occupation / source of income, email, mother’s maiden name (and other Table-A / EMI fields as required).</li>
+      <li><strong>Backend:</strong> AML + sanctions (UNSC, OFAC, local proscribed) + PEP screen; on clean status provision Stored Value Account (SVA) in core.</li>
+      <li><strong>API:</strong> <code>POST /api/v1/kyc/submit-profile</code></li>
+    </ul>
+  </div>
+  <div class="step-block">
+    <h3>Screen 6.2 — Final status</h3>
+    <ul class="detail-list">
+      <li><strong>UI:</strong> Success for instant approval, or “Under review” for flagged accounts.</li>
+      <li><strong>API:</strong> <code>GET /api/v1/kyc/status</code></li>
+      <li><strong>Cooling-off:</strong> Pakistan digital banking controls still expect the 2-hour wait before full operation — see <a href="#activation" data-page="activation">activation</a>.</li>
+    </ul>
+  </div>
+
+  <div class="toc-jump">
+    <a class="pill amber" href="#domain-dropout" data-page="domain-dropout">Next: Drop-off recovery →</a>
+    <a class="pill blue" href="#domain-srs" data-page="domain-srs">← SRS overview</a>
+  </div>
+</section>
+
+<section class="page" id="page-domain-dropout">
+  <p class="eyebrow">Domain Learning · SRS</p>
+  <h1>Drop-off handling &amp; incomplete KYC</h1>
+  <p class="lede">How the app remembers where the customer stopped — and how we re-check security before continuing.</p>
+
+  <div class="eli5">
+    <h3>In plain English</h3>
+    <p>
+      If the app crashes or the customer leaves, we save a <strong>draft</strong> under the same phone / application.
+      We do <strong>not</strong> dump half-finished CNIC photos into the final customer table forever.
+      After long gaps we force OTP / liveness again so a stranger cannot finish someone else’s pack.
+    </p>
+  </div>
+
+  <pre class="mermaid">flowchart TD
+    A[User re-opens app] --> B[GET /api/v1/onboarding/state]
+    B --> C{Status}
+    C -->|APPROVED| D[Wallet dashboard]
+    C -->|PENDING| E[Under review screen]
+    C -->|DRAFT| F[Resume at current_step]
+  </pre>
+
+  <h2>3.1 Database strategy</h2>
+  <p class="prose">Keep incomplete data in draft storage (PostgreSQL JSONB and/or Redis) so unverified profiles do not pollute production customer tables.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Column</th><th>Type</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code>user_id</code></td><td>UUID</td><td>Primary key</td></tr>
+        <tr><td><code>phone_number</code></td><td>VARCHAR</td><td>Unique; OTP-verified</td></tr>
+        <tr><td><code>kyc_status</code></td><td>ENUM</td><td>DRAFT · PENDING_EDD · APPROVED · REJECTED</td></tr>
+        <tr><td><code>current_step</code></td><td>ENUM</td><td>e.g. PASSCODE_SET · CNIC_UPLOAD · LIVENESS_CHECK · PROFILE_FORM</td></tr>
+        <tr><td><code>draft_data</code></td><td>JSONB</td><td>Scanned text, S3 URIs — temporary</td></tr>
+        <tr><td><code>last_active_at</code></td><td>TIMESTAMP</td><td>Cleanup cron + nudge triggers</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="prose muted-lead">Journey mapping: resume ≤ 30 days with same Tracking ID is also <a href="#J7" data-page="J7">J7</a>.</p>
+
+  <h2>3.2 Drop-off security rules</h2>
+  <ol class="detail-list">
+    <li><strong>TTL cleanup</strong> — S3 lifecycle deletes unverified ID images after ~30 days.</li>
+    <li><strong>Re-verification window</strong> — if idle &gt; 24 hours, re-trigger sensitive steps (OTP and/or fresh liveness) before showing draft.</li>
+  </ol>
+
+  <h2>Re-engagement nudges</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>When</th><th>Action</th><th>Security</th><th>Channel</th></tr></thead>
+      <tbody>
+        <tr><td><strong>5–15 min</strong> idle / background</td><td>Session lock</td><td>MPIN / device biometric to unlock</td><td>In-app</td></tr>
+        <tr><td><strong>2 hours</strong></td><td>Soft nudge — “almost ready”</td><td>Same device session may resume</td><td>Push</td></tr>
+        <tr><td><strong>24 hours</strong></td><td>High engagement + deep link</td><td>Forced OTP (+ fresh selfie per SRS)</td><td>SMS / WhatsApp / email</td></tr>
+        <tr><td><strong>72 hours</strong></td><td>Purge warning</td><td>Invalidation alert</td><td>Email / SMS</td></tr>
+        <tr><td><strong>30 days</strong></td><td>Hard reset</td><td>Delete S3 images + clear <code>draft_data</code>; reset step</td><td>System cron</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Edge cases</h2>
+  <div class="detail-grid">
+    <div class="detail-box">
+      <h4>Device change mid-onboarding</h4>
+      <p>New device fingerprint → invalidate old session → OTP ownership proof → then load draft on Phone B.</p>
+    </div>
+    <div class="detail-box">
+      <h4>OCR / liveness retry exhaustion</h4>
+      <p>After repeated failures, send tips / support chat (“glare-free photo”) instead of a generic nudge only.</p>
+    </div>
+  </div>
+
+  <div class="callout ok">
+    <strong>Privacy reason</strong>
+    <p>Do not keep unverified identity documents forever without active consent — purge drafts on the 30-day TTL.</p>
+  </div>
+
+  <div class="toc-jump">
+    <a class="pill violet" href="#domain-pep" data-page="domain-pep">Next: PEP / EDD →</a>
+    <a class="pill green" href="#domain-screens" data-page="domain-screens">← Screens &amp; APIs</a>
+  </div>
+</section>
+
+<section class="page" id="page-domain-pep">
+  <p class="eyebrow">Domain Learning · SRS</p>
+  <h1>PEP verification &amp; EDD mechanics</h1>
+  <p class="lede">
+    Politically Exposed Persons can be onboarded — but never with a silent auto-approve.
+    Journey mapping: <a href="#J6" data-page="J6">J6</a>.
+  </p>
+
+  <div class="eli5">
+    <h3>Who is a PEP?</h3>
+    <p>
+      Someone with a prominent public role (e.g. MNA/MPA, senior judge, military general, SOE executive),
+      plus close family and associates. They need <strong>Enhanced Due Diligence (EDD)</strong> and senior sign-off.
+    </p>
+  </div>
+
+  <pre class="mermaid">flowchart TD
+    A[User submits KYC profile] --> B[Screening · fuzzy PEP match]
+    B -->|No match| C[Standard path]
+    B -->|Match| D[Status = PENDING_EDD]
+    D --> E[App: under compliance review]
+    E --> F[EDD form · SoW / office details]
+    F --> G[Compliance officer review]
+    G --> H[MLRO sign-off]
+    H --> I[Activate as High Risk · enhanced monitoring]
+  </pre>
+
+  <h2>4.1 Workflow rules</h2>
+  <ul class="detail-list">
+    <li>Fuzzy match against PEP database — do not require exact spelling only.</li>
+    <li>Match → <code>PENDING_EDD</code>; app shows under-review copy (no tip-off of list names).</li>
+    <li>Push dynamic EDD form (source of wealth, public office details).</li>
+    <li>Webhook / case to Compliance Admin dashboard.</li>
+    <li>Officer rules out false positives (father name / CNIC / DOB).</li>
+    <li>MLRO (Money Laundering Reporting Officer) approves; account marked high-risk for ongoing monitoring (<a href="#J10" data-page="J10">J10</a>).</li>
+  </ul>
+
+  <h2>4.2 Fuzzy matching algorithms</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Algorithm</th><th>Best for</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Jaro-Winkler</strong></td><td>Short human names; rewards shared prefixes</td></tr>
+        <tr><td><strong>Levenshtein</strong></td><td>Edit distance (insert/delete/substitute)</td></tr>
+        <tr><td><strong>Soundex / Metaphone</strong></td><td>Phonetic matches (how the name sounds)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="prose">Typical similarity threshold in this SRS: about <strong>75–80%</strong> to catch transliterations (Muhammad vs Mohammad).</p>
+
+  <h2>4.3 Audit trail</h2>
+  <ul class="detail-list">
+    <li>Log every MLRO action, notes, and SoW attachments.</li>
+    <li>Immutable audit table; retain ~<strong>10 years</strong> for regulatory exams.</li>
+  </ul>
+
+  <div class="callout danger">
+    <strong>Never auto-approve a PEP match</strong>
+    <p>False-positive clearing still needs a human. True PEPs need EDD + MLRO — see also <a href="#audit" data-page="audit">SBP audit readiness</a>.</p>
+  </div>
+
+  <div class="toc-jump">
+    <a class="pill" href="#domain-admin" data-page="domain-admin">Next: Admin portal &amp; security →</a>
+    <a class="pill amber" href="#domain-dropout" data-page="domain-dropout">← Drop-off</a>
+  </div>
+</section>
+
+<section class="page" id="page-domain-admin">
+  <p class="eyebrow">Domain Learning · SRS</p>
+  <h1>Admin portal &amp; security architecture</h1>
+  <p class="lede">Back-office modules for KYC review, PEP cases, alerts — plus the security baseline for engineering.</p>
+
+  <h2>Section 5 — Technical security baseline</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Domain</th><th>Standard / technology</th></tr></thead>
+      <tbody>
+        <tr><td>Databases</td><td>PostgreSQL (RDBMS) · Redis (session / state)</td></tr>
+        <tr><td>PIN hashing</td><td>Argon2id or bcrypt · unique salt · never log plaintext</td></tr>
+        <tr><td>Secrets</td><td>HSM / AWS KMS / HashiCorp Vault</td></tr>
+        <tr><td>Encryption at rest</td><td>AES-256</td></tr>
+        <tr><td>Encryption in transit</td><td>TLS 1.3 / HTTPS · SSL pinning on mobile</td></tr>
+        <tr><td>Compliance posture</td><td>PCI-DSS where cards apply · local central-bank rules</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Section 6 — Admin sidebar map</h2>
+  <pre class="mermaid">flowchart TD
+    A[Admin sidebar] --> B[Dashboard]
+    A --> C[Customers]
+    A --> D[Accounts]
+    A --> E[Operations]
+    A --> F[Compliance]
+    A --> G[Administration]
+    A --> H[Reports]
+    A --> I[Audit Logs]
+    F --> F1[Overview]
+    F --> F2[KYC Review]
+    F --> F3[Cases · PEP/EDD]
+    F --> F4[Alerts]
+  </pre>
+
+  <h3>6.1 Core KYC modules</h3>
+  <div class="step-block">
+    <h3>Compliance → KYC Review</h3>
+    <ul class="detail-list">
+      <li>Queue filters: Pending / Approved / Rejected · account type · risk.</li>
+      <li>Review panel: CNIC images, OCR text, selfie vs NADRA match %, Verisys status, PMD telco match.</li>
+      <li>Actions: Approve · Reject (catalogue reason codes) · Escalate to EDD case.</li>
+    </ul>
+  </div>
+  <div class="step-block">
+    <h3>Compliance → Cases</h3>
+    <ul class="detail-list">
+      <li>Workspace for PEP / sanctions-flagged files.</li>
+      <li>Request/review Source of Wealth; internal notes; route to MLRO digital sign-off.</li>
+    </ul>
+  </div>
+  <div class="step-block">
+    <h3>Compliance → Alerts</h3>
+    <ul class="detail-list">
+      <li>Fuzzy name matches above threshold (e.g. 75%).</li>
+      <li>Duplicate CNIC / SIM flags.</li>
+      <li>Multiple failed biometric / liveness attempts.</li>
+    </ul>
+  </div>
+
+  <h3>6.2 Supporting modules</h3>
+  <ul class="detail-list">
+    <li><strong>Customers</strong> — registry, tiers, historic KYC timestamps.</li>
+    <li><strong>Accounts</strong> — wallet limits, freeze status, linked cards.</li>
+    <li><strong>Audit Logs</strong> — immutable: Admin ID, time, IP, old→new state, notes (for SBP / internal audit).</li>
+  </ul>
+
+  <div class="callout ok">
+    <strong>How teams should read this with journeys</strong>
+    <p>
+      Admin KYC Review ≈ ops view of spine + <a href="#J4" data-page="J4">J4</a>/<a href="#J8" data-page="J8">J8</a>.
+      Cases ≈ <a href="#J5" data-page="J5">J5</a>/<a href="#J6" data-page="J6">J6</a>.
+      Alerts ≈ uniqueness <a href="#J12" data-page="J12">J12</a> + monitoring <a href="#J10" data-page="J10">J10</a>.
+      Audit Logs ≈ <a href="#audit" data-page="audit">SBP audit readiness</a> checklist.
+    </p>
+  </div>
+
+  <div class="toc-jump">
+    <a class="pill blue" href="#domain-srs" data-page="domain-srs">SRS overview</a>
+    <a class="pill violet" href="#domain" data-page="domain">11-pillar master spec</a>
+    <a class="pill amber" href="#audit" data-page="audit">SBP audit readiness</a>
+    <a class="pill green" href="#J1" data-page="J1">KYC Journey J1</a>
+  </div>
+</section>
+
+
+      <!-- WORKFLOWS -->
+      <section class="page" id="page-workflows">
+        <p class="eyebrow">Visual flows</p>
+        <h1>Interactive diagrams</h1>
+        <p class="lede">Pick a journey. Read the plain-English story, follow the coloured arrows, then check what happens when the path branches. No technical node IDs — just the customer path.</p>
+        <div class="wf-shell">
+          <div class="wf-toolbar">
+            <label for="wf-select">Which journey?</label>
+            <select id="wf-select"></select>
+            <button type="button" class="primary" id="wf-play">Show this diagram</button>
+          </div>
+          <p id="wf-summary" class="lede" style="margin-bottom:0.75rem;display:none"></p>
+          <div class="wf-canvas" id="wf-canvas" aria-label="Workflow diagram"></div>
+        </div>
+      </section>
+
+      <!-- STATES -->
+      <section class="page" id="page-states">
+        <p class="eyebrow">Vocabulary &amp; details</p>
+        <h1>State vocabulary</h1>
+        <p class="lede">States are documentation facts shared by product, compliance, and engineering. Verification strength is not a Boolean “KYC flag”.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>State</th><th>Meaning</th></tr></thead>
+            <tbody id="states-table"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- LIMITS -->
+      <section class="page" id="page-limits">
+        <p class="eyebrow">Vocabulary &amp; details · EMI para 14</p>
+        <h1>Wallet limits &amp; EMI 14.VI exclusions</h1>
+        <p class="lede">Limits are a consequence of verification strength once KYC is complete — not a free commercial preference.</p>
+        <h2>Limit bands</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Band</th><th>Monthly load</th><th>Cash-out</th><th>Notes</th></tr></thead>
+            <tbody id="limits-table"></tbody>
+          </table>
+        </div>
+        <h2>EMI 14.VI — exclusions from the monthly load cap</h2>
+        <div class="callout warn">
+          <ul id="exclusions-list"></ul>
+        </div>
+      </section>
+
+      <!-- ANNEXURE -->
+      <section class="page" id="page-annexure">
+        <p class="eyebrow">Vocabulary &amp; details · Enhanced band (J13)</p>
+        <h1>Annexure-J — source of income evidence</h1>
+        <p class="lede">
+          For the PKR 1,000,000 enhanced band, <strong>any one</strong> document from the matching column suffices.
+          Verification must stay <strong>in-house</strong> (EMI 14.III) — these controls must not be outsourced.
+        </p>
+        <div class="grid-2">
+          <div class="journey-card" style="border-left-color:#0f766e">
+            <h3>Salaried</h3>
+            <ul id="annexure-salaried" class="detail-list"></ul>
+          </div>
+          <div class="journey-card" style="border-left-color:#0284c7">
+            <h3>Non-salaried / self-employed</h3>
+            <ul id="annexure-nonsal" class="detail-list"></ul>
+          </div>
+        </div>
+        <div class="journey-card" style="border-left-color:#7c3aed">
+          <h3>Alternate income sources</h3>
+          <ul id="annexure-alt" class="detail-list"></ul>
+        </div>
+      </section>
+
+      <!-- GLOSSARY -->
+      <section class="page" id="page-glossary">
+        <p class="eyebrow">Vocabulary &amp; details</p>
+        <h1>Vocabulary (full dictionary)</h1>
+        <div class="eli5">
+          <h3>How to use this page</h3>
+          <p>
+            Every important word used in these docs is listed here.
+            Read <strong>Plain English</strong> first, then <strong>More detail</strong>.
+            Use the search box to jump to a word. Categories group related terms.
+          </p>
+        </div>
+        <p class="lede" id="glossary-count"></p>
+        <div class="wf-toolbar" style="margin-bottom:1rem">
+          <input id="glossary-search" type="search" placeholder="Search vocabulary…" aria-label="Search vocabulary"
+            style="flex:1;min-width:200px;background:#0f172a;color:#e7eefc;border:1px solid #243049;border-radius:8px;padding:0.5rem 0.75rem;font:inherit" />
+          <select id="glossary-filter" aria-label="Filter by category"
+            style="background:#0f172a;color:#e7eefc;border:1px solid #243049;border-radius:8px;padding:0.45rem 0.7rem;font:inherit">
+            <option value="">All categories</option>
+          </select>
+        </div>
+        <div id="glossary-root"></div>
+      </section>
+
+      <div class="footer-nav" id="page-footer-nav"></div>
+      <p class="footer-note">
+        Pakistan EMI e-money wallet · not a digital bank · CCOF 2025 · EMI 2023 · AML/CFT · BPRD Circular 04 of 2023 via CCOF K ·
+        Companion to kyc-journey-map.vercel.app · Official circulars on sbp.org.pk prevail
+      </p>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="js/data.js?v=23"></script>
+  <script src="js/from-map.js?v=23"></script>
+  <script src="js/reference.js?v=23"></script>
+  <script src="js/simple-content.js?v=23"></script>
+  <script src="js/workflows.js?v=23"></script>
+  <script src="js/emi-enrich.js?v=23"></script>
+  <script src="js/journey-compliance.js?v=23"></script>
+  <script src="js/site.js?v=23"></script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+erDiagram
+  KYC_APPLICATIONS ||--o{ KYC_APPLICATION_PARTIES : has
+  KYC_APPLICATIONS ||--o{ CUSTOMER_IDENTITIES : has
+  KYC_APPLICATIONS ||--o{ CUSTOMER_CONTACTS : has
+  KYC_APPLICATIONS ||--o{ CUSTOMER_ADDRESSES : has
+  KYC_APPLICATIONS ||--o| CUSTOMER_OCCUPATIONS_INCOME : has
+  KYC_APPLICATIONS ||--o| CUSTOMER_TAX_PROFILES : has
+  KYC_APPLICATIONS ||--o{ KYC_CONSENTS : has
+  KYC_APPLICATIONS ||--o{ OTP_CHALLENGES : has
+  KYC_APPLICATIONS ||--o{ KYC_VERIFICATIONS : has
+  KYC_VERIFICATIONS ||--o{ KYC_VERIFICATION_ATTEMPTS : attempts
+  KYC_APPLICATIONS ||--o{ KYC_DOCUMENTS : has
+  KYC_APPLICATIONS ||--o{ FACE_CHECKS : has
+  KYC_DOCUMENTS ||--o| FACE_CHECKS : live_photo
+  KYC_APPLICATIONS ||--o{ SCREENING_RESULTS : screened
+  KYC_APPLICATION_PARTIES ||--o{ SCREENING_RESULTS : party_screen
+  KYC_APPLICATIONS ||--o{ CUSTOMER_RISK_ASSESSMENTS : scored
+  KYC_APPLICATIONS ||--o{ KYC_CASES : opens
+  KYC_CASES ||--o{ KYC_CASE_ACTIONS : actions
+  KYC_APPLICATIONS ||--o{ KYC_DECISIONS : decided
+  KYC_DECISIONS ||--o{ KYC_APPLICATION_REJECTION_REASONS : reasons
+  KYC_REJECTION_REASON_CODES ||--o{ KYC_APPLICATION_REJECTION_REASONS : catalog
+  KYC_APPLICATIONS ||--o{ KYC_STATUS_HISTORY : transitions
+  KYC_APPLICATIONS ||--o{ KYC_AUDIT_LOGS : audited
+  KYC_APPLICATIONS ||--o| CUSTOMERS : creates
+  CUSTOMERS ||--o{ ACCOUNTS : owns
+  CUSTOMERS ||--o| CUSTOMER_RISK_PROFILES : current_risk
+  CUSTOMERS ||--o| KYC_REFRESH_SCHEDULES : refresh
+  KYC_APPLICATIONS ||--o{ DEVICE_BINDINGS : devices
+  CUSTOMERS ||--o{ DEVICE_BINDINGS : trusted_devices
+  KYC_APPLICATIONS ||--o{ IDENTITY_UNIQUENESS_KEYS : dedupe
+  KYC_APPLICATIONS ||--o{ FRAUD_ALERTS : fraud
+  FRAUD_ALERTS }o--o| KYC_CASES : may_open
+  KYC_APPLICATIONS ||--o{ SHARED_EKYC_EXCHANGES : ekyc
+  KYC_CONSENTS ||--o{ SHARED_EKYC_EXCHANGES : authorizes
+  CUSTOMER_CONTACTS ||--o{ OTP_CHALLENGES : verifies
+
+  KYC_APPLICATIONS {
+    uuid id PK
+    string tracking_id UK
+    string state
+    string channel
+    timestamptz tat_due_at
+    boolean debit_block_intended
+  }
+  CUSTOMER_IDENTITIES {
+    uuid id PK
+    uuid application_id FK
+    string id_type
+    char id_number_hash
+    string full_name
+    date date_of_birth
+  }
+  CUSTOMER_CONTACTS {
+    uuid id PK
+    uuid application_id FK
+    string contact_type
+    boolean is_verified
+    boolean msisdn_cnic_paired
+  }
+  KYC_VERIFICATIONS {
+    uuid id PK
+    uuid application_id FK
+    string verification_type
+    string status
+    string vendor_reference
+  }
+  SCREENING_RESULTS {
+    uuid id PK
+    uuid application_id FK
+    string screening_type
+    string status
+    string list_version
+  }
+  CUSTOMER_RISK_ASSESSMENTS {
+    uuid id PK
+    uuid application_id FK
+    string risk_rating
+    string model_version
+    numeric score
+  }
+  KYC_CASES {
+    uuid id PK
+    uuid application_id FK
+    string case_type
+    string status
+    timestamptz sla_due_at
+  }
+  KYC_DECISIONS {
+    uuid id PK
+    uuid application_id FK
+    string decision
+    string decision_mode
+  }
+  CUSTOMERS {
+    uuid id PK
+    string cif UK
+    uuid application_id FK
+    string status
+  }
+  ACCOUNTS {
+    uuid id PK
+    uuid customer_id FK
+    string iban UK
+    boolean debit_block
+    string status
+  }
+  KYC_AUDIT_LOGS {
+    bigint id PK
+    uuid application_id
+    string action
+    string actor_type
+    timestamptz occurred_at
+  }

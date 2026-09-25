@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Appendix A — EMI regulatory requirement catalog</title>
+<link rel="stylesheet" href="../assets/doc.css">
+</head>
+<body>
+<nav class="top">
+  <div class="top-inner">
+    <a href="../index.html">EMI pack home</a>
+    <span class="meta"><a href="../05c-emi-interactive-journeys.html">Journeys</a> · <a href="A-regulatory-requirement-catalog.md">Source .md</a></span>
+  </div>
+</nav>
+<article class="page markdown-body">
+<h1 id="appendix-a-emi-regulatory-requirement-catalog">Appendix A — EMI regulatory requirement catalog</h1>
+<blockquote>
+<p>Clause list with what each rule actually requires in product and ops. Narrative in <a href="../02-sbp-emi-kyc-cdd-framework.html">02-sbp-emi-kyc-cdd-framework</a>. <strong>Not legal advice.</strong> Confirm current text on sbp.org.pk before freezing a build.</p>
+</blockquote>
+<p><strong>Class A</strong> = mandatory SBP / law. Do not weaken in UX. This catalog is all <strong>A</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Source</th>
+<th>Requirement</th>
+<th>Class</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A-E01</td>
+<td>PS&amp;EFT Act / EMI §2–3</td>
+<td>E-money is a claim on the issuer, not a bank deposit</td>
+<td>A</td>
+<td>The customer holds <strong>prepaid e-money</strong>, a claim on this EMI, not a deposit under the Banking Companies Ordinance. Copy, receipts, and support must not say “account”, “savings”, or deposit insurance. Outstanding value sits in a <strong>trust account</strong>, not on the EMI’s own banking book. Wallet limits and CDD follow EMI Regulations, not digital-bank product tables.</td>
+</tr>
+<tr>
+<td>A-E02</td>
+<td>EMI §7</td>
+<td>No banking/lending; no interest on e-money; no issue at a discount; no VCs</td>
+<td>A</td>
+<td>The EMI must not take deposits, lend the public’s money, or pay <strong>interest / return / monetary value</strong> just for holding e-money. Instruments are issued <strong>at par</strong>, never at a discount. Virtual currencies are out of scope. Product features that “grow your wallet balance” while idle, or cashback that is economically interest, need Legal sign-off before build.</td>
+</tr>
+<tr>
+<td>A-E03</td>
+<td>EMI §8</td>
+<td>Four-stage licence: initiation / IPA / pilot / commercial</td>
+<td>A</td>
+<td>You cannot skip stages. <strong>Initiation</strong> → in-principle approval (<strong>IPA</strong>) → <strong>pilot</strong> (capped limits, including BV 200k) → <strong>commercial</strong>. Enhanced 1M and some limit exclusions are only after commercial licence plus a further PSP&amp;OD application. The app must know which stage it is in; a pilot build must not show commercial 400k or 1M as if already approved.</td>
+</tr>
+<tr>
+<td>A-E04</td>
+<td>EMI §11</td>
+<td>PKR 200m initial capital; ongoing OEB slabs; 10% security deposit at BSC</td>
+<td>A</td>
+<td>Licensing capital is <strong>PKR 200 million</strong>. Ongoing own-funds follow <strong>outstanding e-money balance (OEB)</strong> slabs. <strong>10%</strong> of relevant funds is a security deposit with SBP BSC. This is finance/treasury, not a KYC screen — but OEB reporting, trust sweeps, and wallet issuance must stay reconcilable so capital returns are true.</td>
+</tr>
+<tr>
+<td>A-E05</td>
+<td>EMI §12.I–II</td>
+<td>Minimum fields; 2 extra non-CNIC fields; live CNIC/photo where applicable; 2FA</td>
+<td>A</td>
+<td>At issuance collect at least: name; father/spouse; ID (CNIC, NICOP, POC, Passport, ARC, POR); mobile; residential address; <strong>two fields not printed on the CNIC</strong> (e.g. mother’s name, place of birth); and, where applicable, <strong>live original CNIC and live digital photo</strong>. CCOF makes live photo <strong>A</strong> for digital/remote open. Also collect Consolidated <strong>Table-A</strong> as applicable (purpose, SoI, FATCA/CRS, PEP, occupation). <strong>§12.II: at least two-factor authentication</strong> to verify the customer — OTP/2FA. A selfie is not 2FA and is not NADRA BV.</td>
+</tr>
+<tr>
+<td>A-E06</td>
+<td>EMI §12.III</td>
+<td>Verify + TFS pre-screen before relationship or payment use</td>
+<td>A</td>
+<td>Particulars in §12 must be verified, and the person (and associated parties) <strong>pre-screened</strong> against UNSC lists and ATA 1997 proscribed persons <strong>before</strong> you start the relationship <strong>or</strong> let them use payment services. A true match: no wallet, no load, freeze as required, written decline, STR/TFS ops — not a retry button. Screening after first spend is too late.</td>
+</tr>
+<tr>
+<td>A-E07</td>
+<td>EMI §12.IV</td>
+<td>Optional one credit; else close + STR</td>
+<td>A</td>
+<td>Policy <strong>may</strong> allow <strong>one</strong> inbound credit before credentials are fully verified. If verification then fails, <strong>close</strong> the instrument and file <strong>STR</strong>. This is not a standing anonymous prepaid. The system needs a one-credit flag, a timer, and a fail-closed path. Product copy must not look like “use first, KYC later.”</td>
+</tr>
+<tr>
+<td>A-E08</td>
+<td>EMI §12.VII</td>
+<td>One instrument per CNIC per EMI</td>
+<td>A</td>
+<td>An individual or entity may hold <strong>only one e-money instrument with this EMI</strong>. A second CNIC attempt is login/resume of the existing wallet, not a new issue. This is per EMI, not “one wallet in all of Pakistan.” CCOF uniqueness language aligns. Hash the ID, block parallel applications, and do not invent a second “lite” wallet for the same CNIC.</td>
+</tr>
+<tr>
+<td>A-E09</td>
+<td>EMI §12.VIII</td>
+<td>Real-time alerts all transactions</td>
+<td>A</td>
+<td>Every transaction gets a <strong>real-time</strong> customer alert — not only cash-out, not only above a threshold. Channel (push, SMS, email) is design <strong>D</strong>; existence of the alert is <strong>A</strong>. Alerts also support fraud dispute timelines. Do not batch “end of day” as a substitute.</td>
+</tr>
+<tr>
+<td>A-E10</td>
+<td>EMI §14</td>
+<td>Pilot/commercial/enhanced/minor limit tables</td>
+<td>A</td>
+<td><strong>Payments and receipts are separate buckets.</strong> Commercial: Verisys load <strong>PKR 50,000</strong>/month and cash-out <strong>10,000</strong>/day; NADRA BV load <strong>400,000</strong>/month (pilot BV <strong>200,000</strong>); BV cash-out from risk profile; ATM cash-out always <strong>2FA</strong>; agent cash-out BV or 2FA if BVS is a major challenge. Minors: guardian-linked, 50k Verisys or 400k BV freelancer, not the adult enhanced table. Limit <strong>exclusions</strong> (salary, inward remittance up to 1.5m, utility) need an SBP application and apply to BV holders, not minors. UI caps must read from this policy, not a bank debit-block table.</td>
+</tr>
+<tr>
+<td>A-E11</td>
+<td>EMI §14.III</td>
+<td>Enhanced: SoF, SIM pairing, TMS, CRP; not outsourced</td>
+<td>A</td>
+<td>After <strong>commercial licence</strong>, apply to PSP&amp;OD for up to <strong>PKR 1,000,000</strong>. All four must hold: Annexure-J income/source of funds; <strong>CNIC/SIM pairing of the device on which the instrument is opened</strong>; TMS with robust scenarios (one-to-many, many-to-one, etc.); detailed <strong>customer risk profiling</strong>. Verification of these <strong>must not be outsourced</strong>. Device bind on ordinary 50k/400k wallets is <strong>not</strong> this clause — see pack security notes (C until Legal says BPRD 04 is A).</td>
+</tr>
+<tr>
+<td>A-E12</td>
+<td>EMI §15</td>
+<td>Issue/redeem at par; cash-in BV; cash redeem BV</td>
+<td>A</td>
+<td>Issue the instrument <strong>at par, without delay</strong>, when funds are received. Fund via IBFT (any ADC) or <strong>cash-in</strong> at EMI/agent/ATM/bank <strong>subject to biometric verification</strong>. Redeem at par <strong>any time, no charges</strong>. <strong>Cash redemption requires NADRA BV.</strong> A Verisys 50k wallet can exist without BV; taking or giving cash still needs BV (agent cash-out may use 2FA only where BVS is a major challenge).</td>
+</tr>
+<tr>
+<td>A-E13</td>
+<td>EMI §16</td>
+<td>Trust account; no co-mingle; trustee A-rated; 50% cap &gt;300m OEB</td>
+<td>A</td>
+<td>Customer e-money must sit in a <strong>trust account</strong> at an <strong>‘A’-rated</strong> licensed bank (trustee). Do not co-mingle with the EMI’s operating money. When OEB exceeds <strong>PKR 300 million</strong>, additional diversification / 50% cap rules apply (see current §16 text). Product and ledger must be able to prove safeguarding; this is why “wallet balance” is not the EMI’s working capital.</td>
+</tr>
+<tr>
+<td>A-E14</td>
+<td>EMI §17</td>
+<td>Agents SBP-approved; cannot issue wallets</td>
+<td>A</td>
+<td>Agents are <strong>SBP-approved</strong> distribution points for permitted services (typically cash-in/out), <strong>not</strong> issuers. The agent channel must <strong>never</strong> create a wallet (<code>POST /wallets</code> or equivalent). Cash-in: BV. Cash-out: BV or 2FA if BVS is a major challenge. Agent complaints have a <strong>separate</strong> track under consumer protection. Journey UJ-E12 documents the customer path; agent ops stay in file 10.</td>
+</tr>
+<tr>
+<td>A-E15</td>
+<td>EMI §21–22</td>
+<td>Annual system audit; TMS; RBA; new-tech risk</td>
+<td>A</td>
+<td><strong>Systems audit</strong> by an SBP-approved panel <strong>before pilot</strong> and <strong>annually</strong>. Automated <strong>TMS</strong> for ML/TF. Risk-based AML. <strong>New product or technology</strong> needs an ML/TF risk assessment <strong>before launch</strong>. Security breaches: notify including PSP&OD; detailed report in <strong>15 days</strong> (Annexure F); major cyber in <strong>48 hours</strong>. Do not treat TMS as “a vendor dashboard we might add later.”</td>
+</tr>
+<tr>
+<td>A-E16</td>
+<td>EMI §24.II</td>
+<td>Records ≥10 years; call recordings 1 year</td>
+<td>A</td>
+<td>Keep EMI records <strong>at least 10 years</strong> or as required by law. Call-centre recordings <strong>1 year</strong>. AML regs often cite <strong>5 years</strong> after end of relationship — implement the <strong>stricter</strong> applicable rule (Legal to confirm). Every KYC decision, limit upgrade, screening hit, and agent cash session must be reconstructible for audit.</td>
+</tr>
+<tr>
+<td>A-E17</td>
+<td>BPRD C1/2025</td>
+<td>EMIs in Consolidated Framework; wallet limits still EMI regs</td>
+<td>A</td>
+<td>The Consolidated Customer Onboarding Framework applies to <strong>EMIs</strong> (scope §B). <strong>Footnote 1:</strong> e-money <strong>limits and related wallet instructions stay in the EMI Regulations</strong>. Use CCOF for how you onboard (identity hierarchy, live photo, TAT, tracking, resume). Use EMI <strong>§14</strong> for how much the wallet may load. Do not import bank debit-block or bank product caps as the EMI happy path.</td>
+</tr>
+<tr>
+<td>A-E18</td>
+<td>BPRD C1/2025</td>
+<td>Live photo; BV ladder; video KYC if no presence; TAT 2 WD; tracking ID</td>
+<td>A</td>
+<td>Digital/remote open: <strong>live photo</strong> with valid ID. Identity: primarily <strong>NADRA BV</strong>; Verisys alternate for disability, unclear prints, age <strong>&gt;60</strong>, NRP/POC abroad. EMIs <strong>without physical presence</strong>: recorded <strong>video KYC + Verisys</strong> (record why BV was not met) or third-party reliance on a bank with branches. Individual decision <strong>TAT 2 working days</strong> from a complete file; entity 5 WD. <strong>Tracking ID</strong> generated; customer notified of initiation; status on app/web. Incomplete sessions resumable <strong>≤ 30 days</strong>. Written decline reason. Geo/IP of the digital gadget. This pack: Tracking ID <strong>on screen at Step 0</strong>, SMS <strong>after OTP</strong> (placement <strong>D</strong>; existence <strong>A</strong>).</td>
+</tr>
+<tr>
+<td>A-E19</td>
+<td>AML regs</td>
+<td>CDD, PEP, TFS, STR, ongoing monitoring</td>
+<td>A</td>
+<td>Full SBP AML/CFT/CPF overlay on the wallet relationship: identify and verify; purpose; beneficial ownership where needed; <strong>PEP</strong> (including family/close associates) with senior approval and SoW/SoF; <strong>TFS</strong> ongoing not only at open; <strong>STR/CTR</strong> to FMU; ongoing monitoring and periodic refresh by risk. High risk → <strong>EDD</strong> (CCOF: recorded video KYC for non-face-to-face EDD). Anonymous or fictitious wallets are prohibited.</td>
+</tr>
+<tr>
+<td>A-E20</td>
+<td>EMI §13</td>
+<td>Cross-border / inward remittance via AD + EPD approval</td>
+<td>A</td>
+<td>Cross-border and inward remittance rails go through <strong>Authorized Dealers</strong> and need <strong>EPD / SBP</strong> permissions as written in §13 — the EMI is not a parallel FX house. Inward remittance <strong>limit exclusion</strong> (up to PKR 1,500,000 for BV holders, not minors) is a separate <strong>§14.VI</strong> application, not an automatic product switch. Do not advertise “receive any remittance, no cap” on a Verisys 50k wallet.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>How to use this table:</strong> Product and UX implement the <strong>Requirement</strong> column without watering it down. Engineering uses <strong>What it means</strong> for gates, states, and “do not.” Compliance maps evidence to <strong>Source</strong>. Open Legal items (NADRA face BV, BPRD 04 on EMIs, mint Tracking ID after OTP) are <strong>not</strong> in this A-list as signed design — they live in the <a href="../docs/index.html#open">guided docs open register</a>.</p>
+</article>
+<div class="pager"><a href="../15-use-cases.html">← 15-use-cases</a><span></span><a href="B-comparative-emi-matrix.html">B-comparative-emi-matrix →</a></div>
+<footer class="note">Rendered preview of A-regulatory-requirement-catalog.md. Markdown remains the source of truth. Not legal advice.</footer>
+
+</body>
+</html>

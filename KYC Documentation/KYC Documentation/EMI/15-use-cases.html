@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>15. Use cases — EMI wallet KYC / CDD</title>
+<link rel="stylesheet" href="assets/doc.css">
+</head>
+<body>
+<nav class="top">
+  <div class="top-inner">
+    <a href="index.html">EMI pack home</a>
+    <span class="meta"><a href="05c-emi-interactive-journeys.html">Journeys</a> · <a href="15-use-cases.md">Source .md</a></span>
+  </div>
+</nav>
+<article class="page markdown-body">
+<h1 id="15-use-cases-emi-wallet-kyc-cdd">15. Use cases — EMI wallet KYC / CDD</h1>
+<blockquote>
+<p>Customer and system use cases traced to <a href="14-srs.html">14-srs</a> and journeys UJ-E01–E20.<br />
+Customer-facing only in the main flows. Ops/STR detail: <a href="10-aml-risk-edd-ops.html">10-aml-risk-edd-ops</a>.<br />
+<strong>Not legal advice.</strong> Fictional personas. Do not invent NADRA APIs.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Use case</th>
+<th>Journey</th>
+<th>Goal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#uc-e01--open-verisys-wallet">UC-E01</a></td>
+<td>UJ-E01</td>
+<td>First wallet at Verisys 50k</td>
+</tr>
+<tr>
+<td><a href="#uc-e02--upgrade-to-nadra-bv">UC-E02</a></td>
+<td>UJ-E02</td>
+<td>Raise to BV 400k (pilot 200k)</td>
+</tr>
+<tr>
+<td><a href="#uc-e03--request-enhanced-1m">UC-E03</a></td>
+<td>UJ-E03</td>
+<td>Enhanced 1M after PSP&amp;OD</td>
+</tr>
+<tr>
+<td><a href="#uc-e04--one-credit-then-close">UC-E04</a></td>
+<td>UJ-E04</td>
+<td>Fail-closed unverified credit</td>
+</tr>
+<tr>
+<td><a href="#uc-e05--block-duplicate-cnic">UC-E05</a></td>
+<td>UJ-E05</td>
+<td>One instrument per CNIC</td>
+</tr>
+<tr>
+<td><a href="#uc-e06--complete-otp--2fa">UC-E06</a></td>
+<td>UJ-E06</td>
+<td>Bind mobile or stay INITIATED</td>
+</tr>
+<tr>
+<td><a href="#uc-e07--handle-bv-failure">UC-E07</a></td>
+<td>UJ-E07</td>
+<td>Stay 50k or video KYC</td>
+</tr>
+<tr>
+<td><a href="#uc-e08--survive-nadra-outage">UC-E08</a></td>
+<td>UJ-E08</td>
+<td>No silent 400k</td>
+</tr>
+<tr>
+<td><a href="#uc-e09--track-application--tat">UC-E09</a></td>
+<td>UJ-E09</td>
+<td>Status + 2 WD notify</td>
+</tr>
+<tr>
+<td><a href="#uc-e10--decline-sanctions-match">UC-E10</a></td>
+<td>UJ-E10</td>
+<td>Fail closed</td>
+</tr>
+<tr>
+<td><a href="#uc-e11--complete-pep--edd">UC-E11</a></td>
+<td>UJ-E11</td>
+<td>Video KYC + ops approval</td>
+</tr>
+<tr>
+<td><a href="#uc-e12--agent-cash-inout">UC-E12</a></td>
+<td>UJ-E12</td>
+<td>Cash without issuing</td>
+</tr>
+<tr>
+<td><a href="#uc-e13--open-basic-minor-wallet">UC-E13</a></td>
+<td>UJ-E13</td>
+<td>Guardian-linked 50k</td>
+</tr>
+<tr>
+<td><a href="#uc-e14--open-minor-freelancer-wallet">UC-E14</a></td>
+<td>UJ-E14</td>
+<td>Guardian-linked 400k BV</td>
+</tr>
+<tr>
+<td><a href="#uc-e15--apply-remittance-exclusion">UC-E15</a></td>
+<td>UJ-E15</td>
+<td>AD inward up to 1.5m</td>
+</tr>
+<tr>
+<td><a href="#uc-e16--apply-salary-exclusion">UC-E16</a></td>
+<td>UJ-E16</td>
+<td>Employer credit via nominated bank</td>
+</tr>
+<tr>
+<td><a href="#uc-e17--open-merchant--entity-wallet">UC-E17</a></td>
+<td>UJ-E17</td>
+<td>Phase 2 entity</td>
+</tr>
+<tr>
+<td><a href="#uc-e18--refuse-mandatory-consents">UC-E18</a></td>
+<td>UJ-E18</td>
+<td>No issue</td>
+</tr>
+<tr>
+<td><a href="#uc-e19--resume-within-30-days">UC-E19</a></td>
+<td>UJ-E19</td>
+<td>Continue incomplete file</td>
+</tr>
+<tr>
+<td><a href="#uc-e20--complete-kyc-refresh">UC-E20</a></td>
+<td>UJ-E20</td>
+<td>Ongoing CDD</td>
+</tr>
+<tr>
+<td><a href="#uc-s01--show-and-lookup-tracking-id">UC-S01</a></td>
+<td>—</td>
+<td>Tracking without extra PII</td>
+</tr>
+<tr>
+<td><a href="#uc-s02--pre-screen-tfs">UC-S02</a></td>
+<td>—</td>
+<td>Screen before services</td>
+</tr>
+<tr>
+<td><a href="#uc-s03--enforce-limit-on-posting">UC-S03</a></td>
+<td>—</td>
+<td>Ledger rejects over-cap</td>
+</tr>
+<tr>
+<td><a href="#uc-s04--alert-every-transaction">UC-S04</a></td>
+<td>—</td>
+<td>Real-time alert</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="conventions">Conventions</h2>
+<ul>
+<li><strong>Main success</strong> is the customer-visible happy path.  </li>
+<li><strong>Extensions</strong> are numbered from the step they branch.  </li>
+<li><strong>Class</strong> A/B/C/D as in the pack README.  </li>
+<li>System actors: KYC Service writes states; Ledger posts money; NADRA adapter returns <strong>refs</strong> only.</li>
+</ul>
+<hr />
+<h2 id="uc-e01-open-verisys-wallet">UC-E01 — Open Verisys wallet</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor</td>
+<td>Customer (Ayesha — resident CNIC)</td>
+</tr>
+<tr>
+<td>Goal</td>
+<td>Receive a usable e-money instrument at <strong>PKR 50,000</strong>/month load</td>
+</tr>
+<tr>
+<td>Trigger</td>
+<td>Taps <strong>Open wallet</strong></td>
+</tr>
+<tr>
+<td>Preconditions</td>
+<td>Eligible digital ID (happy path: CNIC/SNIC). No open instrument at this EMI. <code>licence_phase</code> set.</td>
+</tr>
+<tr>
+<td>Success</td>
+<td><code>WALLET_ACTIVE</code>, <code>limit_tier=VERISYS</code>. Cash-out <strong>10,000</strong>/day. Tracking ID known.</td>
+</tr>
+<tr>
+<td>FR</td>
+<td>FR-E01–E12, E13, E15–E16, E19, E24–E25, E28–E30</td>
+</tr>
+<tr>
+<td>Class</td>
+<td><strong>A</strong> EMI §12, §14.II, CCOF live photo / TAT</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Main success</strong></p>
+<ol>
+<li>Customer opens app/web and taps Open wallet.  </li>
+<li>System creates application (<code>INITIATED</code>), captures channel / device hash / IP / geo if permitted.  </li>
+<li>System shows <strong>Tracking ID on screen</strong> (no SMS).  </li>
+<li>Customer enters mobile; completes OTP (<strong>UC-E06</strong>). State <code>CONTACT_VERIFIED</code>. System SMSes Tracking ID.  </li>
+<li>Customer accepts versioned consents (<strong>UC-E18</strong> if refuse). <code>CONSENT_CAPTURED</code>.  </li>
+<li>Customer submits §12 + Table-A identity. Uniqueness check (<strong>UC-E05</strong>). <code>IDENTITY_CAPTURED</code>.  </li>
+<li>Customer captures live photo + live CNIC where applicable. Encrypted upload; nothing left on device. <code>LIVE_PHOTO_CAPTURED</code>.  </li>
+<li>System pre-screens TFS/PEP (<strong>UC-S02</strong>).  </li>
+<li>System starts NADRA <strong>Verisys</strong>.  </li>
+<li>Verisys and screen clear → issue instrument at par when funded. <code>WALLET_ACTIVE</code> / <code>VERISYS</code>.  </li>
+<li>Customer sees <strong>Wallet ready — 50,000/month</strong>. Ledger enforces caps (<strong>UC-S03</strong>). Alerts on postings (<strong>UC-S04</strong>).</li>
+</ol>
+<p><strong>Extensions</strong></p>
+<ul>
+<li>4a. OTP fail → stay <code>INITIATED</code> (UC-E06).  </li>
+<li>6a. Duplicate CNIC → UC-E05; stop.  </li>
+<li>8a. True match → UC-E10; stop.  </li>
+<li>8b. PEP / high CRP → UC-E11.  </li>
+<li>9a. NADRA down → UC-E08.  </li>
+<li>9b. Product flag one-credit → UC-E04.</li>
+</ul>
+<hr />
+<h2 id="uc-e02-upgrade-to-nadra-bv">UC-E02 — Upgrade to NADRA BV</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor</td>
+<td>Customer with <code>WALLET_ACTIVE</code> / <code>VERISYS</code></td>
+</tr>
+<tr>
+<td>Goal</td>
+<td>Raise monthly load to <strong>400k</strong> commercial or <strong>200k</strong> pilot</td>
+</tr>
+<tr>
+<td>Trigger</td>
+<td>Taps <strong>Increase limit</strong> / biometric upgrade</td>
+</tr>
+<tr>
+<td>Preconditions</td>
+<td>Verisys wallet active. Screening still clear.</td>
+</tr>
+<tr>
+<td>Success</td>
+<td>Same wallet; <code>limit_tier=BV</code>. Banner shows new load. Selfie did not do this.</td>
+</tr>
+<tr>
+<td>FR</td>
+<td>FR-E20–E21, E26–E27</td>
+</tr>
+<tr>
+<td>Class</td>
+<td><strong>A</strong> EMI §14; channel <strong>D</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Main success</strong></p>
+<ol>
+<li>Customer requests upgrade.  </li>
+<li>System presents authenticated NADRA BV (in-app fingerprint <strong>or</strong> e-Sahulat / partner ATM).  </li>
+<li>NADRA BV success → <code>limit_tier=BV</code>. Pilot uses 200k via <code>licence_phase</code>.  </li>
+<li>Ledger applies new policy. No new CNIC instrument.</li>
+</ol>
+<p><strong>Extensions</strong></p>
+<ul>
+<li>3a. Eligible BV fail → UC-E07.  </li>
+<li>3b. Outage → UC-E08.  </li>
+<li>3c. Face-only camera with no NADRA face product → <strong>not</strong> BV; keep Verisys.</li>
+</ul>
+<hr />
+<h2 id="uc-e03-request-enhanced-1m">UC-E03 — Request enhanced 1M</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor</td>
+<td>Customer with <code>limit_tier=BV</code></td>
+</tr>
+<tr>
+<td>Goal</td>
+<td>Individual instrument limit up to <strong>PKR 1,000,000</strong></td>
+</tr>
+<tr>
+<td>Trigger</td>
+<td>Taps higher limit / enhanced wallet</td>
+</tr>
+<tr>
+<td>Preconditions</td>
+<td><code>licence_phase=COMMERCIAL</code>. PSP&amp;OD enhanced product <strong>on</strong>.</td>
+</tr>
+<tr>
+<td>Success</td>
+<td><code>limit_tier=ENHANCED</code> after in-house SoF, SIM pairing, TMS, CRP.</td>
+</tr>
+<tr>
+<td>FR</td>
+<td>FR-E31</td>
+</tr>
+<tr>
+<td>Class</td>
+<td><strong>A</strong> EMI §14.III</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Main success</strong></p>
+<ol>
+<li>System checks commercial + PSP&amp;OD flag.  </li>
+<li>Customer uploads Annexure-J income / source of funds.  </li>
+<li>Customer completes <strong>CNIC/SIM pairing</strong> on the device of this instrument.  </li>
+<li>System runs detailed CRP and confirms TMS scenarios (1:N, N:1) are live.  </li>
+<li>Verification of (2)–(4) is <strong>not</strong> sent to an outsourcer.  </li>
+<li>Written outcome. Customer waits (<code>EDD_REQUIRED</code> / review) with Tracking ID visible.</li>
+</ol>
+<p><strong>Extensions</strong></p>
+<ul>
+<li>1a. Pilot or flag off → decline with reason; stay BV.  </li>
+<li>5a. Incomplete SoF → <code>ADDITIONAL_INFORMATION_REQUIRED</code>.</li>
+</ul>
+<hr />
+<h2 id="uc-e04-one-credit-then-close">UC-E04 — One credit then close</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor</td>
+<td>System + customer</td>
+</tr>
+<tr>
+<td>Goal</td>
+<td>Honour §12.IV if product enables it, then fail closed</td>
+</tr>
+<tr>
+<td>Trigger</td>
+<td>One inbound credit before credentials verified</td>
+</tr>
+<tr>
+<td>Preconditions</td>
+<td>Product flag <code>unverified_one_credit</code> <strong>on</strong> (pack default <strong>off</strong>)</td>
+</tr>
+<tr>
+<td>Success</td>
+<td>If still unverified: <code>CLOSED_UNVERIFIED</code> + STR. Wallet not left operable.</td>
+</tr>
+<tr>
+<td>FR</td>
+<td>FR-E18</td>
+</tr>
+<tr>
+<td>Class</td>
+<td><strong>A</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Main success (fail closed)</strong></p>
+<ol>
+<li>System allows <strong>one</strong> credit only, with timer.  </li>
+<li>Credentials never verify in time.  </li>
+<li>System closes instrument, queues <strong>STR</strong>, customer sees closed — not “try spending again.”</li>
+</ol>
+<hr />
+<h2 id="uc-e05-block-duplicate-cnic">UC-E05 — Block duplicate CNIC</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor</td>
+<td>Customer (Yasmin) already holding an open instrument</td>
+</tr>
+<tr>
+<td>Goal</td>
+<td>Prevent a second wallet at this EMI</td>
+</tr>
+<tr>
+<td>Trigger</td>
+<td>Open wallet with an ID that already has an open instrument</td>
+</tr>
+<tr>
+<td>Success</td>
+<td>No new application STP. Copy: <strong>You already have a wallet</strong> — login/recovery.</td>
+</tr>
+<tr>
+<td>FR</td>
+<td>FR-E13–E14</td>
+</tr>
+<tr>
+<td>Class</td>
+<td><strong>A</strong> EMI §12.VII</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Main success</strong></p>
+<ol>
+<li>Identity captured or hashed at uniqueness check.  </li>
+<li>System finds open wallet for CNIC hash.  </li>
+<li>Return <code>DUPLICATE_CNIC</code>. Do not create a second <code>wallets</code> row.</li>
+</ol>
+<hr />
+<h2 id="uc-e06-complete-otp-2fa">UC-E06 — Complete OTP / 2FA</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor</td>
+<td>Customer</td>
+</tr>
+<tr>
+<td>Goal</td>
+<td>Bind a mobile to the application</td>
+</tr>
+<tr>
+<td>Trigger</td>
+<td>Enter mobile after Tracking ID shown</td>
+</tr>
+<tr>
+<td>Success</td>
+<td><code>CONTACT_VERIFIED</code>; then SMS Tracking ID.</td>
+</tr>
+<tr>
+<td>Failure</td>
+<td>Stay <code>INITIATED</code>; remaining attempts shown; cool-down <strong>D</strong>.</td>
+</tr>
+<tr>
+<td>FR</td>
+<td>FR-E06–E08</td>
+</tr>
+<tr>
+<td>Class</td>
+<td><strong>A</strong> §12.II</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Main success</strong></p>
+<ol>
+<li>Start OTP. No code in logs.  </li>
+<li>Customer enters code.  </li>
+<li>Confirm → bind MSISDN.</li>
+</ol>
+<p><strong>Extensions</strong></p>
+<ul>
+<li>2a. Wrong/expired → retry; never skip state.  </li>
+<li>2b. N fails → lockout cool-down.  </li>
+<li>2c. Change number → new attempt rules.</li>
+</ul>
+<hr />
+<h2 id="uc-e07-handle-bv-failure">UC-E07 — Handle BV failure</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor</td>
+<td>Customer (Bilal — unclear prints) or age <strong>&gt;60</strong> / disability</td>
+</tr>
+<tr>
+<td>Goal</td>
+<td>Do not fake BV; keep a legal wallet or video KYC</td>
+</tr>
+<tr>
+<td>Trigger</td>
+<td>NADRA BV fails for an allowed reason</td>
+</tr>
+<tr>
+<td>Success</td>
+<td>Stay <code>VERISYS</code> 50k <strong>or</strong> complete recorded video KYC + Verisys.</td>
+</tr>
+<tr>
+<td>FR</td>
+<td>FR-E21</td>
+</tr>
+<tr>
+<td>Class</td>
+<td><strong>A</strong> CCOF §F.1</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Main success</strong></p>
+<ol>
+<li>Record reason BV was not met.  </li>
+<li>Offer stay-at-50k <strong>or</strong> video KYC (no branch).  </li>
+<li>Do <strong>not</strong> apply bank debit-block as the EMI happy path.  </li>
+<li>Do <strong>not</strong> treat selfie as BV.</li>
+</ol>
+<hr />
+<h2 id="uc-e08-survive-nadra-outage">UC-E08 — Survive NADRA outage</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor</td>
+<td>Any customer in NADRA call</td>
+</tr>
+<tr>
+<td>Goal</td>
+<td>Hold without lying</td>
+</tr>
+<tr>
+<td>Trigger</td>
+<td>503 / timeout from NADRA adapter</td>
+</tr>
+<tr>
+<td>Success</td>
+<td>State stays <code>IDENTITY_VERIFICATION_IN_PROGRESS</code>. Resume ≤ 30 days.</td>
+</tr>
+<tr>
+<td>FR</td>
+<td>FR-E22</td>
+</tr>
+<tr>
+<td>Class</td>
+<td><strong>A</strong> fail-controlled</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Main success</strong></p>
+<ol>
+<li>Show “verification taking longer” + Tracking ID. No “Wallet ready.”  </li>
+<li>Idempotent retry.  </li>
+<li>When vendor recovers, continue UC-E01 or UC-E02.</li>
+</ol>
+<hr />
+<h2 id="uc-e09-track-application-tat">UC-E09 — Track application + TAT</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor</td>
+<td>Customer</td>
+</tr>
+<tr>
+<td>Goal</td>
+<td>Know where the file is; be told if TAT slips</td>
+</tr>
+<tr>
+<td>Trigger</td>
+<td>Uses Tracking ID on app/web; or clock exceeds 2 WD after complete file</td>
+</tr>
+<tr>
+<td>Success</td>
+<td>Status without extra PII. Notify if individual decision &gt; 2 WD.</td>
+</tr>
+<tr>
+<td>FR</td>
+<td>FR-E01–E04</td>
+</tr>
+<tr>
+<td>Class</td>
+<td><strong>A</strong> CCOF §I</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="uc-e10-decline-sanctions-match">UC-E10 — Decline sanctions match</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor</td>
+<td>System (screening)</td>
+</tr>
+<tr>
+<td>Goal</td>
+<td>No services to designated/proscribed persons</td>
+</tr>
+<tr>
+<td>Trigger</td>
+<td>Confirmed UNSC / ATA true match</td>
+</tr>
+<tr>
+<td>Success</td>
+<td><code>REJECTED</code>. No wallet. Written reason. STR/TFS ops. Never STP.</td>
+</tr>
+<tr>
+<td>FR</td>
+<td>FR-E15–E16</td>
+</tr>
+<tr>
+<td>Class</td>
+<td><strong>A</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="uc-e11-complete-pep-edd">UC-E11 — Complete PEP / EDD</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor</td>
+<td>Customer (Sana) + ops</td>
+</tr>
+<tr>
+<td>Goal</td>
+<td>High-risk relationship only after EDD</td>
+</tr>
+<tr>
+<td>Trigger</td>
+<td>PEP declaration or CRP HIGH</td>
+</tr>
+<tr>
+<td>Success</td>
+<td>Recorded video KYC; SoW/SoF as required; senior approval <strong>ops-side</strong>; then continue issuance or upgrade.</td>
+</tr>
+<tr>
+<td>FR</td>
+<td>FR-E17</td>
+</tr>
+<tr>
+<td>Class</td>
+<td><strong>A</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Customer waits with Tracking ID. Ops UI is not a customer journey.</p>
+<hr />
+<h2 id="uc-e12-agent-cash-inout">UC-E12 — Agent cash-in/out</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor</td>
+<td>Customer + SBP-approved agent</td>
+</tr>
+<tr>
+<td>Goal</td>
+<td>Move cash against an <strong>existing</strong> wallet</td>
+</tr>
+<tr>
+<td>Trigger</td>
+<td>Customer at agent location</td>
+</tr>
+<tr>
+<td>Success</td>
+<td>Cash-in with <strong>BV</strong>. Cash-out BV or 2FA if BVS is a major challenge. ATM cash-out 2FA. Cash <strong>redemption</strong> BV.</td>
+</tr>
+<tr>
+<td>Forbidden</td>
+<td>Agent creates a wallet (<code>AGENT_CANNOT_ISSUE</code>).</td>
+</tr>
+<tr>
+<td>FR</td>
+<td>FR-E35–E36</td>
+</tr>
+<tr>
+<td>Class</td>
+<td><strong>A</strong> EMI §15, §17</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="uc-e13-open-basic-minor-wallet">UC-E13 — Open basic minor wallet</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor</td>
+<td>Guardian (from <strong>guardian app</strong> only)</td>
+</tr>
+<tr>
+<td>Goal</td>
+<td>Linked minor instrument, 50k Verisys</td>
+</tr>
+<tr>
+<td>Trigger</td>
+<td>Guardian starts minor wallet</td>
+</tr>
+<tr>
+<td>Success</td>
+<td>Linked to guardian wallet; funded <strong>only</strong> from guardian; undertaking stored; TMS on. Not adult enhanced table.</td>
+</tr>
+<tr>
+<td>FR</td>
+<td>FR-E32</td>
+</tr>
+<tr>
+<td>Class</td>
+<td><strong>A</strong> §14.IV</td>
+</tr>
+<tr>
+<td>Open</td>
+<td>Remote Form-B/Juvenile vs CCOF adult digital ID list — Legal</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="uc-e14-open-minor-freelancer-wallet">UC-E14 — Open minor freelancer wallet</h2>
+<p>Same linkage as UC-E13. Load <strong>400k</strong> after <strong>NADRA BV</strong>. Funding guardian <strong>or</strong> EMI-verified income. Still <strong>not</strong> adult 1M (<strong>FR-E33</strong>).</p>
+<hr />
+<h2 id="uc-e15-apply-remittance-exclusion">UC-E15 — Apply remittance exclusion</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor</td>
+<td>BV holder</td>
+</tr>
+<tr>
+<td>Goal</td>
+<td>Inward remittance via AD up to PKR <strong>1,500,000</strong> excluded from load cap</td>
+</tr>
+<tr>
+<td>Preconditions</td>
+<td>SBP <strong>granted</strong> §14.VI exclusion. AD + EPD rails live. Not a minor.</td>
+</tr>
+<tr>
+<td>FR</td>
+<td>FR-E34, A-E20</td>
+</tr>
+<tr>
+<td>Class</td>
+<td><strong>A</strong> if granted; else stay on §14 cap</td>
+</tr>
+</tbody>
+</table>
+<p>Do not advertise “any remittance, no cap” on Verisys 50k.</p>
+<hr />
+<h2 id="uc-e16-apply-salary-exclusion">UC-E16 — Apply salary exclusion</h2>
+<p>Employer credit via nominated bank. EMI <strong>verifies employer</strong>. BV holders. SBP exclusion granted. <strong>FR-E34</strong>.</p>
+<hr />
+<h2 id="uc-e17-open-merchant-entity-wallet">UC-E17 — Open merchant / entity wallet</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor</td>
+<td>Authorised natural person of an entity</td>
+</tr>
+<tr>
+<td>Goal</td>
+<td>One wallet per entity at this EMI</td>
+</tr>
+<tr>
+<td>Notes</td>
+<td>Phase 2. Table-B / UBO. TAT <strong>5 WD</strong>. BV of persons who open/operate; Verisys for other associates.</td>
+</tr>
+<tr>
+<td>FR</td>
+<td>FR-E04 (entity TAT), A-E08 analogue for entity</td>
+</tr>
+<tr>
+<td>Class</td>
+<td><strong>A</strong> when product ships</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="uc-e18-refuse-mandatory-consents">UC-E18 — Refuse mandatory consents</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor</td>
+<td>Customer</td>
+</tr>
+<tr>
+<td>Goal</td>
+<td>Leave without an instrument if they refuse T&amp;Cs / NADRA consent</td>
+</tr>
+<tr>
+<td>Success</td>
+<td>No <code>WALLET_ACTIVE</code>. Draft save is <strong>D</strong>.</td>
+</tr>
+<tr>
+<td>FR</td>
+<td>FR-E09, FR-E40</td>
+</tr>
+<tr>
+<td>Class</td>
+<td><strong>A</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="uc-e19-resume-within-30-days">UC-E19 — Resume within 30 days</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor</td>
+<td>Customer who abandoned mid-flow</td>
+</tr>
+<tr>
+<td>Goal</td>
+<td>Continue without restarting from zero</td>
+</tr>
+<tr>
+<td>Success</td>
+<td>Resume last incomplete step if ≤ 30 days. Else <code>EXPIRED</code>; new application.</td>
+</tr>
+<tr>
+<td>FR</td>
+<td>FR-E03</td>
+</tr>
+<tr>
+<td>Class</td>
+<td><strong>A</strong> CCOF §J.iii</td>
+</tr>
+</tbody>
+</table>
+<p>Tracking ID from Step 0 remains the handle even if OTP never succeeded (pack rule).</p>
+<hr />
+<h2 id="uc-e20-complete-kyc-refresh">UC-E20 — Complete KYC refresh</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor</td>
+<td>Customer + scheduler</td>
+</tr>
+<tr>
+<td>Goal</td>
+<td>Ongoing CDD proportionate to CRP</td>
+</tr>
+<tr>
+<td>Trigger</td>
+<td>Periodic clock, CNIC expiry, adverse hit, fraud event, product upgrade</td>
+</tr>
+<tr>
+<td>Success</td>
+<td>Re-screen; restrict <strong>explicitly</strong> if overdue; BV may be re-required for high assurance.</td>
+</tr>
+<tr>
+<td>FR</td>
+<td>A-E19, FR-E15, FR-E39</td>
+</tr>
+<tr>
+<td>Class</td>
+<td><strong>A</strong> ongoing CDD; interval policy <strong>B</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="uc-s01-show-and-lookup-tracking-id">UC-S01 — Show and lookup Tracking ID</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor</td>
+<td>KYC Service</td>
+</tr>
+<tr>
+<td>Goal</td>
+<td>CCOF tracking without leaking PII</td>
+</tr>
+<tr>
+<td>Main</td>
+<td>Mint ID at application create; show in-app; public <code>GET /kyc/tracking/{id}</code> rate-limited. SMS after OTP only.</td>
+</tr>
+<tr>
+<td>FR</td>
+<td>FR-E01–E02, E08</td>
+</tr>
+<tr>
+<td>Class</td>
+<td><strong>A</strong> exist; <strong>D</strong> when to SMS</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="uc-s02-pre-screen-tfs">UC-S02 — Pre-screen TFS</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor</td>
+<td>Screening service</td>
+</tr>
+<tr>
+<td>Goal</td>
+<td>No payment use before list check</td>
+</tr>
+<tr>
+<td>Main</td>
+<td>Screen before <code>WALLET_ACTIVE</code> (and before the optional one credit is spent, if that flag is on). Potential hit → <code>SCREENING_HIT_REVIEW</code>. True match → UC-E10.</td>
+</tr>
+<tr>
+<td>FR</td>
+<td>FR-E15–E16</td>
+</tr>
+<tr>
+<td>Class</td>
+<td><strong>A</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="uc-s03-enforce-limit-on-posting">UC-S03 — Enforce limit on posting</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor</td>
+<td>Ledger</td>
+</tr>
+<tr>
+<td>Goal</td>
+<td>§14 caps hold even if the app is wrong</td>
+</tr>
+<tr>
+<td>Main</td>
+<td><code>POST /ledger/postings</code> reads <code>limit_tier</code> × <code>licence_phase</code>. Over cap → <code>LIMIT_EXCEEDED</code>. Payments vs receipts are separate buckets.</td>
+</tr>
+<tr>
+<td>FR</td>
+<td>FR-E24–E27</td>
+</tr>
+<tr>
+<td>Class</td>
+<td><strong>A</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="uc-s04-alert-every-transaction">UC-S04 — Alert every transaction</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor</td>
+<td>Notify + Ledger hook</td>
+</tr>
+<tr>
+<td>Goal</td>
+<td>Real-time alert on <strong>all</strong> transactions</td>
+</tr>
+<tr>
+<td>Main</td>
+<td>Fire on each posting. Channel <strong>D</strong>. Not a daily digest as the only control.</td>
+</tr>
+<tr>
+<td>FR</td>
+<td>FR-E37</td>
+</tr>
+<tr>
+<td>Class</td>
+<td><strong>A</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="traceability-matrix-use-case-fr-journey">Traceability matrix (use case → FR → journey)</h2>
+<table>
+<thead>
+<tr>
+<th>UC</th>
+<th>FR (primary)</th>
+<th>Journey</th>
+<th>Pri</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UC-E01</td>
+<td>FR-E01–E19, E24–E25</td>
+<td>UJ-E01</td>
+<td>P1</td>
+</tr>
+<tr>
+<td>UC-E02</td>
+<td>FR-E20, E26</td>
+<td>UJ-E02</td>
+<td>P2</td>
+</tr>
+<tr>
+<td>UC-E03</td>
+<td>FR-E31</td>
+<td>UJ-E03</td>
+<td>P5</td>
+</tr>
+<tr>
+<td>UC-E04</td>
+<td>FR-E18</td>
+<td>UJ-E04</td>
+<td>P1 (flag)</td>
+</tr>
+<tr>
+<td>UC-E05</td>
+<td>FR-E13</td>
+<td>UJ-E05</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>UC-E06</td>
+<td>FR-E06–E08</td>
+<td>UJ-E06</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>UC-E07</td>
+<td>FR-E21</td>
+<td>UJ-E07</td>
+<td>P2</td>
+</tr>
+<tr>
+<td>UC-E08</td>
+<td>FR-E22</td>
+<td>UJ-E08</td>
+<td>P1</td>
+</tr>
+<tr>
+<td>UC-E09</td>
+<td>FR-E01–E04</td>
+<td>UJ-E09</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>UC-E10</td>
+<td>FR-E16</td>
+<td>UJ-E10</td>
+<td>P1</td>
+</tr>
+<tr>
+<td>UC-E11</td>
+<td>FR-E17</td>
+<td>UJ-E11</td>
+<td>P3</td>
+</tr>
+<tr>
+<td>UC-E12</td>
+<td>FR-E35–E36</td>
+<td>UJ-E12</td>
+<td>P4</td>
+</tr>
+<tr>
+<td>UC-E13</td>
+<td>FR-E32</td>
+<td>UJ-E13</td>
+<td>P6</td>
+</tr>
+<tr>
+<td>UC-E14</td>
+<td>FR-E33</td>
+<td>UJ-E14</td>
+<td>P6</td>
+</tr>
+<tr>
+<td>UC-E15</td>
+<td>FR-E34</td>
+<td>UJ-E15</td>
+<td>P6</td>
+</tr>
+<tr>
+<td>UC-E16</td>
+<td>FR-E34</td>
+<td>UJ-E16</td>
+<td>P6</td>
+</tr>
+<tr>
+<td>UC-E17</td>
+<td>FR-E04</td>
+<td>UJ-E17</td>
+<td>P6</td>
+</tr>
+<tr>
+<td>UC-E18</td>
+<td>FR-E09</td>
+<td>UJ-E18</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>UC-E19</td>
+<td>FR-E03</td>
+<td>UJ-E19</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>UC-E20</td>
+<td>A-E19</td>
+<td>UJ-E20</td>
+<td>P4</td>
+</tr>
+<tr>
+<td>UC-S01</td>
+<td>FR-E01–E02</td>
+<td>—</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>UC-S02</td>
+<td>FR-E15</td>
+<td>—</td>
+<td>P1</td>
+</tr>
+<tr>
+<td>UC-S03</td>
+<td>FR-E27</td>
+<td>—</td>
+<td>P1</td>
+</tr>
+<tr>
+<td>UC-S04</td>
+<td>FR-E37</td>
+<td>—</td>
+<td>P1</td>
+</tr>
+</tbody>
+</table>
+<p>QA IDs J-E01–J-E07 in <a href="05a-emi-user-journey.html">05a</a> exercise UC-E01, E05, E02, E10, E12. Click-through: <a href="05c-emi-interactive-journeys.html">explorer</a>.</p>
+</article>
+<div class="pager"><a href="14-srs.html">← 14-srs</a><span></span><a href="appendices/A-regulatory-requirement-catalog.html">A-regulatory-requirement-catalog →</a></div>
+<footer class="note">Rendered preview of 15-use-cases.md. Markdown remains the source of truth. Not legal advice.</footer>
+
+</body>
+</html>

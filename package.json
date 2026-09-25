@@ -1,0 +1,10 @@
+{
+  "name": "kyc-journey-docs",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Standalone Pakistan EMI KYC Journey documentation (J1–J19) — separate from BilalAhmedSatti/Documentation",
+  "scripts": {
+    "start": "npx --yes serve -l 5180 .",
+    "docs": "npx --yes serve -l 5180 ."
+  }
+}

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>15. EMI wallet KYC state machine</title>
+<link rel="stylesheet" href="assets/doc.css">
+</head>
+<body>
+<nav class="top">
+  <div class="top-inner">
+    <a href="index.html">EMI pack home</a>
+    <span class="meta"><a href="05c-emi-interactive-journeys.html">Journeys</a> · <a href="08-state-machine.md">Source .md</a></span>
+  </div>
+</nav>
+<article class="page markdown-body">
+<h1 id="15-emi-wallet-kyc-state-machine">15. EMI wallet KYC state machine</h1>
+<blockquote>
+<p><strong>Identity Service</strong> is the only writer of KYC states (<code>identity_db</code>). Ledger reads a replica of <code>limit_tier</code> + <code>wallet_status</code> in <code>ledger_db</code>. Not legal advice.</p>
+</blockquote>
+<h2 id="states">States</h2>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>INITIATED</code></td>
+<td>App created; Tracking ID shown</td>
+</tr>
+<tr>
+<td><code>CONTACT_VERIFIED</code></td>
+<td>2FA/OTP bound</td>
+</tr>
+<tr>
+<td><code>CONSENT_CAPTURED</code></td>
+<td>Mandatory consents</td>
+</tr>
+<tr>
+<td><code>IDENTITY_CAPTURED</code></td>
+<td>§12 + Table-A</td>
+</tr>
+<tr>
+<td><code>LIVE_PHOTO_CAPTURED</code></td>
+<td>Digital live photo</td>
+</tr>
+<tr>
+<td><code>IDENTITY_VERIFICATION_IN_PROGRESS</code></td>
+<td>NADRA in flight</td>
+</tr>
+<tr>
+<td><code>SCREENING_IN_PROGRESS</code></td>
+<td>TFS/PEP</td>
+</tr>
+<tr>
+<td><code>SCREENING_HIT_REVIEW</code></td>
+<td>Potential hit</td>
+</tr>
+<tr>
+<td><code>WALLET_ACTIVE</code></td>
+<td>Instrument usable; see <code>limit_tier</code></td>
+</tr>
+<tr>
+<td><code>EDD_REQUIRED</code></td>
+<td>High risk / PEP</td>
+</tr>
+<tr>
+<td><code>VIDEO_KYC_PENDING</code></td>
+<td>No-branch fallback</td>
+</tr>
+<tr>
+<td><code>ADDITIONAL_INFORMATION_REQUIRED</code></td>
+<td>Docs</td>
+</tr>
+<tr>
+<td><code>CLOSED_UNVERIFIED</code></td>
+<td>One-credit path failed + STR</td>
+</tr>
+<tr>
+<td><code>REJECTED</code></td>
+<td>Decline in writing</td>
+</tr>
+<tr>
+<td><code>EXPIRED</code></td>
+<td>Resume window exceeded</td>
+</tr>
+<tr>
+<td><code>WITHDRAWN</code></td>
+<td>Customer cancel</td>
+</tr>
+<tr>
+<td><code>REFRESH_DUE</code></td>
+<td>Ongoing CDD</td>
+</tr>
+</tbody>
+</table>
+<h2 id="limit-tiers-orthogonal-on-the-wallet">Limit tiers (orthogonal, on the wallet)</h2>
+<p><code>VERISYS</code> | <code>BV</code> | <code>ENHANCED</code> | <code>MINOR_BASIC</code> | <code>MINOR_FREELANCER</code></p>
+<h2 id="transitions-happy">Transitions (happy)</h2>
+<pre><code class="language-text">INITIATED → CONTACT_VERIFIED → CONSENT_CAPTURED → IDENTITY_CAPTURED
+  → LIVE_PHOTO_CAPTURED → SCREENING_IN_PROGRESS → IDENTITY_VERIFICATION_IN_PROGRESS
+  → WALLET_ACTIVE (VERISYS)
+  → (BV success) same state, limit_tier=BV
+  → (PSP&amp;OD enhanced) limit_tier=ENHANCED
+</code></pre>
+<h2 id="fail-closed">Fail closed</h2>
+<ul>
+<li>Sanctions confirmed → <code>REJECTED</code> (never <code>WALLET_ACTIVE</code>).  </li>
+<li>Duplicate CNIC → no new wallet (redirect).  </li>
+<li>Unverified after one credit → <code>CLOSED_UNVERIFIED</code> + STR.  </li>
+<li>NADRA 503 → stay <code>IDENTITY_VERIFICATION_IN_PROGRESS</code>.</li>
+</ul>
+<h2 id="diagram">Diagram</h2>
+<p>See <a href="diagrams/05-state-machine.mmd">diagrams/05-state-machine.mmd</a>.</p>
+</article>
+<div class="pager"><a href="07-database-and-erd.html">← 07-database-and-erd</a><span></span><a href="09-api-specification.html">09-api-specification →</a></div>
+<footer class="note">Rendered preview of 08-state-machine.md. Markdown remains the source of truth. Not legal advice.</footer>
+
+</body>
+</html>

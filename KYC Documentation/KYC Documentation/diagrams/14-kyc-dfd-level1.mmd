@@ -1,0 +1,64 @@
+flowchart TB
+  Cust[Customer]
+  Analyst[KYC_Analyst]
+  NADRA[NADRA]
+  Lists[Sanctions_PEP_Lists]
+  EKYC[Shared_eKYC]
+  Core[Core_Banking]
+
+  subgraph p1 [P1_Capture_Application]
+    D1[(D1_kyc_applications)]
+    D2[(D2_contacts_otp)]
+    D3[(D3_consents)]
+  end
+
+  subgraph p2 [P2_Identify_and_Verify]
+    D4[(D4_identities_addresses)]
+    D5[(D5_documents_face_checks)]
+    D6[(D6_verifications_attempts)]
+  end
+
+  subgraph p3 [P3_Screen_and_Risk]
+    D7[(D7_screening_results)]
+    D8[(D8_risk_assessments_profiles)]
+  end
+
+  subgraph p4 [P4_Decide_and_CaseManage]
+    D9[(D9_cases_actions_decisions)]
+    D10[(D10_status_history_audit)]
+  end
+
+  subgraph p5 [P5_Provision_Customer_Account]
+    D11[(D11_customers_accounts)]
+    D12[(D12_refresh_fraud_ekyc_logs)]
+  end
+
+  Cust -->|"start_OTP_profile"| p1
+  p1 -->|"tracking_status"| Cust
+  p1 -->|"identity_livephoto"| p2
+  p2 -->|"BV_requests"| NADRA
+  NADRA -->|"BV_Verisys_results"| p2
+  p2 -->|"verified_profile"| p3
+  p3 -->|"screen_queries"| Lists
+  Lists -->|"results"| p3
+  p1 -->|"consent_fetch"| EKYC
+  EKYC -->|"prefill"| p2
+  p3 -->|"risk_score_hits"| p4
+  Analyst -->|"adjudicate_EDD"| p4
+  p4 -->|"queues"| Analyst
+  p4 -->|"approve"| p5
+  p5 -->|"open_CIF_account"| Core
+  Core -->|"IBAN_CIF"| p5
+  p5 -->|"activation_notice"| Cust
+  p4 --> D10
+  p1 --> D1
+  p1 --> D2
+  p1 --> D3
+  p2 --> D4
+  p2 --> D5
+  p2 --> D6
+  p3 --> D7
+  p3 --> D8
+  p4 --> D9
+  p5 --> D11
+  p5 --> D12

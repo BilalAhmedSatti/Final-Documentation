@@ -1,0 +1,12 @@
+flowchart TD
+  Start[ProfileComplete] --> San[Sanctions_TFS_UNSC_ATA]
+  San --> Pep[PEP_Screen]
+  Pep --> WL[Internal_Watchlist]
+  WL --> Adv[Optional_AdverseMedia]
+  Adv --> Hit{Potential_or_Confirmed_Hit}
+  Hit -->|confirmed_prohibited| Rej[Reject_or_Freeze]
+  Hit -->|potential| Case[Alert_Adjudication_Case]
+  Case -->|false_positive_maker_checker| Clear[Clear_to_Risk]
+  Case -->|true_match| Rej
+  Hit -->|all_clear| Clear
+  Clear --> Risk[Risk_Assessment]

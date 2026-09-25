@@ -1,0 +1,18 @@
+flowchart TB
+  subgraph emi [EMI - PS and EFT Act]
+    E[Non-bank e-money issuer]
+    W[Wallet / prepaid instrument]
+    T[Trust account at A-rated bank]
+    E --> W
+    W --> T
+  end
+  subgraph drb [Digital Retail Bank]
+    B[Licensed bank]
+    A[Deposit account]
+    B --> A
+  end
+  subgraph bb [Branchless Banking]
+    MFB[Bank or MFB]
+    MA[BB mobile account]
+    MFB --> MA
+  end

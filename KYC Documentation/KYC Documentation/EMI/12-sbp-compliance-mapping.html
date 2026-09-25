@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>25–26. EMI compliance mapping</title>
+<link rel="stylesheet" href="assets/doc.css">
+</head>
+<body>
+<nav class="top">
+  <div class="top-inner">
+    <a href="index.html">EMI pack home</a>
+    <span class="meta"><a href="05c-emi-interactive-journeys.html">Journeys</a> · <a href="12-sbp-compliance-mapping.md">Source .md</a></span>
+  </div>
+</nav>
+<article class="page markdown-body">
+<h1 id="2526-emi-compliance-mapping">25–26. EMI compliance mapping</h1>
+<blockquote>
+<p>Maps <strong>A</strong> requirements to implementation. Statuses are design-time. Not legal advice.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Source</th>
+<th>Component</th>
+<th>Data</th>
+<th>API / control</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E-A01</td>
+<td>Digital onboarding default</td>
+<td>EMI §12</td>
+<td>KYC app</td>
+<td><code>kyc_applications.channel</code></td>
+<td>POST /applications</td>
+<td>Designed</td>
+</tr>
+<tr>
+<td>E-A02</td>
+<td>Minimum CDD fields + 2 extra</td>
+<td>EMI §12.I</td>
+<td>Identity module</td>
+<td>identity + extras</td>
+<td>POST /identity</td>
+<td>Designed</td>
+</tr>
+<tr>
+<td>E-A03</td>
+<td>2FA</td>
+<td>EMI §12.II</td>
+<td>OTP</td>
+<td><code>contact_verifications</code></td>
+<td>/contact/verify</td>
+<td>Designed</td>
+</tr>
+<tr>
+<td>E-A04</td>
+<td>Verify before activate + TFS pre-screen</td>
+<td>EMI §12.III</td>
+<td>Screening + NADRA</td>
+<td><code>screenings</code></td>
+<td>hold on fail</td>
+<td>Designed</td>
+</tr>
+<tr>
+<td>E-A05</td>
+<td>One credit then close+STR</td>
+<td>EMI §12.IV</td>
+<td>Policy flag</td>
+<td><code>unverified_one_credit</code></td>
+<td>close job</td>
+<td>Designed (default <strong>off</strong>)</td>
+</tr>
+<tr>
+<td>E-A06</td>
+<td>EDD high risk</td>
+<td>EMI §12.V / AML</td>
+<td>Case + video</td>
+<td><code>edd_cases</code></td>
+<td>/video-kyc</td>
+<td>Designed</td>
+</tr>
+<tr>
+<td>E-A07</td>
+<td>T&amp;Cs consent</td>
+<td>EMI §12.VI</td>
+<td>Consents</td>
+<td><code>consents</code></td>
+<td>POST /consents</td>
+<td>Designed</td>
+</tr>
+<tr>
+<td>E-A08</td>
+<td>One CNIC one instrument</td>
+<td>EMI §12.VII</td>
+<td>Uniqueness</td>
+<td>hash unique</td>
+<td>DUPLICATE_CNIC</td>
+<td>Designed</td>
+</tr>
+<tr>
+<td>E-A09</td>
+<td>Real-time alerts</td>
+<td>EMI §12.VIII</td>
+<td>Notify</td>
+<td><code>alerts</code></td>
+<td>ledger hook</td>
+<td>Designed</td>
+</tr>
+<tr>
+<td>E-A10</td>
+<td>STR on suspicion</td>
+<td>EMI §12.IX / AML</td>
+<td>STR</td>
+<td><code>str_cases</code></td>
+<td>ops queue</td>
+<td>Designed</td>
+</tr>
+<tr>
+<td>E-A11</td>
+<td>TFS freeze / no service</td>
+<td>EMI §12.X</td>
+<td>Screening</td>
+<td>lists</td>
+<td>fail closed</td>
+<td>Designed</td>
+</tr>
+<tr>
+<td>E-A12</td>
+<td>Pilot/commercial/enhanced/minor limits</td>
+<td>EMI §14</td>
+<td>Limit engine</td>
+<td><code>limit_policies</code></td>
+<td>ledger reject</td>
+<td>Designed</td>
+</tr>
+<tr>
+<td>E-A13</td>
+<td>Enhanced controls not outsourced</td>
+<td>EMI §14.III</td>
+<td>In-house KYC</td>
+<td>artefacts</td>
+<td>/enhanced</td>
+<td>Designed</td>
+</tr>
+<tr>
+<td>E-A14</td>
+<td>Issue/redeem at par; cash redemption BV</td>
+<td>EMI §15</td>
+<td>Ledger + BV</td>
+<td><code>trust_postings</code></td>
+<td>redemption API</td>
+<td>Designed</td>
+</tr>
+<tr>
+<td>E-A15</td>
+<td>Trust account, no co-mingle</td>
+<td>EMI §16</td>
+<td>Trust adapter</td>
+<td><code>trust_postings</code></td>
+<td>recon job</td>
+<td>Designed</td>
+</tr>
+<tr>
+<td>E-A16</td>
+<td>Agents: approval; no issuance</td>
+<td>EMI §17</td>
+<td>Agent GW</td>
+<td><code>agents</code></td>
+<td>AGENT_CANNOT_ISSUE</td>
+<td>Designed</td>
+</tr>
+<tr>
+<td>E-A17</td>
+<td>TMS</td>
+<td>EMI §22.I</td>
+<td>TMS</td>
+<td>alerts</td>
+<td>scenarios</td>
+<td>Designed</td>
+</tr>
+<tr>
+<td>E-A18</td>
+<td>RBA + new-tech risk</td>
+<td>EMI §22.II–III</td>
+<td>Risk</td>
+<td>assessments</td>
+<td>go-live gate</td>
+<td>Designed</td>
+</tr>
+<tr>
+<td>E-A19</td>
+<td>Records ≥10 years</td>
+<td>EMI §24.II</td>
+<td>Storage</td>
+<td>retention class</td>
+<td>Legal memo</td>
+<td>Open</td>
+</tr>
+<tr>
+<td>E-A20</td>
+<td>Pre-pilot + annual system audit</td>
+<td>EMI §21.IV</td>
+<td>GRC</td>
+<td>audit reports</td>
+<td>—</td>
+<td>Process</td>
+</tr>
+<tr>
+<td>E-A21</td>
+<td>Consolidated: live photo, TAT 2 WD, tracking ID, BV ladder, video fallback</td>
+<td>BPRD C1/2025</td>
+<td>KYC</td>
+<td>TAT clocks</td>
+<td>/tracking</td>
+<td>Designed</td>
+</tr>
+<tr>
+<td>E-A22</td>
+<td>Table-A / no anonymous</td>
+<td>AML + Consolidated</td>
+<td>KYC</td>
+<td>Table-A</td>
+<td>validation</td>
+<td>Designed</td>
+</tr>
+<tr>
+<td>E-A23</td>
+<td>No interest on e-money</td>
+<td>EMI §7.V</td>
+<td>Product</td>
+<td>—</td>
+<td>no profit module</td>
+<td>Designed</td>
+</tr>
+<tr>
+<td>E-A24</td>
+<td>No banking/lending</td>
+<td>EMI §7.III</td>
+<td>Licence</td>
+<td>—</td>
+<td>product firewall</td>
+<td>Process</td>
+</tr>
+</tbody>
+</table>
+<p>Open items: Shared e-KYC EMI onboarding; Annexure-J field list from PDF annex (Legal extract); NADRA contract.</p>
+</article>
+<div class="pager"><a href="11-security-fraud-audit.html">← 11-security-fraud-audit</a><span></span><a href="13-implementation-gaps-references.html">13-implementation-gaps-references →</a></div>
+<footer class="note">Rendered preview of 12-sbp-compliance-mapping.md. Markdown remains the source of truth. Not legal advice.</footer>
+
+</body>
+</html>

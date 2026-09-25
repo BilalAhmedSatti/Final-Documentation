@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KYC customer journeys</title>
+<style>
+  :root {
+    --bg: #f4f6f8;
+    --surface: #ffffff;
+    --ink: #1a2332;
+    --muted: #5c6b80;
+    --line: #d8dee8;
+    --line-strong: #c3ccd8;
+    --accent: #1e4e8c;
+    --accent-soft: #e8f0fa;
+    --success: #0f6b45;
+    --success-soft: #e6f5ee;
+    --danger: #b42318;
+    --danger-soft: #fdecea;
+    --warn: #8a5a00;
+    --warn-soft: #fff6e0;
+    --wait: #5b4aa8;
+    --wait-soft: #f1eefc;
+    --shadow: 0 0 0 1px var(--line);
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    font-family: "Segoe UI", system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+  }
+  .app {
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    height: 100%;
+  }
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .brand {
+    padding: 20px 18px 12px;
+    border-bottom: 1px solid var(--line);
+  }
+  .brand h1 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+  }
+  .brand p {
+    margin: 6px 0 0;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.45;
+  }
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 12px 18px 0;
+  }
+  .filters button, .toolbar button, .walk button, .related button {
+    font: inherit;
+    cursor: pointer;
+    border: 1px solid var(--line-strong);
+    background: var(--surface);
+    color: var(--ink);
+    border-radius: 999px;
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+  .filters button.active, .journey.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .search {
+    padding: 10px 18px 8px;
+  }
+  .search input {
+    width: 100%;
+    font: inherit;
+    font-size: 13px;
+    padding: 8px 10px;
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  .search input:focus {
+    outline: 2px solid var(--accent-soft);
+    border-color: var(--accent);
+  }
+  .journeys {
+    flex: 1;
+    overflow: auto;
+    padding: 4px 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .journey {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+    width: 100%;
+    text-align: left;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    font-size: 13px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--ink);
+  }
+  .journey:hover { background: var(--accent-soft); }
+  .journey span {
+    flex: 0 0 48px;
+    font-size: 11px;
+    font-weight: 650;
+    color: var(--muted);
+  }
+  .journey.active span { color: #cfe0f5; }
+  .legend {
+    padding: 12px 18px 16px;
+    border-top: 1px solid var(--line);
+    font-size: 11px;
+    color: var(--muted);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 12px;
+  }
+  .legend i {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  .main {
+    display: grid;
+    grid-template-rows: auto minmax(480px, 1fr) minmax(280px, 34vh);
+    min-width: 0;
+    min-height: 0;
+  }
+  .top {
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+    padding: 12px 22px 10px;
+  }
+  .top-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 650;
+    letter-spacing: -0.03em;
+  }
+  .meta { margin: 4px 0 0; font-size: 13px; color: var(--muted); }
+  .why {
+    margin-top: 8px;
+    padding: 8px 10px;
+    background: var(--accent-soft);
+    border-radius: 8px;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .facts {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .fact {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 8px 10px;
+    background: var(--bg);
+  }
+  .fact b {
+    display: block;
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 650;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .fact span { font-size: 12px; line-height: 1.4; }
+  .toolbar { display: flex; gap: 6px; flex-shrink: 0; }
+  .walk { display: flex; gap: 6px; margin-top: 8px; align-items: center; }
+  .walk .count { font-size: 12px; color: var(--muted); }
+  .canvas {
+    position: relative;
+    overflow: auto;
+    background: var(--bg);
+    min-height: 480px;
+  }
+  svg { display: block; }
+  .node { cursor: pointer; }
+  .node .box { fill: var(--surface); stroke: var(--line-strong); stroke-width: 1; }
+  .node.selected .box { stroke: var(--accent); stroke-width: 2; fill: var(--accent-soft); }
+  .node.success .bar { fill: var(--success); }
+  .node.fail .bar { fill: var(--danger); }
+  .node.decision .bar { fill: var(--warn); }
+  .node.wait .bar { fill: var(--wait); }
+  .node.action .bar { fill: var(--accent); }
+  .node-html {
+    font-family: "Segoe UI", system-ui, sans-serif;
+    padding: 8px 10px 8px 14px;
+    height: 100%;
+  }
+  .n-label {
+    font-size: 14px;
+    font-weight: 650;
+    line-height: 1.3;
+    color: var(--ink);
+  }
+  .n-kind {
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .n-state {
+    margin-top: 4px;
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .edge { fill: none; stroke: #8b9bb0; stroke-width: 1.4; marker-end: url(#arrow); }
+  .edge-label {
+    font-size: 10px;
+    fill: #5c6b80;
+    font-family: "Segoe UI", system-ui, sans-serif;
+  }
+  .details {
+    background: var(--surface);
+    border-top: 1px solid var(--line);
+    padding: 16px 22px 18px;
+    display: grid;
+    grid-template-columns: 1.1fr 1.3fr 1.3fr 1fr;
+    gap: 18px;
+    min-height: 280px;
+    overflow: auto;
+  }
+  .details h3 {
+    margin: 0 0 6px;
+    font-size: 11px;
+    font-weight: 650;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .details p { margin: 0; font-size: 13px; line-height: 1.5; }
+  .step-title { font-size: 16px; font-weight: 650; margin: 0 0 6px; }
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    margin-left: 6px;
+    vertical-align: middle;
+    text-transform: uppercase;
+  }
+  .related { display: flex; flex-wrap: wrap; gap: 6px; }
+  @media (max-width: 960px) {
+    .app { grid-template-columns: 1fr; grid-template-rows: 220px 1fr; }
+    .facts { grid-template-columns: 1fr; }
+    .details { grid-template-columns: 1fr; min-height: 240px; }
+    .main { grid-template-rows: auto minmax(360px, 1fr) minmax(240px, 40vh); }
+    .canvas { min-height: 360px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <h1>KYC customer journeys</h1>
+      <p>38 customer-facing paths for the Conventional DRB pack. Click a journey, then a step.</p>
+    </div>
+    <div id="filters" class="filters"></div>
+    <div class="search"><input id="q" type="search" placeholder="Search journeys, personas, IDs" autocomplete="off"></div>
+    <div id="journeys" class="journeys"></div>
+    <div class="legend">
+      <div><i style="background:#1e4e8c"></i>Action</div>
+      <div><i style="background:#8a5a00"></i>Decision</div>
+      <div><i style="background:#0f6b45"></i>Success</div>
+      <div><i style="background:#b42318"></i>Fail / stop</div>
+      <div><i style="background:#5b4aa8"></i>Wait</div>
+      <div>Source: 05b catalog</div>
+    </div>
+  </aside>
+  <main class="main">
+    <header class="top">
+      <div class="top-row">
+        <div>
+          <h2 id="title" class="title"></h2>
+          <p id="meta" class="meta"></p>
+        </div>
+        <div class="toolbar">
+          <button type="button" id="zoomOut">-</button>
+          <button type="button" id="zoomIn">+</button>
+          <button type="button" id="fitBtn">Fit</button>
+        </div>
+      </div>
+      <div id="why" class="why"></div>
+      <div id="facts" class="facts"></div>
+      <div class="walk">
+        <button type="button" id="prevBtn">Previous step</button>
+        <button type="button" id="nextBtn">Next step</button>
+        <span id="count" class="count"></span>
+      </div>
+    </header>
+    <section id="canvas" class="canvas">
+      <svg id="svg" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrow" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8 z" fill="#8b9bb0"></path>
+          </marker>
+        </defs>
+        <g id="viewport"></g>
+      </svg>
+    </section>
+    <section id="details" class="details"></section>
+  </main>
+</div>
+<script>
+const DATA=[{"id":"UJ-01","family":"A","title":"Happy path STP","persona":"Ayesha — salaried, resident CNIC","classTag":"A CDD/BV/TAT · C progress","why":"Low-risk resident completes NADRA BV. Screening is clear. Account goes straight to ACTIVE.","trigger":"Taps Open account. Eligible resident CNIC. BV succeeds. Screening clear. CRP LOW.","success":"Full product limits. Home dashboard. TMS enrolled. State ACTIVE.","alternate":"Any fail branches to UJ-04 through UJ-25.","related":["UJ-02","UJ-04","UJ-09","UJ-27"],"walk":["open","track","otp","sms","consent","id","photo","bv","profile","screen","risk","pin"],"nodes":[{"id":"open","label":"Open account","kind":"action","customer":"Opens app or web and taps Open savings/current account.","system":"Creates application. Captures channel, device hash, IP, geo if permitted.","state":"INITIATED","from":"","to":""},{"id":"track","label":"Tracking ID on screen","kind":"action","customer":"Sees Tracking ID. Can copy it. No SMS yet — no mobile collected.","system":"Issues Tracking ID. Shows it in-app only.","state":"INITIATED","from":"","to":""},{"id":"otp","label":"Mobile OTP","kind":"action","customer":"Enters PTA-registered mobile and OTP.","system":"Sends OTP. Verifies. Binds mobile. Does not skip state on wrong OTP.","state":"CONTACT_VERIFIED","from":"","to":""},{"id":"sms","label":"SMS Tracking ID","kind":"action","customer":"Receives SMS: application started + Tracking ID.","system":"First out-of-band notify. Only after OTP success — not to an unverified number.","state":"CONTACT_VERIFIED","from":"","to":""},{"id":"consent","label":"Consents","kind":"action","customer":"Accepts T&Cs, privacy, KFS, NADRA/BV. Marketing off by default.","system":"Stores versioned consents. Blocks continue until mandatory accepted.","state":"CONSENT_CAPTURED","from":"","to":""},{"id":"id","label":"CNIC identity","kind":"action","customer":"Enters or confirms Table-A identity (CNIC, names, DOB, dates).","system":"Format/checksum validation. Encrypts sensitive fields.","state":"IDENTITY_CAPTURED","from":"","to":""},{"id":"photo","label":"Live photo","kind":"action","customer":"Centers face. Captures live photo. Good light, no mask.","system":"Encrypted realtime upload. No photo left on device. Face match vs ID.","state":"LIVE_PHOTO_CAPTURED","from":"","to":""},{"id":"bv","label":"NADRA BV success","kind":"success","customer":"Completes in-app fingerprint or facial BV.","system":"NADRA adapter BV. Persist vendor refs, not raw templates.","state":"IDENTITY_VERIFIED","from":"","to":""},{"id":"profile","label":"Profile FATCA PEP","kind":"action","customer":"Occupation, SoI, purpose, addresses, FATCA/CRS, PEP declaration.","system":"Annex-B document rules. Independent PEP screen still runs later.","state":"PROFILE_COMPLETE","from":"","to":""},{"id":"screen","label":"Screening clear","kind":"success","customer":"Sees Under review, then Approved. Does not see list hits.","system":"UNSC + ATA + PEP + watchlist. Clear → risk.","state":"SCREENING_IN_PROGRESS → clear","from":"","to":""},{"id":"risk","label":"CRP LOW STP","kind":"success","customer":"Account approved. TAT target ≤ 2 working days.","system":"Risk LOW + BV + clear screening → auto approve. CIF + IBAN.","state":"APPROVED → ACCOUNT_PENDING","from":"","to":""},{"id":"pin","label":"Set PIN · ACTIVE","kind":"success","customer":"Sets PIN. Sees IBAN and home. Optional debit card.","system":"Device binding. Welcome notices. TMS enroll.","state":"ACTIVE","from":"","to":""}],"edges":[{"from":"open","to":"track","label":""},{"from":"track","to":"otp","label":""},{"from":"otp","to":"sms","label":""},{"from":"sms","to":"consent","label":""},{"from":"consent","to":"id","label":""},{"from":"id","to":"photo","label":""},{"from":"photo","to":"bv","label":""},{"from":"bv","to":"profile","label":""},{"from":"profile","to":"screen","label":""},{"from":"screen","to":"risk","label":""},{"from":"risk","to":"pin","label":""}]},{"id":"UJ-02","family":"A","title":"Shared e-KYC prefill","persona":"Ayesha — already KYC’d at another bank","classTag":"A when platform live + consent","why":"Optional consent lets the bank prefill KYC. BV and sanctions still run. Miss or timeout continues locally.","trigger":"Customer accepts optional Shared e-KYC consent and the platform is live.","success":"Prefill confirmed. Customer still owns accuracy. Then live photo + BV.","alternate":"Decline, miss, or error → silent continue to local identity form (UJ-01).","related":["UJ-01","UJ-05"],"walk":["consent","lookup","hit","review","continue"],"nodes":[{"id":"consent","label":"Optional e-KYC consent","kind":"decision","customer":"Can accept or refuse Shared e-KYC. Refusal must not block local KYC.","system":"Records SHARED_EKYC_READ consent version.","state":"CONSENT_CAPTURED","from":"","to":""},{"id":"lookup","label":"Network lookup","kind":"wait","customer":"Short wait. No dark pattern to force consent.","system":"Adapter query. Bank stays responsible for CDD.","state":"CONSENT_CAPTURED","from":"","to":""},{"id":"hit","label":"KYC found","kind":"action","customer":"Sees We found your KYC — review details.","system":"Prefills editable fields. Never skips sanctions or BV.","state":"EKYC_PREFILL_APPLIED","from":"","to":""},{"id":"miss","label":"No shared KYC","kind":"action","customer":"Sees No shared KYC — continue. Same as manual path.","system":"Timeout/miss is non-blocking.","state":"skip prefill","from":"","to":""},{"id":"review","label":"Customer confirms fields","kind":"action","customer":"Edits anything wrong. Confirms identity fields.","system":"Stores confirmed Table-A values.","state":"IDENTITY_CAPTURED","from":"","to":""},{"id":"continue","label":"Live photo + BV","kind":"success","customer":"Still captures live photo and NADRA BV.","system":"Same verification policy as UJ-01.","state":"LIVE_PHOTO_CAPTURED → IDENTITY_VERIFIED","from":"","to":""}],"edges":[{"from":"consent","to":"lookup","label":"accepted"},{"from":"lookup","to":"hit","label":"hit"},{"from":"lookup","to":"miss","label":"miss/timeout"},{"from":"hit","to":"review","label":""},{"from":"miss","to":"continue","label":""},{"from":"review","to":"continue","label":""}]},{"id":"UJ-03","family":"A","title":"Expired CNIC + NADRA token","persona":"Hamza — ID expired, token in hand","classTag":"A token path · renew in 3 months","why":"Expired CNIC can open if NADRA token/receipt is captured. Renewed ID is due within 3 months (UJ-31).","trigger":"Enters expired CNIC and has NADRA renewal receipt/token.","success":"Application continues. Renewal timer starts. May still reach ACTIVE.","alternate":"No token → cannot proceed on expired ID.","related":["UJ-01","UJ-31"],"walk":["id","expired","token","timer","continue"],"nodes":[{"id":"id","label":"Enter CNIC","kind":"action","customer":"Enters CNIC that NADRA shows as expired.","system":"Detects expiry vs today.","state":"IDENTITY_CAPTURED pending","from":"","to":""},{"id":"expired","label":"Expired?","kind":"decision","customer":"Helper text: need NADRA token/receipt to continue.","system":"Blocks continue without token artefact.","state":"IDENTITY_CAPTURED","from":"","to":""},{"id":"token","label":"Capture token","kind":"action","customer":"Uploads expired ID plus NADRA token/receipt.","system":"Stores artefact. Flags document_pending.","state":"IDENTITY_CAPTURED","from":"","to":""},{"id":"none","label":"No token — stop","kind":"fail","customer":"Cannot continue until token is available.","system":"Stay at identity. No account.","state":"IDENTITY_CAPTURED","from":"","to":""},{"id":"timer","label":"3-month timer","kind":"wait","customer":"Told renewed CNIC is required within 3 months.","system":"Schedules reminders (handoff UJ-31).","state":"exception + reminder","from":"","to":""},{"id":"continue","label":"Rest of onboarding","kind":"success","customer":"Live photo, BV or alternate, profile, submit.","system":"Same spine as UJ-01 after identity.","state":"may be ACTIVE or RESTRICTED_ACTIVE","from":"","to":""}],"edges":[{"from":"id","to":"expired","label":""},{"from":"expired","to":"token","label":"has token"},{"from":"expired","to":"none","label":"no token"},{"from":"token","to":"timer","label":""},{"from":"timer","to":"continue","label":""}]},{"id":"UJ-04","family":"A","title":"OTP fail / lockout / change number","persona":"Ayesha — mistypes OTP","classTag":"A MSISDN · B/C OTP security","why":"Wrong OTP never skips CONTACT_VERIFIED. After N fails, cool-down. Change number is a new attempt.","trigger":"Wrong OTP, expiry, or customer wants a different mobile.","success":"Mobile verified → CONTACT_VERIFIED. Then SMS Tracking ID.","alternate":"Cool-down. Support via Tracking ID shown in-app (UJ-27).","related":["UJ-01","UJ-27"],"walk":["enter","otp","wrong","retry","ok"],"nodes":[{"id":"enter","label":"Enter mobile","kind":"action","customer":"Types mobile. Helper: PTA-registered in own name.","system":"Start OTP. Attempt counters.","state":"INITIATED","from":"","to":""},{"id":"otp","label":"Enter OTP","kind":"decision","customer":"Enters code from SMS.","system":"No OTP in logs. Confirm or fail.","state":"INITIATED","from":"","to":""},{"id":"wrong","label":"Wrong / expired","kind":"fail","customer":"Retry prompt. Remaining attempts shown.","system":"Does not advance state.","state":"INITIATED","from":"","to":""},{"id":"retry","label":"Retry","kind":"action","customer":"Requests new OTP or re-enters.","system":"Resend with limits.","state":"INITIATED","from":"","to":""},{"id":"lock","label":"Lockout cool-down","kind":"wait","customer":"Sees timer. Cannot brute-force.","system":"Cool-down. Still INITIATED.","state":"INITIATED","from":"","to":""},{"id":"change","label":"Change number","kind":"action","customer":"Optional new number. New attempt rules explained.","system":"New OTP cycle. Fraud rules apply.","state":"INITIATED","from":"","to":""},{"id":"ok","label":"Verified","kind":"success","customer":"Mobile verified badge.","system":"Bind MSISDN. SMS Tracking ID.","state":"CONTACT_VERIFIED","from":"","to":""}],"edges":[{"from":"enter","to":"otp","label":""},{"from":"otp","to":"ok","label":"correct"},{"from":"otp","to":"wrong","label":"fail"},{"from":"wrong","to":"retry","label":""},{"from":"retry","to":"otp","label":""},{"from":"wrong","to":"lock","label":"N fails"},{"from":"lock","to":"change","label":""},{"from":"change","to":"enter","label":""}]},{"id":"UJ-05","family":"A","title":"Decline mandatory consents","persona":"Ayesha — refuses NADRA processing","classTag":"A/B consents","why":"Mandatory consents (T&Cs, privacy, KFS, NADRA/BV) gate the journey. Marketing is separate and off by default.","trigger":"Refuses T&Cs, privacy, KFS, or NADRA/BV processing.","success":"If later accepted → CONSENT_CAPTURED.","alternate":"Save draft (UJ-06) or withdraw (UJ-08).","related":["UJ-06","UJ-08"],"walk":["screen","decline","blocked","draft"],"nodes":[{"id":"screen","label":"Consent screen","kind":"action","customer":"Reads KFS, T&Cs, privacy, NADRA/BV purpose (EN/UR).","system":"Shows mandatory vs optional visually.","state":"CONTACT_VERIFIED","from":"","to":""},{"id":"decline","label":"Decline mandatory","kind":"decision","customer":"Leaves a required box unchecked.","system":"Continue stays disabled.","state":"CONTACT_VERIFIED","from":"","to":""},{"id":"blocked","label":"Cannot continue","kind":"fail","customer":"Explains which consent is required.","system":"No CONSENT_CAPTURED.","state":"CONTACT_VERIFIED","from":"","to":""},{"id":"draft","label":"Save draft","kind":"wait","customer":"Optional Save draft and exit.","system":"30-day resume window.","state":"CONTACT_VERIFIED","from":"","to":""},{"id":"accept","label":"Accept mandatory","kind":"success","customer":"Accepts all required. Marketing still optional.","system":"Timestamped versioned consents.","state":"CONSENT_CAPTURED","from":"","to":""}],"edges":[{"from":"screen","to":"decline","label":"refuse"},{"from":"screen","to":"accept","label":"accept"},{"from":"decline","to":"blocked","label":""},{"from":"blocked","to":"draft","label":""}]},{"id":"UJ-06","family":"A","title":"Abandon and resume ≤ 30 days","persona":"Ayesha — exits at live photo","classTag":"A 30-day resume","why":"Draft is saved up to 30 days. Return via app or Tracking ID to the last incomplete step.","trigger":"Exits mid-flow or kills the app.","success":"Resumes without re-collecting completed steps (re-auth OTP if policy).","alternate":"Day 31 → UJ-07 expired.","related":["UJ-07","UJ-27"],"walk":["exit","saved","return","resume"],"nodes":[{"id":"exit","label":"Leaves mid-flow","kind":"action","customer":"Closes app at an incomplete step (e.g. live photo).","system":"Persists last successful state.","state":"last successful state","from":"","to":""},{"id":"saved","label":"Draft ≤ 30 days","kind":"wait","customer":"May get reminder. Tracking ID already on screen from Step 0.","system":"Resume window (**A**).","state":"unchanged","from":"","to":""},{"id":"return","label":"Return day ≤ 30","kind":"action","customer":"Opens deep link or enters Tracking ID.","system":"Loads application. Optional step-up OTP.","state":"unchanged","from":"","to":""},{"id":"resume","label":"Last incomplete step","kind":"success","customer":"Lands on live photo (example), not at the start.","system":"No skip forward. No silent re-collect of done steps.","state":"continues spine","from":"","to":""}],"edges":[{"from":"exit","to":"saved","label":""},{"from":"saved","to":"return","label":""},{"from":"return","to":"resume","label":""}]},{"id":"UJ-07","family":"A","title":"Application expired > 30 days","persona":"Ayesha — returns day 31","classTag":"A 30-day resume","why":"After 30 days the application is EXPIRED. Customer must start a new one. Old Tracking ID is for support only.","trigger":"Resume window exceeded.","success":"New application INITIATED.","alternate":"Support cannot silently reuse old evidence beyond policy.","related":["UJ-06","UJ-01"],"walk":["return","expired","newapp"],"nodes":[{"id":"return","label":"Return day 31+","kind":"action","customer":"Opens old link or Tracking ID.","system":"Expiry job already marked EXPIRED.","state":"EXPIRED","from":"","to":""},{"id":"expired","label":"Expired message","kind":"fail","customer":"Sees Application expired — start a new one. Old ID for support.","system":"Terminal for that application.","state":"EXPIRED","from":"","to":""},{"id":"newapp","label":"Start new","kind":"success","customer":"Taps Open account again.","system":"POST new application. New Tracking ID.","state":"INITIATED","from":"","to":""}],"edges":[{"from":"return","to":"expired","label":""},{"from":"expired","to":"newapp","label":""}]},{"id":"UJ-08","family":"A","title":"Customer withdraws","persona":"Ayesha — cancels from status screen","classTag":"D UX · audit A/B","why":"Customer-initiated cancel. No CIF. TAT clock stops. Accidental cancel cannot reopen the same ID.","trigger":"Chooses Cancel application from status or support-linked screen.","success":"No account. Can start a new application per fraud/dedupe rules.","alternate":"Accidental cancel → start new. Same ID is not reopened.","related":["UJ-01","UJ-06"],"walk":["cancel","confirm","withdrawn"],"nodes":[{"id":"cancel","label":"Cancel application","kind":"action","customer":"Taps cancel on status.","system":"Asks confirm. Explains no account will open.","state":"in-progress","from":"","to":""},{"id":"confirm","label":"Confirm","kind":"decision","customer":"Confirms withdrawal.","system":"Stops TAT. No CIF.","state":"in-progress","from":"","to":""},{"id":"withdrawn","label":"WITHDRAWN","kind":"fail","customer":"Confirmation + support contact.","system":"State WITHDRAWN. Audit event.","state":"WITHDRAWN","from":"","to":""}],"edges":[{"from":"cancel","to":"confirm","label":""},{"from":"confirm","to":"withdrawn","label":"yes"}]},{"id":"UJ-09","family":"B","title":"BV fail → Verisys + MSISDN + OTP","persona":"Bilal — unclear fingerprints","classTag":"A §F.1.v.b","why":"Eligible BV failure uses Verisys + CNIC–MSISDN pairing + OTP/callback. Not a silent approve.","trigger":"Live photo OK. BV fails for an eligible reason (unclear prints, etc.).","success":"IDENTITY_VERIFIED at alternate assurance. May still be full ACTIVE.","alternate":"Still fail → debit block (UJ-11) and/or video KYC (UJ-12).","related":["UJ-10","UJ-11","UJ-12"],"walk":["bvfail","explain","verisys","msisdn","verified"],"nodes":[{"id":"bvfail","label":"BV eligible fail","kind":"fail","customer":"Fingerprint/face BV does not complete.","system":"Eligible-reason check. Do not STP.","state":"IDENTITY_VERIFICATION_IN_PROGRESS","from":"","to":""},{"id":"explain","label":"We’ll verify another way","kind":"action","customer":"Plain EN/UR why BV failed and what is next.","system":"Starts Verisys orchestration.","state":"IDENTITY_VERIFICATION_IN_PROGRESS","from":"","to":""},{"id":"verisys","label":"NADRA Verisys","kind":"action","customer":"Waits. May confirm CNIC details.","system":"Verisys. Persist vendor ref.","state":"IN_PROGRESS","from":"","to":""},{"id":"msisdn","label":"CNIC–MSISDN + OTP","kind":"action","customer":"Confirms mobile ownership via OTP or callback.","system":"Pairs CNIC to MSISDN.","state":"IN_PROGRESS","from":"","to":""},{"id":"verified","label":"Identity verified","kind":"success","customer":"Sees Identity verified. Continues profile.","system":"Assurance = Verisys tier.","state":"IDENTITY_VERIFIED","from":"","to":""},{"id":"still","label":"Still failing","kind":"fail","customer":"Offered video KYC or debit-blocked open.","system":"Route UJ-11 / UJ-12.","state":"VIDEO_KYC_PENDING or restricted path","from":"","to":""}],"edges":[{"from":"bvfail","to":"explain","label":""},{"from":"explain","to":"verisys","label":""},{"from":"verisys","to":"msisdn","label":""},{"from":"msisdn","to":"verified","label":"success"},{"from":"msisdn","to":"still","label":"fail"}]},{"id":"UJ-10","family":"B","title":"Senior >60 or disability Verisys","persona":"Imran — age 67","classTag":"A Verisys alternate for >60 / disability","why":"Seniors over 60 and disability/unclear prints get Verisys without punitive finger-retry loops. Live photo still required.","trigger":"DOB >60, or declared/observed permanent disability / unclear fingerprints.","success":"Verified without endless BV retries.","alternate":"Verisys fail → UJ-11 / UJ-12.","related":["UJ-09","UJ-11","UJ-12"],"walk":["flag","offer","verisys","ok"],"nodes":[{"id":"flag","label":"Eligible reason","kind":"decision","customer":"Age from DOB, or disability/unclear prints.","system":"Sets eligible Verisys reason. Records why BV not met.","state":"IDENTITY_CAPTURED","from":"","to":""},{"id":"offer","label":"Offer Verisys","kind":"action","customer":"Not forced through repeated finger BV. Still live photo.","system":"Skip punitive retry loop.","state":"LIVE_PHOTO_CAPTURED","from":"","to":""},{"id":"verisys","label":"Verisys + MSISDN","kind":"action","customer":"Completes Verisys and mobile pairing (UJ-09).","system":"Same tier as UJ-09.","state":"IDENTITY_VERIFICATION_IN_PROGRESS","from":"","to":""},{"id":"ok","label":"Verified","kind":"success","customer":"Identity verified.","system":"IDENTITY_VERIFIED.","state":"IDENTITY_VERIFIED","from":"","to":""},{"id":"fail","label":"Verisys fail","kind":"fail","customer":"Video KYC or debit-block path.","system":"UJ-11 / UJ-12.","state":"VIDEO_KYC_PENDING or restricted","from":"","to":""}],"edges":[{"from":"flag","to":"offer","label":""},{"from":"offer","to":"verisys","label":""},{"from":"verisys","to":"ok","label":"success"},{"from":"verisys","to":"fail","label":"fail"}]},{"id":"UJ-11","family":"B","title":"Debit-blocked then later BV lift","persona":"Bilal — opens restricted, finishes BV later","classTag":"A §F.1.v.c · explicit banner","why":"If BV and Verisys+MSISDN are not done, the account may open with debit block. Messaging is explicit. Later BV lifts it.","trigger":"Tiers a/b not completed. Policy opens with debit block.","success":"Later BV success clears debit_block and bv_pending. ACTIVE full limits. Banner gone.","alternate":"Still cannot BV → video KYC (UJ-12) or remain restricted.","related":["UJ-09","UJ-12","UJ-28"],"walk":["open","banner","cta","bv","lift"],"nodes":[{"id":"open","label":"Restricted open","kind":"action","customer":"Told Account opened — debit blocked until biometric complete.","system":"RESTRICTED_ACTIVE + debit_block + bv_pending. Credits may be allowed per policy.","state":"RESTRICTED_ACTIVE","from":"","to":""},{"id":"banner","label":"Home banner","kind":"wait","customer":"Persistent banner. Not a silent limited account.","system":"restrictionFlags on status API.","state":"RESTRICTED_ACTIVE","from":"","to":""},{"id":"cta","label":"Complete biometric","kind":"action","customer":"Taps CTA to finish BV.","system":"Starts BV session.","state":"bv_pending","from":"","to":""},{"id":"bv","label":"NADRA BV","kind":"decision","customer":"Completes fingerprint/face.","system":"NADRA adapter.","state":"verification","from":"","to":""},{"id":"lift","label":"Lift block","kind":"success","customer":"Banner gone. Full limits.","system":"Clear debit_block and bv_pending.","state":"ACTIVE","from":"","to":""},{"id":"alt","label":"BV still fails","kind":"fail","customer":"Verisys/MSISDN or video KYC offered.","system":"Stay restricted until policy success.","state":"RESTRICTED_ACTIVE","from":"","to":""}],"edges":[{"from":"open","to":"banner","label":""},{"from":"banner","to":"cta","label":""},{"from":"cta","to":"bv","label":""},{"from":"bv","to":"lift","label":"success"},{"from":"bv","to":"alt","label":"fail"},{"from":"alt","to":"banner","label":"retry later"}]},{"id":"UJ-12","family":"B","title":"Video KYC as BV fallback","persona":"Bilal — a/b fail; no branch","classTag":"A §F.1.v.f / §G","why":"Digital bank without branches: recorded video KYC + Verisys when BV and MSISDN tiers fail. Recording is retained.","trigger":"No physical branch. BV and Verisys+MSISDN not completed.","success":"IDENTITY_VERIFIED. Account ACTIVE or still restricted per flags.","alternate":"No-show or poor recording → reschedule. Reject if policy fails.","related":["UJ-09","UJ-11","UJ-21"],"walk":["need","book","join","record","ok"],"nodes":[{"id":"need","label":"Video KYC required","kind":"action","customer":"Told additional video verification is required.","system":"VIDEO_KYC_PENDING. Record why BV not met.","state":"VIDEO_KYC_PENDING","from":"","to":""},{"id":"book","label":"Book session","kind":"action","customer":"Picks a slot.","system":"Creates video session.","state":"VIDEO_KYC_PENDING","from":"","to":""},{"id":"join","label":"Join call","kind":"action","customer":"Joins. Follows agent script. Shows ID. Live presence.","system":"Agent script. Liveness as support only — not a BV substitute.","state":"VIDEO_KYC_PENDING","from":"","to":""},{"id":"record","label":"Recording + Verisys","kind":"wait","customer":"Waits for decision.","system":"Retains recording. Runs Verisys.","state":"VIDEO_KYC_PENDING","from":"","to":""},{"id":"ok","label":"Verified","kind":"success","customer":"Identity verified. Continues or account activates.","system":"IDENTITY_VERIFIED.","state":"IDENTITY_VERIFIED","from":"","to":""},{"id":"miss","label":"No-show / reject","kind":"fail","customer":"Reschedule or written decline.","system":"Re-request or REJECTED.","state":"VIDEO_KYC_PENDING or REJECTED","from":"","to":""}],"edges":[{"from":"need","to":"book","label":""},{"from":"book","to":"join","label":""},{"from":"join","to":"record","label":""},{"from":"record","to":"ok","label":"pass"},{"from":"record","to":"miss","label":"fail/no-show"},{"from":"miss","to":"book","label":"reschedule"}]},{"id":"UJ-13","family":"B","title":"Live photo / liveness fail","persona":"Ayesha — dark room / mask","classTag":"A live photo · B/C match/liveness","why":"Live photo is mandatory for digital onboarding. Liveness helps anti-impersonation. It does not replace NADRA BV.","trigger":"Face not in frame, mismatch to ID portrait, or liveness fail.","success":"Live photo accepted → BV step.","alternate":"Max retries → video KYC (UJ-12) or reject per fraud policy.","related":["UJ-01","UJ-12"],"walk":["capture","fail","retry","ok"],"nodes":[{"id":"capture","label":"Capture live photo","kind":"action","customer":"Centers face. Guidance: light, no mask.","system":"Realtime encrypted upload. Nothing stored on device.","state":"IDENTITY_CAPTURED","from":"","to":""},{"id":"fail","label":"Match / liveness fail","kind":"fail","customer":"Told what went wrong (light, mask, mismatch).","system":"Face match vs ID. Optional liveness. Not a BV substitute.","state":"IDENTITY_CAPTURED","from":"","to":""},{"id":"retry","label":"Retry N times","kind":"action","customer":"Retries with guidance.","system":"Attempt cap.","state":"IDENTITY_CAPTURED","from":"","to":""},{"id":"ok","label":"Photo accepted","kind":"success","customer":"Continues to NADRA BV.","system":"LIVE_PHOTO_CAPTURED.","state":"LIVE_PHOTO_CAPTURED","from":"","to":""},{"id":"max","label":"Max retries","kind":"fail","customer":"Schedule video or support.","system":"No skip to BV without photo.","state":"IDENTITY_CAPTURED","from":"","to":""}],"edges":[{"from":"capture","to":"fail","label":""},{"from":"fail","to":"retry","label":""},{"from":"retry","to":"ok","label":"pass"},{"from":"retry","to":"max","label":"N fails"}]},{"id":"UJ-14","family":"B","title":"NADRA timeout / outage","persona":"Any — vendor down","classTag":"A fail-controlled on BV","why":"NADRA 503 never becomes silent APPROVE. Application holds IN_PROGRESS. Customer can retry or resume later.","trigger":"NADRA/vendor timeout or 503.","success":"Vendor recovers → continue UJ-01 or UJ-09.","alternate":"Resume later (UJ-06). After max retries → alternate tier or case.","related":["UJ-01","UJ-09","UJ-06"],"walk":["call","hold","retry","recover"],"nodes":[{"id":"call","label":"NADRA call fails","kind":"fail","customer":"Sees Verification taking longer + Tracking ID. No fake Approved.","system":"503/timeout. Stay IN_PROGRESS.","state":"IDENTITY_VERIFICATION_IN_PROGRESS","from":"","to":""},{"id":"hold","label":"Hold — no STP","kind":"wait","customer":"Retry CTA. Can leave and come back.","system":"Backoff retries. Never APPROVE on outage.","state":"IDENTITY_VERIFICATION_IN_PROGRESS","from":"","to":""},{"id":"retry","label":"Customer retry","kind":"action","customer":"Taps retry.","system":"Idempotent restart.","state":"IN_PROGRESS","from":"","to":""},{"id":"recover","label":"Vendor up","kind":"success","customer":"BV or Verisys continues.","system":"Resume UJ-01 or UJ-09.","state":"IDENTITY_VERIFIED or still in progress","from":"","to":""},{"id":"max","label":"Max retries","kind":"fail","customer":"Alternate verify or wait for case.","system":"Verisys/video/case. Still no silent approve.","state":"alternate or case","from":"","to":""}],"edges":[{"from":"call","to":"hold","label":""},{"from":"hold","to":"retry","label":""},{"from":"retry","to":"recover","label":"up"},{"from":"retry","to":"max","label":"still down"}]},{"id":"UJ-15","family":"B","title":"Web channel BV","persona":"Ayesha — starts on web","classTag":"A website/portal allowed","why":"Same state machine as mobile. BV via webcam/widget or Continue in app for the biometric SDK.","trigger":"Starts on web/portal instead of mobile app.","success":"Same outcomes as mobile (UJ-01 or identity exceptions).","alternate":"Webcam cannot complete BV → push-to-app or UJ-09/UJ-12.","related":["UJ-01","UJ-09","UJ-12"],"walk":["web","same","bvchoice","done"],"nodes":[{"id":"web","label":"Start on web","kind":"action","customer":"Opens portal. Same steps as app.","system":"channel = WEB. Geo/IP captured.","state":"INITIATED","from":"","to":""},{"id":"same","label":"Same spine","kind":"action","customer":"OTP, consents, identity, live photo.","system":"Same APIs and states.","state":"through LIVE_PHOTO","from":"","to":""},{"id":"bvchoice","label":"How to do BV","kind":"decision","customer":"Webcam/vendor widget or Continue in app.","system":"Same application ID.","state":"IDENTITY_VERIFICATION_IN_PROGRESS","from":"","to":""},{"id":"webcam","label":"Webcam BV","kind":"action","customer":"Completes facial BV in browser if NADRA product allows.","system":"Vendor widget. No device template store.","state":"IN_PROGRESS","from":"","to":""},{"id":"push","label":"Push to app","kind":"action","customer":"Opens app to finish fingerprint/face SDK.","system":"Binds same applicationId.","state":"IN_PROGRESS","from":"","to":""},{"id":"done","label":"Verified","kind":"success","customer":"Continues on web or app.","system":"IDENTITY_VERIFIED.","state":"IDENTITY_VERIFIED","from":"","to":""}],"edges":[{"from":"web","to":"same","label":""},{"from":"same","to":"bvchoice","label":""},{"from":"bvchoice","to":"webcam","label":"webcam"},{"from":"bvchoice","to":"push","label":"app"},{"from":"webcam","to":"done","label":""},{"from":"push","to":"done","label":""}]},{"id":"UJ-16","family":"C","title":"NICOP","persona":"Farah — overseas Pakistani, in PK","classTag":"A eligible digital ID","why":"NICOP is an allowed digital onboarding ID. If she is abroad and BV is unavailable, use UJ-17.","trigger":"Selects NICOP (in Pakistan; if abroad see UJ-17).","success":"Account per product after same CDD spine as UJ-01.","alternate":"BV unavailable abroad → UJ-17.","related":["UJ-01","UJ-17"],"walk":["select","fields","photo","bv","rest"],"nodes":[{"id":"select","label":"Select NICOP","kind":"action","customer":"Chooses NICOP instead of CNIC.","system":"Allow-list ID type.","state":"CONSENT_CAPTURED","from":"","to":""},{"id":"fields","label":"NICOP fields","kind":"action","customer":"Number, issue, expiry, Table-A names/DOB.","system":"Format validation. FATCA/CRS often NRP-capable.","state":"IDENTITY_CAPTURED","from":"","to":""},{"id":"photo","label":"Live photo","kind":"action","customer":"Live photo vs NICOP portrait.","system":"Same live-photo rules.","state":"LIVE_PHOTO_CAPTURED","from":"","to":""},{"id":"bv","label":"BV if available","kind":"decision","customer":"Completes NADRA BV in PK.","system":"If BV unavailable abroad → UJ-17.","state":"IDENTITY_VERIFIED or Verisys","from":"","to":""},{"id":"rest","label":"Profile → ACTIVE","kind":"success","customer":"Same profile, screening, STP if low risk.","system":"Same decisioning as UJ-01.","state":"ACTIVE","from":"","to":""}],"edges":[{"from":"select","to":"fields","label":""},{"from":"fields","to":"photo","label":""},{"from":"photo","to":"bv","label":""},{"from":"bv","to":"rest","label":""}]},{"id":"UJ-17","family":"C","title":"NRP / POC abroad","persona":"Farah — applying from abroad","classTag":"A Verisys until BV available","why":"NRP/POC outside Pakistan may use Verisys until NADRA BV is available. Live photo still required. Do not fake BV success.","trigger":"Residency NRP and/or POC holder applying outside Pakistan; BV service not available.","success":"IDENTITY_VERIFIED at Verisys assurance. Relationship established honestly.","alternate":"When BV becomes available → upgrade/remediation (UJ-28 / UJ-32).","related":["UJ-16","UJ-18","UJ-28"],"walk":["abroad","explain","photo","verisys","ok"],"nodes":[{"id":"abroad","label":"Geo shows abroad","kind":"action","customer":"Applies from outside Pakistan.","system":"Records geo/IP. Residency NRP/POC.","state":"IDENTITY_CAPTURED","from":"","to":""},{"id":"explain","label":"BV later","kind":"action","customer":"Told BV will follow when the service is available.","system":"Does not mark BV success.","state":"IDENTITY_CAPTURED","from":"","to":""},{"id":"photo","label":"Live photo still","kind":"action","customer":"Digital live photo vs ID portrait.","system":"Live photo is still **A**.","state":"LIVE_PHOTO_CAPTURED","from":"","to":""},{"id":"verisys","label":"Verisys path","kind":"action","customer":"Completes Verisys (and MSISDN if applicable).","system":"Framework exception for NRP/POC abroad.","state":"IDENTITY_VERIFICATION_IN_PROGRESS","from":"","to":""},{"id":"ok","label":"Verified (Verisys)","kind":"success","customer":"Can complete profile. Possible restriction flags per policy.","system":"Assurance = Verisys, not BV.","state":"IDENTITY_VERIFIED","from":"","to":""}],"edges":[{"from":"abroad","to":"explain","label":""},{"from":"explain","to":"photo","label":""},{"from":"photo","to":"verisys","label":""},{"from":"verisys","to":"ok","label":""}]},{"id":"UJ-18","family":"C","title":"POC / POR / ARC","persona":"Kamran — eligible non-CNIC ID","classTag":"A eligible digital IDs","why":"Digital onboarding allows CNIC, NICOP, POC, POR, ARC only. Passport-only without ARC is blocked.","trigger":"Holds POC, POR, or ARC (not CNIC/NICOP).","success":"Verified identity. Product eligibility per bank policy.","alternate":"Ineligible ID → stop with a specific reason.","related":["UJ-01","UJ-16","UJ-17"],"walk":["type","allow","capture","bv","ok"],"nodes":[{"id":"type","label":"Select ID type","kind":"decision","customer":"Chooses POC, POR, or ARC.","system":"Allow-list before capture.","state":"CONSENT_CAPTURED","from":"","to":""},{"id":"allow","label":"Eligible?","kind":"decision","customer":"If type not allowed, sees why.","system":"Block ineligible types (e.g. passport-only).","state":"pre-identity","from":"","to":""},{"id":"block","label":"Ineligible — stop","kind":"fail","customer":"Specific reason. Support.","system":"No IDENTITY_CAPTURED.","state":"blocked","from":"","to":""},{"id":"capture","label":"Capture fields","kind":"action","customer":"Number, dates, nationality, residency.","system":"Table-A + nationality fields.","state":"IDENTITY_CAPTURED","from":"","to":""},{"id":"bv","label":"BV or alternate","kind":"action","customer":"Live photo + NADRA BV or eligible Verisys.","system":"Screen customer.","state":"IDENTITY_VERIFIED","from":"","to":""},{"id":"ok","label":"Continue CDD","kind":"success","customer":"Profile and decisioning as UJ-01.","system":"Same spine.","state":"PROFILE_COMPLETE onward","from":"","to":""}],"edges":[{"from":"type","to":"allow","label":""},{"from":"allow","to":"capture","label":"POC/POR/ARC"},{"from":"allow","to":"block","label":"ineligible"},{"from":"capture","to":"bv","label":""},{"from":"bv","to":"ok","label":""}]},{"id":"UJ-19","family":"C","title":"Annex-B self-declaration SoI","persona":"Nadia — student / informal profession","classTag":"A risk-based Annex-B","why":"Self-declaration is allowed only if low CRP, low expected turnover, and a profession where formal docs are uncommon. Not a blanket skip of salary slips.","trigger":"Student, housewife, farmer, labor, etc. and low risk and low turnover.","success":"PROFILE_COMPLETE. STP only if screening/risk still allow.","alternate":"High turnover or medium-high risk → documents (UJ-20).","related":["UJ-01","UJ-20"],"walk":["occ","policy","declare","complete"],"nodes":[{"id":"occ","label":"Occupation","kind":"action","customer":"Selects student / informal profession.","system":"Looks up Annex-B policy.","state":"toward PROFILE_COMPLETE","from":"","to":""},{"id":"policy","label":"Self-declare allowed?","kind":"decision","customer":"If not eligible, upload docs instead.","system":"Requires low risk + low turnover + informal profession.","state":"policy check","from":"","to":""},{"id":"declare","label":"Self-declaration","kind":"action","customer":"Declares SoI. If funds from another person: name, ID, relationship.","system":"Stores declaration. Does not hardcode salary slip.","state":"profile","from":"","to":""},{"id":"docs","label":"Upload docs","kind":"action","customer":"Salary/business evidence when policy requires.","system":"Document policy engine.","state":"document_pending","from":"","to":""},{"id":"complete","label":"Profile complete","kind":"success","customer":"Continues to screening.","system":"PROFILE_COMPLETE.","state":"PROFILE_COMPLETE","from":"","to":""}],"edges":[{"from":"occ","to":"policy","label":""},{"from":"policy","to":"declare","label":"eligible"},{"from":"policy","to":"docs","label":"not eligible"},{"from":"declare","to":"complete","label":""},{"from":"docs","to":"complete","label":""}]},{"id":"UJ-20","family":"D","title":"Medium risk additional docs","persona":"Sana — turnover vs income flag","classTag":"A TAT comms · A CDD completeness","why":"CRP MEDIUM or documentary gaps. Customer gets a checklist, not a silent stall. After upload, screening/risk re-run.","trigger":"CRP MEDIUM or missing docs after submit.","success":"Docs accepted → approve or EDD.","alternate":"No upload in window → reminders; expire/restrict per policy.","related":["UJ-19","UJ-21","UJ-26"],"walk":["submit","medium","checklist","upload","rerun"],"nodes":[{"id":"submit","label":"Submit profile","kind":"action","customer":"Reviews summary and submits.","system":"Starts TAT clock. Screening + risk.","state":"PROFILE_COMPLETE","from":"","to":""},{"id":"medium","label":"CRP MEDIUM","kind":"decision","customer":"Sees More information needed — not Approved.","system":"ADDITIONAL_INFORMATION_REQUIRED. TAT pause/comms.","state":"ADDITIONAL_INFORMATION_REQUIRED","from":"","to":""},{"id":"checklist","label":"Doc checklist","kind":"action","customer":"Sees exactly which docs are missing.","system":"Case/doc flags.","state":"ADDITIONAL_INFORMATION_REQUIRED","from":"","to":""},{"id":"upload","label":"Upload","kind":"action","customer":"Uploads SoI/SoF or other requested files.","system":"Malware scan. Store.","state":"info submitted","from":"","to":""},{"id":"rerun","label":"Re-screen / re-risk","kind":"wait","customer":"Waits again. Tracking ID visible.","system":"Re-enter screening and CRP.","state":"PROFILE_COMPLETE re-run","from":"","to":""},{"id":"out","label":"Approve or EDD","kind":"success","customer":"Approved, more EDD (UJ-21), or reject.","system":"Decision per new rating.","state":"APPROVED / EDD_REQUIRED / REJECTED","from":"","to":""}],"edges":[{"from":"submit","to":"medium","label":""},{"from":"medium","to":"checklist","label":""},{"from":"checklist","to":"upload","label":""},{"from":"upload","to":"rerun","label":""},{"from":"rerun","to":"out","label":""}]},{"id":"UJ-21","family":"D","title":"High risk EDD + video interview","persona":"Sana — high CRP","classTag":"A EDD · A recorded video NFTF","why":"High CRP needs extra SoW/SoF and a recorded video interview. Customer waits; maker-checker is ops-side.","trigger":"CRP HIGH and/or policy EDD (complex profile, SoW/SoF).","success":"Approved with enhanced monitoring, or reject with written reason.","alternate":"Missed interview → reschedule. Delay → UJ-26.","related":["UJ-12","UJ-22","UJ-26"],"walk":["high","docs","book","interview","decision"],"nodes":[{"id":"high","label":"Extra verification needed","kind":"action","customer":"Told additional verification is required. Not STP.","system":"EDD_REQUIRED / MANUAL_REVIEW case.","state":"EDD_REQUIRED","from":"","to":""},{"id":"docs","label":"Upload SoI / SoW","kind":"action","customer":"Uploads source of income/wealth evidence.","system":"Stores docs on the EDD case.","state":"EDD_REQUIRED","from":"","to":""},{"id":"book","label":"Book video interview","kind":"action","customer":"Schedules recorded video KYC interview.","system":"Video session. Retention rules.","state":"VIDEO_KYC_PENDING","from":"","to":""},{"id":"interview","label":"Recorded interview","kind":"action","customer":"Joins. Answers purpose, occupation, funds.","system":"Recording retained. Senior path if PEP.","state":"VIDEO_KYC_PENDING","from":"","to":""},{"id":"decision","label":"Decision","kind":"decision","customer":"Waits. Gets approve (monitoring) or written reject.","system":"Ops maker-checker is invisible. Customer sees outcome only.","state":"APPROVED or REJECTED","from":"","to":""},{"id":"ok","label":"Approved + monitoring","kind":"success","customer":"Account opens with enhanced monitoring.","system":"edd_in_progress/monitoring flag.","state":"ACTIVE","from":"","to":""},{"id":"rej","label":"Rejected in writing","kind":"fail","customer":"Specific reason + support.","system":"No CIF if never approved.","state":"REJECTED","from":"","to":""}],"edges":[{"from":"high","to":"docs","label":""},{"from":"docs","to":"book","label":""},{"from":"book","to":"interview","label":""},{"from":"interview","to":"decision","label":""},{"from":"decision","to":"ok","label":"approve"},{"from":"decision","to":"rej","label":"reject"}]},{"id":"UJ-22","family":"D","title":"PEP self-declare or screening match","persona":"Sana — family PEP","classTag":"A PEP · declaration B/D","why":"PEP answers plus independent screening. Customer only waits. Senior approval is ops-side.","trigger":"Yes to PEP/family/associate, or independent PEP screen hits.","success":"Approved with enhanced monitoring, or declined in writing.","alternate":"False-positive cleared → may approve without extra docs if policy allows.","related":["UJ-21","UJ-24"],"walk":["ask","yes","wait","edd","out"],"nodes":[{"id":"ask","label":"PEP questions","kind":"action","customer":"Answers PEP / family / close associate honestly.","system":"Stores declaration. Still runs independent PEP list.","state":"PROFILE_COMPLETE","from":"","to":""},{"id":"yes","label":"Yes or list hit","kind":"decision","customer":"Sees Extra checks in progress.","system":"SCREENING_HIT_REVIEW and/or EDD_REQUIRED.","state":"SCREENING_HIT_REVIEW","from":"","to":""},{"id":"wait","label":"Customer waits","kind":"wait","customer":"No maker-checker UI. Tracking ID + support.","system":"Ops adjudicates. Senior approval if PEP relationship.","state":"EDD_REQUIRED","from":"","to":""},{"id":"edd","label":"SoW / video if needed","kind":"action","customer":"May be asked SoW/SoF and video (UJ-21).","system":"EDD steps.","state":"EDD_REQUIRED","from":"","to":""},{"id":"fp","label":"False positive","kind":"success","customer":"May see Approved without extra docs.","system":"Adjudicated clear.","state":"RISK onward","from":"","to":""},{"id":"out","label":"Approve or decline","kind":"success","customer":"Monitoring if approved; written reason if not.","system":"PEP enhanced monitoring.","state":"ACTIVE or REJECTED","from":"","to":""}],"edges":[{"from":"ask","to":"yes","label":""},{"from":"yes","to":"wait","label":""},{"from":"wait","to":"edd","label":""},{"from":"wait","to":"fp","label":"false positive"},{"from":"edd","to":"out","label":""}]},{"id":"UJ-23","family":"D","title":"FATCA US person / CRS evidence","persona":"Omar — US tax person","classTag":"A Table-A FATCA/CRS","why":"US person or extra tax residency needs tax evidence. Refusal to declare blocks profile complete.","trigger":"US person, additional tax residency, or other nationality declared.","success":"Tax profile stored. Onboarding continues (may still EDD).","alternate":"Refusal to declare → cannot complete profile.","related":["UJ-01","UJ-21"],"walk":["tax","us","evidence","store"],"nodes":[{"id":"tax","label":"Tax residency UI","kind":"action","customer":"Declares resident/NRP, other tax residencies, US person.","system":"Table-A FATCA/CRS capture.","state":"toward PROFILE_COMPLETE","from":"","to":""},{"id":"us","label":"US / extra residency?","kind":"decision","customer":"If yes, extra evidence requested.","system":"May flag EDD.","state":"tax profile","from":"","to":""},{"id":"evidence","label":"Upload evidence","kind":"action","customer":"Uploads tax evidence / W-form analogue per bank ops.","system":"Stores tax docs.","state":"tax complete","from":"","to":""},{"id":"refuse","label":"Refuse to declare","kind":"fail","customer":"Cannot finish profile.","system":"Block PROFILE_COMPLETE.","state":"incomplete","from":"","to":""},{"id":"store","label":"Continue onboarding","kind":"success","customer":"Goes to review/submit.","system":"Tax stored. Possible EDD_REQUIRED.","state":"PROFILE_COMPLETE","from":"","to":""}],"edges":[{"from":"tax","to":"us","label":""},{"from":"us","to":"evidence","label":"US/CRS extra"},{"from":"us","to":"store","label":"resident only"},{"from":"us","to":"refuse","label":"refuse"},{"from":"evidence","to":"store","label":""}]},{"id":"UJ-24","family":"D","title":"Sanctions / fraud true match reject","persona":"System decline — written reason","classTag":"A TFS · A written decline","why":"Confirmed UNSC/ATA hit or fraud lock is fail-closed. No CIF. No STP retry. Customer gets a specific written reason.","trigger":"Confirmed sanctions/proscribed hit after adjudication, or fraud lock.","success":"Customer understands outcome. Support channel available.","alternate":"Potential hit first → wait Under review until adjudication.","related":["UJ-22","UJ-27"],"walk":["screen","potential","confirmed","reject"],"nodes":[{"id":"screen","label":"Sanctions screen","kind":"action","customer":"Does not see lists. Sees Under review.","system":"UNSC + ATA + watchlist. Fail closed on provider down (no STP).","state":"SCREENING_IN_PROGRESS","from":"","to":""},{"id":"potential","label":"Potential hit","kind":"wait","customer":"Status Under review. Tracking ID.","system":"SCREENING_HIT_REVIEW. Ops adjudicates.","state":"SCREENING_HIT_REVIEW","from":"","to":""},{"id":"confirmed","label":"True match / fraud","kind":"fail","customer":"Application rejected.","system":"No CIF. Audit. No STP retry for sanctions true match.","state":"REJECTED","from":"","to":""},{"id":"reject","label":"Written reason","kind":"fail","customer":"Specific legal-approved wording + support.","system":"Decline notice **A**.","state":"REJECTED","from":"","to":""},{"id":"clear","label":"False positive","kind":"success","customer":"Continues to risk.","system":"Adjudicated clear.","state":"RISK_ASSESSMENT_IN_PROGRESS","from":"","to":""}],"edges":[{"from":"screen","to":"potential","label":""},{"from":"potential","to":"confirmed","label":"true match"},{"from":"potential","to":"clear","label":"false positive"},{"from":"confirmed","to":"reject","label":""}]},{"id":"UJ-25","family":"D","title":"Duplicate CNIC / existing CIF","persona":"Yasmin — already has active account","classTag":"A/B no duplicate · C fraud","why":"Active CNIC uniqueness key blocks a second CIF. Message must be clear: You already have an account — not a vague reject.","trigger":"CNIC hash matches an active customer uniqueness key.","success":"Login to existing CIF, or support-led merge (customer sees support).","alternate":"Closed/old CIF → reopen vs new app per product policy.","related":["UJ-01","UJ-27"],"walk":["id","dedupe","message","login"],"nodes":[{"id":"id","label":"Enter CNIC","kind":"action","customer":"Enters identity.","system":"Hash check vs identity_uniqueness_keys.","state":"IDENTITY_CAPTURED","from":"","to":""},{"id":"dedupe","label":"Active CIF match","kind":"decision","customer":"Stopped from opening a second account.","system":"Block/case. Duplicate queue for ops.","state":"blocked or REJECTED","from":"","to":""},{"id":"message","label":"Clear copy","kind":"action","customer":"You already have an account (or recovery/login). Not Rejected by policy only.","system":"Redirect intent.","state":"pre-verify / REJECTED","from":"","to":""},{"id":"login","label":"Login existing","kind":"success","customer":"Goes to login/recovery.","system":"No new CIF.","state":"existing ACTIVE","from":"","to":""}],"edges":[{"from":"id","to":"dedupe","label":""},{"from":"dedupe","to":"message","label":""},{"from":"message","to":"login","label":""}]},{"id":"UJ-26","family":"D","title":"TAT delay beyond 2 WD","persona":"Any in review","classTag":"A TAT 2 WD · A 24/7 support","why":"If a decision is not issued within 2 working days of a complete application, the customer is notified. No silent stall.","trigger":"Individual decision not issued within 2 working days of complete docs.","success":"Customer can track (UJ-27) until a decision exists.","alternate":"Entity TAT 5 WD is Phase 2 (UJ-38).","related":["UJ-20","UJ-21","UJ-27"],"walk":["complete","clock","breach","notify"],"nodes":[{"id":"complete","label":"Application complete","kind":"action","customer":"Submitted all required docs.","system":"TAT clock running (2 WD individuals).","state":"MANUAL_REVIEW / EDD_REQUIRED","from":"","to":""},{"id":"clock","label":"Waiting","kind":"wait","customer":"Status Under review + Tracking ID.","system":"SLA dashboard.","state":"unchanged","from":"","to":""},{"id":"breach","label":"Day 3 no decision","kind":"fail","customer":"Still waiting.","system":"SLA breach queue (ops).","state":"unchanged","from":"","to":""},{"id":"notify","label":"Notify customer","kind":"action","customer":"Push/SMS/email: still in review, Tracking ID, support.","system":"Customer comms. State unchanged.","state":"same as before","from":"","to":""}],"edges":[{"from":"complete","to":"clock","label":""},{"from":"clock","to":"breach","label":""},{"from":"breach","to":"notify","label":""}]},{"id":"UJ-27","family":"D","title":"Status by Tracking ID","persona":"Any — SMS/web/app","classTag":"A tracking ID + status","why":"Tracking ID is on-screen from Step 0. SMS after OTP. Email if collected. Status shows next step without excess PII.","trigger":"Any in-flight or decided application.","success":"Customer knows the next action (upload, wait, login, support).","alternate":"Unknown ID → generic error (no enumeration).","related":["UJ-01","UJ-04","UJ-26"],"walk":["have","lookup","status"],"nodes":[{"id":"have","label":"Where the ID is","kind":"action","customer":"On-screen from Step 0. SMS after OTP success. Email if captured.","system":"Never SMS at Step 0 — no destination yet.","state":"any","from":"","to":""},{"id":"lookup","label":"Enter Tracking ID","kind":"action","customer":"App/web status field.","system":"GET tracking. Rate-limited. Minimal fields.","state":"current","from":"","to":""},{"id":"status","label":"Next step shown","kind":"success","customer":"Progress, restrictions, next action. No extra PII.","system":"Non-sensitive status.","state":"current","from":"","to":""},{"id":"unknown","label":"Unknown ID","kind":"fail","customer":"Generic error.","system":"No enumeration of valid IDs.","state":"n/a","from":"","to":""}],"edges":[{"from":"have","to":"lookup","label":""},{"from":"lookup","to":"status","label":"found"},{"from":"lookup","to":"unknown","label":"not found"}]},{"id":"UJ-28","family":"E","title":"Limit / KYC upgrade","persona":"Ayesha — wants higher limits","classTag":"A ongoing CDD · D thresholds","why":"Higher limits need fresh docs and often re-BV. Insufficient evidence keeps current limits.","trigger":"Requests higher limits / product upgrade from home.","success":"New limit banner. Debit block lifted if that was the gate.","alternate":"Insufficient evidence → remain on current limits.","related":["UJ-11","UJ-19","UJ-29"],"walk":["ask","docs","rebv","decision","limits"],"nodes":[{"id":"ask","label":"Request upgrade","kind":"action","customer":"Taps upgrade / higher limits on home.","system":"May spawn refresh-like application.","state":"ACTIVE or RESTRICTED_ACTIVE","from":"","to":""},{"id":"docs","label":"Upload SoI/SoF","kind":"action","customer":"Provides income/funds evidence.","system":"Re-screen.","state":"refresh/remediation","from":"","to":""},{"id":"rebv","label":"Re-BV if needed","kind":"action","customer":"Repeats BV if assurance is insufficient.","system":"Raises assurance level.","state":"verification","from":"","to":""},{"id":"decision","label":"Decision","kind":"decision","customer":"Waits.","system":"Updates limits or keeps current.","state":"ACTIVE","from":"","to":""},{"id":"limits","label":"New limits","kind":"success","customer":"Sees new limit banner. Block lifted if applicable.","system":"Account limits updated.","state":"ACTIVE","from":"","to":""},{"id":"keep","label":"Keep current limits","kind":"fail","customer":"Told what is still missing.","system":"No silent upgrade.","state":"ACTIVE (unchanged limits)","from":"","to":""}],"edges":[{"from":"ask","to":"docs","label":""},{"from":"docs","to":"rebv","label":""},{"from":"rebv","to":"decision","label":""},{"from":"decision","to":"limits","label":"pass"},{"from":"decision","to":"keep","label":"fail"}]},{"id":"UJ-29","family":"E","title":"Periodic KYC refresh","persona":"Ayesha — due by risk interval","classTag":"A ongoing CDD · B interval policy","why":"Scheduler marks REFRESH_DUE by risk rating. Customer updates profile. Material change can trigger EDD.","trigger":"kyc_refresh_schedules due date.","success":"Next due date set. Account uninterrupted if completed on time.","alternate":"Ignore → UJ-30 overdue restriction.","related":["UJ-30","UJ-21","UJ-32"],"walk":["due","notify","update","screen","done"],"nodes":[{"id":"due","label":"REFRESH_DUE","kind":"wait","customer":"Not yet restricted if inside grace.","system":"Scheduler by risk interval.","state":"ACTIVE → REFRESH_DUE","from":"","to":""},{"id":"notify","label":"Reminder","kind":"action","customer":"Push/SMS Update your KYC. Deep link.","system":"Notification.","state":"REFRESH_DUE","from":"","to":""},{"id":"update","label":"Review profile / ID","kind":"action","customer":"Confirms or updates fields. Uploads if asked.","system":"Refresh application.","state":"REFRESH_DUE","from":"","to":""},{"id":"screen","label":"Re-screen + CRP","kind":"wait","customer":"Under review.","system":"Fresh sanctions/PEP + risk. Material change → EDD (UJ-21).","state":"screening/risk","from":"","to":""},{"id":"done","label":"Complete","kind":"success","customer":"Limits unchanged. Next due set.","system":"Schedule updated.","state":"ACTIVE","from":"","to":""},{"id":"edd","label":"Material change","kind":"action","customer":"Extra docs/video if risk jumped.","system":"EDD path.","state":"EDD_REQUIRED","from":"","to":""}],"edges":[{"from":"due","to":"notify","label":""},{"from":"notify","to":"update","label":""},{"from":"update","to":"screen","label":""},{"from":"screen","to":"done","label":"no material change"},{"from":"screen","to":"edd","label":"material/high"},{"from":"edd","to":"done","label":""}]},{"id":"UJ-30","family":"E","title":"Refresh overdue restriction","persona":"Ayesha — ignored reminders","classTag":"A ongoing CDD enforcement","why":"Overdue refresh is not silent. Customer sees restriction/freeze and a CTA to complete UJ-29.","trigger":"Refresh not completed beyond policy grace.","success":"Completing UJ-29 lifts restriction.","alternate":"Continued non-response → dormancy/closure per Legal.","related":["UJ-29","UJ-33"],"walk":["overdue","restrict","cta","lift"],"nodes":[{"id":"overdue","label":"Grace exceeded","kind":"fail","customer":"Had reminders and did not complete refresh.","system":"Policy overdue.","state":"REFRESH_DUE","from":"","to":""},{"id":"restrict","label":"Explicit restriction","kind":"fail","customer":"Sees debit restrict/freeze copy — not a silent limit.","system":"Restriction flags. Notify.","state":"REFRESH_DUE / REMEDIATION","from":"","to":""},{"id":"cta","label":"Complete refresh","kind":"action","customer":"Taps CTA into UJ-29.","system":"Same refresh APIs.","state":"REMEDIATION","from":"","to":""},{"id":"lift","label":"Restriction lifted","kind":"success","customer":"Operable again after successful refresh.","system":"Clear flags. Next due set.","state":"ACTIVE","from":"","to":""}],"edges":[{"from":"overdue","to":"restrict","label":""},{"from":"restrict","to":"cta","label":""},{"from":"cta","to":"lift","label":""}]},{"id":"UJ-31","family":"E","title":"CNIC renewal after token opening","persona":"Hamza — 3-month timer","classTag":"A renewed ID within 3 months","why":"Token-path accounts (UJ-03) must capture renewed CNIC within 3 months or go to remediation/restrict.","trigger":"Opened under UJ-03. Approaching 3 months.","success":"Identity expiry updated.","alternate":"No renewed ID → restrict per policy.","related":["UJ-03","UJ-30"],"walk":["timer","remind","capture","updated"],"nodes":[{"id":"timer","label":"3-month clock","kind":"wait","customer":"Account already open (possibly restricted).","system":"Reminder schedule from UJ-03.","state":"ACTIVE / RESTRICTED_ACTIVE","from":"","to":""},{"id":"remind","label":"Reminders","kind":"action","customer":"Push/SMS: upload renewed CNIC.","system":"Notifications.","state":"same","from":"","to":""},{"id":"capture","label":"Capture renewed CNIC","kind":"action","customer":"Photo/OCR confirm. May re-BV.","system":"Update identity expiry.","state":"REMEDIATION if late","from":"","to":""},{"id":"updated","label":"ID updated","kind":"success","customer":"Timer cleared.","system":"Identity current.","state":"operable","from":"","to":""},{"id":"late","label":"No renewed ID","kind":"fail","customer":"Restriction messaging.","system":"REMEDIATION + restrict.","state":"REMEDIATION","from":"","to":""}],"edges":[{"from":"timer","to":"remind","label":""},{"from":"remind","to":"capture","label":""},{"from":"capture","to":"updated","label":"on time"},{"from":"remind","to":"late","label":"ignored"}]},{"id":"UJ-32","family":"E","title":"Event-driven refresh","persona":"Ayesha — ID expiry / product change","classTag":"A/B ongoing monitoring","why":"Not the calendar interval. Triggered by CNIC expiry, adverse hit, fraud event, or product upgrade. Copy explains why.","trigger":"CNIC expiry, adverse screening, channel fraud, or product upgrade.","success":"Profile current. Risk updated.","alternate":"Overdue → UJ-30.","related":["UJ-29","UJ-30","UJ-28"],"walk":["event","why","update","done"],"nodes":[{"id":"event","label":"Event fires","kind":"action","customer":"Did not wait for annual/interval refresh.","system":"Opens refresh from event.","state":"REFRESH_DUE / REMEDIATION","from":"","to":""},{"id":"why","label":"Copy explains why","kind":"action","customer":"ID expired / security / product — not a generic update.","system":"Reason code on notification.","state":"REFRESH_DUE","from":"","to":""},{"id":"update","label":"Same UX as UJ-29","kind":"action","customer":"Updates profile/ID. Uploads if asked.","system":"Re-screen. Possibly EDD.","state":"refresh","from":"","to":""},{"id":"done","label":"Complete","kind":"success","customer":"Back to normal use.","system":"Risk updated.","state":"ACTIVE","from":"","to":""}],"edges":[{"from":"event","to":"why","label":""},{"from":"why","to":"update","label":""},{"from":"update","to":"done","label":""}]},{"id":"UJ-33","family":"E","title":"Dormancy reactivation","persona":"Ayesha — no login/txn ~1 year","classTag":"A AML reactivation ID/verify","why":"Dormant/inoperative (no customer txn or digital login for ~1 year — confirm current AML text) requires re-identification before use.","trigger":"Tries login or transfer on a dormant account.","success":"Login and payments work again.","alternate":"Cannot re-verify → remain dormant + support.","related":["UJ-09","UJ-34"],"walk":["try","message","reid","bv","ok"],"nodes":[{"id":"try","label":"Login or transfer","kind":"action","customer":"Tries to use the account.","system":"Dormant flag.","state":"dormant","from":"","to":""},{"id":"message","label":"Dormant message","kind":"wait","customer":"Sees account is dormant and must re-verify.","system":"Block or warn per policy.","state":"dormant","from":"","to":""},{"id":"reid","label":"Re-identify","kind":"action","customer":"Confirms CNIC and mobile.","system":"Reactivation CDD. Screening.","state":"re-verify","from":"","to":""},{"id":"bv","label":"BV or alternate","kind":"action","customer":"Completes BV or eligible Verisys/video.","system":"Same identity ladder.","state":"verification","from":"","to":""},{"id":"ok","label":"Operable again","kind":"success","customer":"Payments work.","system":"Clear dormant flag.","state":"ACTIVE","from":"","to":""},{"id":"fail","label":"Cannot re-verify","kind":"fail","customer":"Remains dormant. Support.","system":"No silent reactivation.","state":"dormant","from":"","to":""}],"edges":[{"from":"try","to":"message","label":""},{"from":"message","to":"reid","label":""},{"from":"reid","to":"bv","label":""},{"from":"bv","to":"ok","label":"pass"},{"from":"bv","to":"fail","label":"fail"}]},{"id":"UJ-34","family":"E","title":"Suspected activity extra verification","persona":"Ayesha — TMS step-up","classTag":"A impersonation · B/C device binding","why":"TMS/fraud step-up (new device, atypical transfer). Extra OTP/BV/live photo. Restriction banner if applied. STR is ops-side, not shown.","trigger":"Device change or atypical transfer flagged.","success":"Restriction lifted after verification.","alternate":"Fail → remain restricted + support.","related":["UJ-33","UJ-11"],"walk":["flag","banner","stepup","lift"],"nodes":[{"id":"flag","label":"TMS / fraud flag","kind":"action","customer":"May see extra verification required when transacting.","system":"Step-up. Possible temporary debit_block.","state":"ACTIVE + flags","from":"","to":""},{"id":"banner","label":"Temporary restriction","kind":"wait","customer":"Explicit banner if restricted — not silent.","system":"Orthogonal flags; KYC state may stay ACTIVE.","state":"ACTIVE + debit_block?","from":"","to":""},{"id":"stepup","label":"OTP / BV / photo","kind":"action","customer":"Completes extra OTP, BV, or live photo.","system":"Step-up auth. Case if needed.","state":"challenge","from":"","to":""},{"id":"lift","label":"Lift restriction","kind":"success","customer":"Continues the transfer/login.","system":"Clear temp flags.","state":"ACTIVE","from":"","to":""},{"id":"fail","label":"Fail challenge","kind":"fail","customer":"Stays restricted. Support. No STR text shown to customer.","system":"Possible STR ops-side.","state":"restricted","from":"","to":""}],"edges":[{"from":"flag","to":"banner","label":""},{"from":"banner","to":"stepup","label":""},{"from":"stepup","to":"lift","label":"pass"},{"from":"stepup","to":"fail","label":"fail"}]},{"id":"UJ-35","family":"F","title":"Joint account","persona":"Phase 2 — both parties CDD","classTag":"A CDD each · A associated-person screening","why":"v1 is primary-party. Phase 2: both parties complete identity/BV/consents/screening. Account is not active until all pass.","trigger":"Customer chooses joint savings/current.","success":"Joint CIF/account. Both operate per mandate.","alternate":"One party fails → cannot activate as joint.","related":["UJ-01","UJ-37"],"walk":["choose","primary","invite","second","both"],"nodes":[{"id":"choose","label":"Choose joint","kind":"action","customer":"Primary selects joint product.","system":"kyc_application_parties.","state":"INITIATED (joint)","from":"","to":""},{"id":"primary","label":"Primary CDD","kind":"action","customer":"Primary completes UJ-01 spine.","system":"Party role primary. Screen this person.","state":"primary IDENTITY_VERIFIED","from":"","to":""},{"id":"invite","label":"Invite second party","kind":"action","customer":"Invitee gets a link.","system":"Second party application link.","state":"waiting party","from":"","to":""},{"id":"second","label":"Invitee CDD","kind":"action","customer":"Repeats identity, BV, consents.","system":"Screen each associated person (**A**).","state":"second verified","from":"","to":""},{"id":"both","label":"Both pass","kind":"success","customer":"Joint account usable per mandate.","system":"APPROVED only when all required parties verified + screening clear.","state":"ACTIVE joint","from":"","to":""},{"id":"onefail","label":"One party fails","kind":"fail","customer":"Cannot activate as joint.","system":"No partial joint go-live.","state":"not ACTIVE","from":"","to":""}],"edges":[{"from":"choose","to":"primary","label":""},{"from":"primary","to":"invite","label":""},{"from":"invite","to":"second","label":""},{"from":"second","to":"both","label":"all pass"},{"from":"second","to":"onefail","label":"one fails"}]},{"id":"UJ-36","family":"F","title":"Minor + guardian","persona":"Phase 2 — Form-B / Juvenile","classTag":"A identify/verify · D product","why":"Guardian completes adult KYC. Minor identity via Form-B/Juvenile. Remote-only minor opening may be out of scope — digital ID list is CNIC/NICOP/POC/POR/ARC. Confirm with Compliance.","trigger":"Product allows minor. Guardian opens on behalf.","success":"Minor account with guardian operating mandate.","alternate":"May require assisted channel if Form-B is not eligible digitally.","related":["UJ-01","UJ-37"],"walk":["guard","minor","channel","open"],"nodes":[{"id":"guard","label":"Guardian KYC","kind":"action","customer":"Adult ID + BV + consents.","system":"Party role guardian. Screen guardian.","state":"guardian verified","from":"","to":""},{"id":"minor","label":"Minor identity","kind":"action","customer":"Form-B / Juvenile details. Purpose/SoF of funds.","system":"No anonymous accounts.","state":"minor captured","from":"","to":""},{"id":"channel","label":"Digital allowed?","kind":"decision","customer":"If remote not allowed, assisted/Phase 2 channel.","system":"Consolidated digital IDs may not include Form-B. Confirm Legal.","state":"policy","from":"","to":""},{"id":"block","label":"Assisted channel","kind":"wait","customer":"Cannot finish remote-only.","system":"Out of v1 digital allow-list unless Legal confirms.","state":"blocked remote","from":"","to":""},{"id":"open","label":"Minor account","kind":"success","customer":"Guardian operates the mandate.","system":"TAT typically 2 WD unless Legal says otherwise.","state":"ACTIVE (mandate)","from":"","to":""}],"edges":[{"from":"guard","to":"minor","label":""},{"from":"minor","to":"channel","label":""},{"from":"channel","to":"open","label":"allowed"},{"from":"channel","to":"block","label":"not digital"}]},{"id":"UJ-37","family":"F","title":"Mandate / authorized operator","persona":"Phase 2 — operator KYC","classTag":"A CDD on persons acting","why":"Operator completes own identity/BV/consents. Sanctions on operator can block the mandate without closing the primary.","trigger":"Existing customer adds an authorized operator, or opens with mandate.","success":"Operator transacts within mandate limits.","alternate":"Operator sanctions/PEP → block mandate, not necessarily close primary.","related":["UJ-35","UJ-01"],"walk":["add","confirm","opkyc","active"],"nodes":[{"id":"add","label":"Add operator","kind":"action","customer":"Primary starts add authorized operator.","system":"Party role mandate.","state":"ACTIVE primary","from":"","to":""},{"id":"confirm","label":"Primary confirms","kind":"action","customer":"Confirms mandate scope.","system":"Limits on operator actions.","state":"pending operator","from":"","to":""},{"id":"opkyc","label":"Operator KYC","kind":"action","customer":"Operator does identity, BV, consents.","system":"Screen operator (**A** associated person).","state":"operator verification","from":"","to":""},{"id":"active","label":"Mandate active","kind":"success","customer":"Operator can transact within limits.","system":"Mandate recorded.","state":"mandate live","from":"","to":""},{"id":"blockop","label":"Block operator","kind":"fail","customer":"Operator cannot be added. Primary account can remain.","system":"Sanctions/PEP on operator.","state":"primary ACTIVE, mandate no","from":"","to":""}],"edges":[{"from":"add","to":"confirm","label":""},{"from":"confirm","to":"opkyc","label":""},{"from":"opkyc","to":"active","label":"clear"},{"from":"opkyc","to":"blockop","label":"hit"}]},{"id":"UJ-38","family":"F","title":"Entity / SME + UBO","persona":"Phase 2 — P6 entity","classTag":"A UBO · A TAT 5 WD","why":"Business account is Phase 2. Identify UBOs (20% generally / 10% EDD — confirm Legal). TAT max 5 working days. Not the v1 individual state machine.","trigger":"Business account (Phase 2 / P6).","success":"Entity CIF + account. UBOs stored.","alternate":"Incomplete UBO → more info. Sanctions on BO → reject.","related":["UJ-21","UJ-26"],"walk":["intake","ubo","screen","wait","open"],"nodes":[{"id":"intake","label":"Entity intake","kind":"action","customer":"Incorporation docs, addresses, consents.","system":"entities table. Not v1 individual SM.","state":"entity application","from":"","to":""},{"id":"ubo","label":"Identify UBOs","kind":"action","customer":"Each UBO/controller identified and verified.","system":"beneficial_owners. 20% / 10% EDD — confirm Legal.","state":"UBO capture","from":"","to":""},{"id":"screen","label":"Screen entity + BOs","kind":"action","customer":"Waits.","system":"Sanctions each associated person. EDD if complex ownership.","state":"screening","from":"","to":""},{"id":"wait","label":"TAT ≤ 5 WD","kind":"wait","customer":"Tracking ID. Longer TAT than individuals (2 WD).","system":"Entity TAT **A** 5 working days.","state":"review","from":"","to":""},{"id":"open","label":"Entity account","kind":"success","customer":"Business CIF + account.","system":"UBOs stored.","state":"ACTIVE entity","from":"","to":""},{"id":"info","label":"More UBO info","kind":"action","customer":"Checklist of missing ownership evidence.","system":"Additional information.","state":"info required","from":"","to":""},{"id":"rej","label":"BO sanctions reject","kind":"fail","customer":"Written reason.","system":"Fail closed.","state":"REJECTED","from":"","to":""}],"edges":[{"from":"intake","to":"ubo","label":""},{"from":"ubo","to":"screen","label":""},{"from":"screen","to":"wait","label":""},{"from":"wait","to":"open","label":"approve"},{"from":"wait","to":"info","label":"gaps"},{"from":"wait","to":"rej","label":"sanctions"},{"from":"info","to":"screen","label":""}]}];
+
+const familyNames = {
+  A: "Onboarding",
+  B: "Identity exceptions",
+  C: "ID and residency",
+  D: "Risk and decision",
+  E: "Lifecycle",
+  F: "Phase 2 summary"
+};
+const FILTERS = [
+  ["ALL", "All"],
+  ["A", "A Onboarding"],
+  ["B", "B Identity"],
+  ["C", "C ID types"],
+  ["D", "D Risk"],
+  ["E", "E Lifecycle"],
+  ["F", "F Phase 2"]
+];
+
+let family = "ALL";
+let current = "UJ-01";
+let selected = null;
+let query = "";
+let scale = 1;
+let tx = 0;
+let ty = 0;
+
+const $ = (id) => document.getElementById(id);
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"']/g, (m) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[m]));
+}
+
+function listJourneys() {
+  const q = query.trim().toLowerCase();
+  return DATA.filter((j) => {
+    if (family !== "ALL" && j.family !== family) return false;
+    if (!q) return true;
+    return (j.id + " " + j.title + " " + j.persona + " " + j.why).toLowerCase().includes(q);
+  });
+}
+
+function renderFilters() {
+  $("filters").innerHTML = FILTERS.map(([id, label]) =>
+    `<button type="button" class="${family === id ? "active" : ""}" data-family="${id}">${label}</button>`
+  ).join("");
+}
+
+function renderJourneys() {
+  const list = listJourneys();
+  $("journeys").innerHTML = list.map((j) =>
+    `<button type="button" class="journey ${j.id === current ? "active" : ""}" data-id="${j.id}"><span>${j.id}</span>${esc(j.title)}</button>`
+  ).join("");
+}
+
+function selectJourney(id) {
+  current = id;
+  selected = null;
+  renderJourneys();
+  renderJourney();
+}
+
+function renderJourney() {
+  const j = DATA.find((x) => x.id === current) || DATA[0];
+  $("title").textContent = j.id + " — " + j.title;
+  $("meta").textContent = j.persona + "  ·  Family " + j.family + " " + familyNames[j.family] + "  ·  " + j.classTag;
+  $("why").textContent = j.why;
+  $("facts").innerHTML = ["Trigger", "Success", "Alternate"].map((k, i) => {
+    const val = [j.trigger, j.success, j.alternate][i];
+    return `<div class="fact"><b>${k}</b><span>${esc(val)}</span></div>`;
+  }).join("");
+  draw(j);
+}
+
+function layout(j) {
+  const W = 228, H = 112, XG = 48, YG = 72, pad = 28;
+  const indeg = {};
+  j.nodes.forEach((n) => { indeg[n.id] = 0; });
+  j.edges.forEach((e) => { if (indeg[e.to] != null) indeg[e.to] += 1; });
+  const levels = {};
+  const roots = j.nodes.filter((n) => indeg[n.id] === 0).map((n) => n.id);
+  roots.forEach((id) => { levels[id] = 0; });
+  const q = [...roots];
+  let guard = 0;
+  while (q.length && guard++ < 2000) {
+    const a = q.shift();
+    const lv = levels[a] || 0;
+    j.edges.filter((e) => e.from === a).forEach((e) => {
+      if (levels[e.to] == null || levels[e.to] < lv + 1) levels[e.to] = lv + 1;
+      if (!q.includes(e.to)) q.push(e.to);
+    });
+  }
+  j.nodes.forEach((n, i) => {
+    if (levels[n.id] == null) {
+      const w = j.walk.indexOf(n.id);
+      levels[n.id] = w >= 0 ? w : i;
+    }
+  });
+  const cols = {};
+  j.nodes.forEach((n) => {
+    (cols[levels[n.id]] ??= []).push(n);
+  });
+  const pos = {};
+  const maxCols = Math.max(...Object.values(cols).map((c) => c.length));
+  Object.keys(cols).forEach((c) => {
+    const row = cols[c];
+    const rowWidth = row.length * W + (row.length - 1) * XG;
+    const full = maxCols * W + (maxCols - 1) * XG;
+    const offset = Math.max(0, (full - rowWidth) / 2);
+    row.forEach((n, i) => {
+      pos[n.id] = { x: pad + offset + i * (W + XG), y: pad + Number(c) * (H + YG) };
+    });
+  });
+  const maxX = Math.max(...Object.values(pos).map((p) => p.x)) + W + pad;
+  const maxY = Math.max(...Object.values(pos).map((p) => p.y)) + H + pad;
+  return { pos, W, H, maxX, maxY };
+}
+
+function draw(j) {
+  const svg = $("svg");
+  const g = $("viewport");
+  g.innerHTML = "";
+  const { pos, W, H, maxX, maxY } = layout(j);
+  svg.setAttribute("viewBox", `0 0 ${maxX} ${maxY}`);
+  svg.style.width = maxX + "px";
+  svg.style.height = maxY + "px";
+  const walkSet = new Set(j.walk);
+  j.edges.forEach((e) => {
+    const a = pos[e.from], b = pos[e.to];
+    if (!a || !b) return;
+    const x1 = a.x + W / 2, y1 = a.y + H, x2 = b.x + W / 2, y2 = b.y;
+    const cy = (y1 + y2) / 2;
+    g.insertAdjacentHTML("beforeend",
+      `<path class="edge" d="M${x1},${y1} C${x1},${cy} ${x2},${cy} ${x2},${y2}"/>` +
+      (e.label ? `<text class="edge-label" x="${(x1 + x2) / 2}" y="${cy - 6}" text-anchor="middle">${esc(e.label)}</text>` : "")
+    );
+  });
+  const focus = selected || j.walk[0] || j.nodes[0].id;
+  j.nodes.forEach((n) => {
+    const p = pos[n.id];
+    const sel = n.id === focus;
+    g.insertAdjacentHTML("beforeend", `
+      <g class="node ${esc(n.kind)} ${sel ? "selected" : ""}" transform="translate(${p.x},${p.y})" data-node="${esc(n.id)}">
+        <rect class="box" rx="8" width="${W}" height="${H}"></rect>
+        <rect class="bar" x="0" y="0" width="4" height="${H}" rx="2"></rect>
+        <foreignObject x="0" y="0" width="${W}" height="${H}">
+          <div xmlns="http://www.w3.org/1999/xhtml" class="node-html">
+            <div class="n-label">${esc(n.label)}</div>
+            <div class="n-kind">${esc(n.kind)}${walkSet.has(n.id) ? " · main path" : ""}</div>
+            <div class="n-state">${esc(n.state)}</div>
+          </div>
+        </foreignObject>
+      </g>`);
+  });
+  updateCount(j, focus);
+  showDetails(j, focus);
+  resetView();
+}
+
+function showDetails(j, id) {
+  const n = j.nodes.find((x) => x.id === id) || j.nodes[0];
+  const next = j.edges.filter((e) => e.from === n.id).map((e) => {
+    const dest = j.nodes.find((x) => x.id === e.to);
+    return (e.label ? esc(e.label) + " → " : "") + esc(dest ? dest.label : e.to);
+  });
+  const related = (j.related || []).map((rid) => {
+    const rj = DATA.find((x) => x.id === rid);
+    return `<button type="button" data-id="${rid}">${rid} ${esc(rj ? rj.title : "")}</button>`;
+  }).join("");
+  $("details").innerHTML = `
+    <div>
+      <p class="step-title">${esc(n.label)}<span class="badge">${esc(n.kind)}</span></p>
+      <h3>State</h3>
+      <p>${esc(n.state)}</p>
+    </div>
+    <div><h3>Customer sees / does</h3><p>${esc(n.customer)}</p></div>
+    <div><h3>System does</h3><p>${esc(n.system)}</p></div>
+    <div>
+      <h3>Next</h3>
+      <p>${next.length ? next.join("<br>") : "End of this branch"}</p>
+      ${related ? `<h3 style="margin-top:12px">Related journeys</h3><div class="related">${related}</div>` : ""}
+    </div>`;
+}
+
+function updateCount(j, id) {
+  const i = j.walk.indexOf(id);
+  $("count").textContent = i >= 0
+    ? `Main path ${i + 1} of ${j.walk.length}`
+    : `Branch step · main path has ${j.walk.length} steps`;
+}
+
+function walk(delta) {
+  const j = DATA.find((x) => x.id === current) || DATA[0];
+  const id = selected || j.walk[0] || j.nodes[0].id;
+  let i = j.walk.indexOf(id);
+  if (i < 0) i = 0;
+  i = Math.max(0, Math.min(j.walk.length - 1, i + delta));
+  selected = j.walk[i];
+  draw(j);
+}
+
+function applyTransform() {
+  $("viewport").setAttribute("transform", `translate(${tx} ${ty}) scale(${scale})`);
+}
+function resetView() {
+  scale = 1;
+  tx = 20;
+  ty = 16;
+  applyTransform();
+}
+function zoom(f) {
+  scale = Math.max(0.6, Math.min(1.8, scale * f));
+  applyTransform();
+}
+function fit() {
+  const svg = $("svg");
+  const vb = svg.viewBox.baseVal;
+  const canvas = $("canvas");
+  const w = canvas.clientWidth;
+  if (vb.width && w && vb.width > w - 40) {
+    scale = (w - 40) / vb.width;
+  } else {
+    scale = 1;
+  }
+  tx = 20;
+  ty = 16;
+  applyTransform();
+}
+
+function bind() {
+  $("filters").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-family]");
+    if (!b) return;
+    family = b.getAttribute("data-family");
+    const list = listJourneys();
+    if (!list.some((j) => j.id === current) && list[0]) current = list[0].id;
+    selected = null;
+    renderFilters();
+    renderJourneys();
+    renderJourney();
+  });
+  $("journeys").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-id]");
+    if (b) selectJourney(b.getAttribute("data-id"));
+  });
+  $("q").addEventListener("input", (e) => {
+    query = e.target.value;
+    renderJourneys();
+  });
+  $("svg").addEventListener("click", (e) => {
+    const g = e.target.closest("[data-node]");
+    if (!g) return;
+    selected = g.getAttribute("data-node");
+    const j = DATA.find((x) => x.id === current);
+    draw(j);
+  });
+  $("details").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-id]");
+    if (b) selectJourney(b.getAttribute("data-id"));
+  });
+  $("prevBtn").addEventListener("click", () => walk(-1));
+  $("nextBtn").addEventListener("click", () => walk(1));
+  $("zoomIn").addEventListener("click", () => zoom(1.12));
+  $("zoomOut").addEventListener("click", () => zoom(0.9));
+  $("fitBtn").addEventListener("click", () => fit());
+  window.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT") return;
+    if (e.key === "ArrowRight") walk(1);
+    if (e.key === "ArrowLeft") walk(-1);
+  });
+}
+
+renderFilters();
+renderJourneys();
+bind();
+renderJourney();
+</script>
+</body>
+</html>

@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Start Here · EMI KYC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/docs.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="#start">
+      <span>EMI KYC / CDD<small>Pakistan · September 2026</small></span>
+    </a>
+    <button class="search-btn" type="button" id="open-search">
+      Search
+      <kbd>Ctrl K</kbd>
+    </button>
+    <nav class="nav">
+      <a href="#start" data-page="start">Start Here</a>
+      <a href="#stand" data-page="stand">Where We Stand</a>
+      <a href="#open" data-page="open">What We Do Not Know</a>
+      <a href="#spine" data-page="spine">One Wallet, Followed</a>
+
+      <button type="button" class="group open">The domain <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></button>
+      <div class="children">
+        <a href="#wallet" data-page="wallet">Wallet vs deposit</a>
+        <a href="#ladder" data-page="ladder">Limit ladder</a>
+        <a href="#identity" data-page="identity">Identity documents</a>
+        <a href="#verisys" data-page="verisys">Verisys vs BV</a>
+        <a href="#biometric" data-page="biometric">Finger vs face</a>
+      </div>
+
+      <button type="button" class="group open">Decisions <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></button>
+      <div class="children">
+        <a href="#decisions" data-page="decisions">Decision log</a>
+        <a href="#tracking" data-page="tracking">Tracking ID</a>
+        <a href="#device" data-page="device">Device binding</a>
+        <a href="#compare" data-page="compare">This pack vs J1–J12</a>
+      </div>
+
+      <button type="button" class="group open">Journeys <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></button>
+      <div class="children">
+        <a href="#onboarding" data-page="onboarding">Onboarding ladder</a>
+        <a href="#extras" data-page="extras">Agents, minors, merchants</a>
+      </div>
+
+      <a href="#classify" data-page="classify">A / B / C / D tags</a>
+      <a href="#sources" data-page="sources">SBP sources</a>
+    </nav>
+  </aside>
+
+  <div class="main-wrap">
+    <div class="topbar">
+      <button class="ghost menu-btn" type="button" data-menu>Menu</button>
+      <button class="ghost" type="button" data-search>Search</button>
+      <button class="ghost" type="button" data-copy>Copy Markdown</button>
+      <a class="ghost" href="../index.html">Pack home</a>
+      <a class="ghost" href="../05c-emi-interactive-journeys.html">Explorer</a>
+    </div>
+
+    <main class="article">
+      <p class="kicker">Guided set</p>
+      <h1 id="page-title">Start Here</h1>
+      <p class="lede" id="page-brief"></p>
+      <hr>
+
+      <article data-page="start" data-title="Start Here" data-brief="Fourteen notes, in one order. Pick the path that matches why you are here — or read straight down." data-group="entry">
+        <p class="lead">Fourteen notes, in <em>one order</em>. Every one ends by naming the next and saying why it follows — so the order is a path you can walk, not a claim in a sidebar.</p>
+
+        <div class="callout">
+          <p class="label">If you only have ten minutes</p>
+          <p>Read <a href="#spine">One Wallet, Followed</a>. It follows Ayesha from Open wallet to a Verisys 50k instrument, then BV to 400k. Everything else in this set is the detail behind one of those steps.</p>
+        </div>
+
+        <div class="callout">
+          <p class="label">How this set is organised</p>
+          <ul>
+            <li><strong>It is a derivation, not a library.</strong> The domain justifies the journeys, the journeys justify the decisions, the decisions cite SBP — not the other way round.</li>
+            <li><strong>It opens with what is still open.</strong> Legal and NADRA questions come before the machinery, because they are why some steps are tagged D instead of A.</li>
+            <li><strong>Every note opens with a short brief.</strong> If you are not building this, read the brief and stop.</li>
+            <li><strong>Every claim cites a circular or is marked as a pack choice.</strong> Unanswered things live in <a href="#open">What We Do Not Know</a>.</li>
+            <li><strong>The decision log is the spine.</strong> No later page re-argues a decision; it links to one.</li>
+          </ul>
+        </div>
+
+        <h2>Four ways in</h2>
+        <p>Nobody reads fourteen notes plus the full pack. Pick the reason you are here and follow that path instead.</p>
+        <div class="paths">
+          <div class="path">
+            <p class="when">20 minutes</p>
+            <h3>You run the business</h3>
+            <p>What we are building, what is still owed to Legal, then the wallet ladder.</p>
+            <div class="crumbs">
+              <a href="#stand">Where we stand</a>
+              <a href="#open">Open questions</a>
+              <a href="#ladder">Limit ladder</a>
+            </div>
+          </div>
+          <div class="path">
+            <p class="when">day one</p>
+            <h3>You are building it</h3>
+            <p>One customer end to end, then the SRS and use cases extracted from the clause catalog.</p>
+            <div class="crumbs">
+              <a href="#spine">One wallet</a>
+              <a href="../14-srs.html">SRS</a>
+              <a href="../15-use-cases.html">Use cases</a>
+            </div>
+          </div>
+          <div class="path">
+            <p class="when">as needed</p>
+            <h3>You need one capability</h3>
+            <p>Verisys is not BV. Finger is BV today. Face is BV only if NADRA says so.</p>
+            <div class="crumbs">
+              <a href="#verisys">Verisys vs BV</a>
+              <a href="#biometric">Finger vs face</a>
+              <a href="#identity">CNIC classes</a>
+            </div>
+          </div>
+          <div class="path">
+            <p class="when">half a day</p>
+            <h3>You are reviewing compliance</h3>
+            <p>A/B/C/D tags, the named circulars, then the journeys that exist because a paragraph exists.</p>
+            <div class="crumbs">
+              <a href="#classify">Tags</a>
+              <a href="#sources">Sources</a>
+              <a href="#onboarding">Onboarding</a>
+            </div>
+          </div>
+        </div>
+
+        <h2>Entry</h2>
+        <p>Where the work stands, what is still unsigned, and the ten-minute walk through one wallet.</p>
+        <table class="catalog">
+          <tr><td><a href="#stand">BRIEF Where We Stand</a></td><td class="why">Wallet, not a deposit. Three rungs. Tracking on screen. SMS after OTP.</td><td><span class="badge">current</span></td></tr>
+          <tr><td><a href="#open">OPEN What We Do Not Know</a></td><td class="why">Legal, NADRA, and PSP&amp;OD questions that still block a hard A.</td><td><span class="badge">current</span></td></tr>
+          <tr><td><a href="#spine">SPINE One Wallet, Followed</a></td><td class="why">Ayesha from tap to 50k, then BV, then optional 1M.</td><td><span class="badge">current</span></td></tr>
+        </table>
+
+        <h2>The domain</h2>
+        <p>What an EMI wallet is, before screens. Later notes assume you have this.</p>
+        <table class="catalog">
+          <tr><td><a href="#wallet">Wallet vs deposit</a></td><td class="why">E-money in a trust account. No interest. One instrument per CNIC.</td><td><span class="badge">current</span></td></tr>
+          <tr><td><a href="#ladder">Limit ladder</a></td><td class="why">Verisys 50k, BV 400k, enhanced 1M. Limits stay in EMI §14.</td><td><span class="badge">current</span></td></tr>
+          <tr><td><a href="#identity">Identity documents</a></td><td class="why">CNIC/SNIC, NICOP, POC, ARC, POR. Digital list is narrower than collection.</td><td><span class="badge">current</span></td></tr>
+          <tr><td><a href="#verisys">Verisys vs BV</a></td><td class="why">NADRA record vs NADRA body. Selfie is neither.</td><td><span class="badge">current</span></td></tr>
+          <tr><td><a href="#biometric">Finger vs face</a></td><td class="why">Finger is live BV. NADRA face is gated on footnote 6.</td><td><span class="badge">current</span></td></tr>
+        </table>
+
+        <h2>Decisions</h2>
+        <p>Pack choices that came out of the working session. If something contradicts the log, the log is right until Legal signs otherwise.</p>
+        <table class="catalog">
+          <tr><td><a href="#decisions">ADR Decision log</a></td><td class="why">The six decisions this set will not re-argue.</td><td><span class="badge">current</span></td></tr>
+          <tr><td><a href="#tracking">Tracking ID</a></td><td class="why">Generate at Step 0. SMS after OTP. Mint-after-OTP is not a clearance.</td><td><span class="badge">current</span></td></tr>
+          <tr><td><a href="#device">Device binding</a></td><td class="why">Not an E01/E02 gate. CNIC/SIM pairing is A at enhanced 1M.</td><td><span class="badge">current</span></td></tr>
+          <tr><td><a href="#compare">This pack vs J1–J12</a></td><td class="why">Bank PDF is BV-first + debit-block. This pack is Verisys-first EMI.</td><td><span class="badge">current</span></td></tr>
+        </table>
+
+        <h2>Journeys</h2>
+        <p>Customer-facing only. Ops and STR stay in pack file 10.</p>
+        <table class="catalog">
+          <tr><td><a href="#onboarding">Onboarding ladder</a></td><td class="why">UJ-E01, E02, E03 are one instrument with rising assurance.</td><td><span class="badge">current</span></td></tr>
+          <tr><td><a href="#extras">Agents, minors, merchants</a></td><td class="why">E12–E17 exist because the paragraphs exist. v1 may defer build.</td><td><span class="badge">current</span></td></tr>
+        </table>
+
+        <h2>The rest of the pack</h2>
+        <p>This guided set is the session so far. The numbered files under <a href="../index.html">pack home</a> are the full research pack — framework, explorer, API, ERD, plus the extracted <a href="../14-srs.html">SRS</a> and <a href="../15-use-cases.html">use cases</a>.</p>
+        <table class="catalog">
+          <tr><td><a href="../14-srs.html">14 Software requirements</a></td><td class="why">FR-E01–E40 and NFR-E01–E10, traced to Appendix A and journeys.</td><td><span class="badge">pack</span></td></tr>
+          <tr><td><a href="../15-use-cases.html">15 Use cases</a></td><td class="why">UC-E01–E20 plus system UC-S01–S04. Same IDs as UJ-E01–E20.</td><td><span class="badge">pack</span></td></tr>
+        </table>
+      </article>
+
+      <article hidden data-page="stand" data-title="Where We Stand" data-brief="Five minutes. What we are documenting, three corrections against a bank KYC PDF, and the answers still owed to Legal.">
+        <p class="lead">We are documenting KYC for an SBP-licensed <em>electronic money institution</em> — not a digital bank deposit account. Three things people keep importing from bank packs are wrong for this product.</p>
+        <div class="stats">
+          <div class="stat"><b>50k</b><span>Commercial monthly load after NADRA Verisys. EMI §14.II.</span></div>
+          <div class="stat"><b>400k</b><span>After NADRA biometric. Pilot BV cap is 200k.</span></div>
+          <div class="stat"><b>2 WD</b><span>Individual decision TAT from a complete file. CCOF §I.</span></div>
+          <div class="stat"><b>A–D</b><span>Every control is tagged. UX must not weaken an A.</span></div>
+        </div>
+
+        <h2>What we are building</h2>
+        <p>A customer-facing wallet onboarding path: open, track, 2FA, consents, live photo, sanctions, NADRA, then a limit that matches the verification that actually ran. The wallet is e-money in a trust account. It is not a CIF deposit.</p>
+
+        <h2>Three corrections we made</h2>
+        <ol>
+          <li><strong>Do not start at BV 400k.</strong> EMI §14 lets you issue on Verisys at 50k. CCOF footnote 1 leaves wallet limits in the EMI Regulations.</li>
+          <li><strong>Do not import bank debit-block as an EMI issuance rule.</strong> CCOF §F.1.c debit-block is a bank-style alternate. This pack does not use it as the EMI happy path.</li>
+          <li><strong>Do not treat BPRD 04 device bind as a KYC gate on E01/E02.</strong> EMI names CNIC/SIM pairing only at enhanced §14.III. 2FA is §12.II.</li>
+        </ol>
+
+        <h2>What this set is not</h2>
+        <p>Not legal advice. Not a NADRA integration spec — do not invent APIs. Not the Conventional Digital Retail Bank pack in the parent folder. Ops queues, STR, and EDD casework live in <code>10-aml-risk-edd-ops.md</code>, not in customer journeys.</p>
+
+        <h2>Where the documentation stands</h2>
+        <p>The numbered pack (00–15, explorer, PDF) already exists. Files 14 and 15 are the SRS and use cases extracted from the clause catalog. This guided site is the working session on top of it: why E01–E03 are one onboarding, why tracking is on screen before OTP, when device bind is A, what CNIC classes are, and what BV actually is.</p>
+      </article>
+
+      <article hidden data-page="open" data-title="What We Do Not Know" data-brief="Every unsigned question in one place — owner, what it blocks, what waiting costs.">
+        <p class="lead">If a later page tags something D, it is usually because one of these is still unsigned. Do not promote a D to A in the app to look complete.</p>
+        <table class="data">
+          <thead>
+            <tr><th>Question</th><th>Owner</th><th>Blocks</th><th>If we wait</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Is “account opening initiation” the first tap, or OTP success?</td>
+              <td>Legal / Compliance</td>
+              <td>May we mint Tracking ID only after OTP?</td>
+              <td>Pack keeps generate-at-Step-0, SMS-after-OTP.</td>
+            </tr>
+            <tr>
+              <td>Does BPRD Circular 04 of 2023 bind this EMI as A for device bind?</td>
+              <td>Legal</td>
+              <td>Bind on E01/E02 as a KYC gate</td>
+              <td>Bind stays C until they say A. §14.III pairing is already A at 1M.</td>
+            </tr>
+            <tr>
+              <td>Is NADRA facial BioVerisys operational for this EMI?</td>
+              <td>NADRA account + Compliance</td>
+              <td>Face as BV for 400k / cash-in / cash redemption</td>
+              <td>Finger (multi-finger) is the only NADRA BV. Selfie is not BV.</td>
+            </tr>
+            <tr>
+              <td>May we digitally open NICOP / POC / POR / ARC on this EMI app?</td>
+              <td>Legal vs CCOF §C.5 and EMI §12</td>
+              <td>ID picker beyond resident CNIC</td>
+              <td>Happy path is adult CNIC/SNIC. Other types need a signed list.</td>
+            </tr>
+            <tr>
+              <td>Does CCOF debit-block apply to EMI wallets the way the J1–J12 bank PDF used it?</td>
+              <td>Compliance</td>
+              <td>Whether E01 can open with a spend freeze</td>
+              <td>This pack issues Verisys 50k without a bank debit-block.</td>
+            </tr>
+            <tr>
+              <td>PSP&amp;OD approval for enhanced 1M — will we apply in v1?</td>
+              <td>Product + PSP&amp;OD</td>
+              <td>UJ-E03 build vs defer</td>
+              <td>Journey stays in the catalog because §14.III exists. Build can wait.</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="callout warn">
+          <p class="label">Do not guess these in code</p>
+          <p>Waiting costs a product flag. Guessing costs a finding. Put the unsigned item in the open register, not in the happy path as if it were A.</p>
+        </div>
+      </article>
+
+      <article hidden data-page="spine" data-title="One Wallet, Followed" data-brief="Ayesha from Open wallet to Verisys 50k, then BV to 400k. The whole onboarding happening once, in order.">
+        <p class="lead">Everything in this set is a zoom on one of these steps. If the step is not here, it is not customer onboarding.</p>
+        <ol>
+          <li><strong>Open wallet.</strong> Application created. State <code>INITIATED</code>. Not a bank CIF.</li>
+          <li><strong>Tracking ID on screen.</strong> She can copy it. No SMS yet — no verified destination. See <a href="#tracking">Tracking ID</a>.</li>
+          <li><strong>Mobile OTP / 2FA.</strong> EMI §12.II. Fail stays <code>INITIATED</code> (<a href="../05c-emi-interactive-journeys.html">UJ-E06</a>). Success → <code>CONTACT_VERIFIED</code>, then SMS the Tracking ID.</li>
+          <li><strong>Consents + live photo.</strong> Live photo is A for digital open. Liveness/AI match is B/C. Not BV.</li>
+          <li><strong>Sanctions / TFS.</strong> Pre-screen. True match: no services, written decline, STR ops — not a UX retry.</li>
+          <li><strong>NADRA Verisys.</strong> CNIC verification. Wallet issues at <strong>PKR 50,000</strong>/month, cash-out <strong>10,000</strong>/day. <code>WALLET_ACTIVE · VERISYS</code>. This is UJ-E01.</li>
+          <li><strong>Later: NADRA BV.</strong> Finger today; NADRA face only if operational. Same wallet, new limit <strong>400,000</strong> commercial. UJ-E02. Selfie does not do this.</li>
+          <li><strong>Optional: enhanced 1M.</strong> Commercial licence + PSP&amp;OD. Annexure-J, <strong>CNIC/SIM pairing</strong>, TMS, CRP. Not outsourced. UJ-E03. See <a href="#device">device binding</a>.</li>
+        </ol>
+        <div class="callout">
+          <p class="label">Cash is a different clock</p>
+          <p>Verisys can open the wallet. <strong>Cash-in</strong> at agents/ATMs/branches and <strong>cash redemption</strong> still need NADRA BV (EMI §15). ATM cash-out always needs 2FA. Agent cash-out: BV, or 2FA if BVS is a major challenge.</p>
+        </div>
+        <p>Click the same path in the <a href="../05c-emi-interactive-journeys.html">journey explorer</a>. Next: what this product is, legally.</p>
+      </article>
+
+      <article hidden data-page="wallet" data-title="Wallet vs deposit" data-brief="E-money, not a bank deposit. Trust account, no interest, one instrument per CNIC per EMI.">
+        <p class="lead">If you treat this like a digital retail bank current account, the limit table, uniqueness rule, and debit-block language will all be wrong.</p>
+        <table class="data">
+          <thead><tr><th></th><th>Digital retail bank</th><th>This EMI</th></tr></thead>
+          <tbody>
+            <tr><th>Legal nature</th><td>Bank (BCO / digital bank)</td><td>Non-bank e-money issuer (PS&amp;EFT Act)</td></tr>
+            <tr><th>Product</th><td>Deposit</td><td>Prepaid e-money instrument</td></tr>
+            <tr><th>Interest</th><td>May pay return</td><td>Must not pay interest for holding e-money</td></tr>
+            <tr><th>Funds</th><td>Bank’s books</td><td>Trust account at an A-rated bank</td></tr>
+            <tr><th>Limits</th><td>Product + AML + CCOF</td><td><strong>EMI Regulations §14</strong> (CCOF footnote 1)</td></tr>
+            <tr><th>Uniqueness</th><td>CIF uniqueness (AML/policy)</td><td><strong>One instrument per CNIC per EMI</strong> (§12.VII)</td></tr>
+          </tbody>
+        </table>
+        <p>Issuance CDD is EMI <strong>§12</strong>. The limit that follows is <strong>§14</strong>. Onboarding process overlay is the Consolidated Framework (BPRD C1/2025), including live photo, TAT, tracking ID, 30-day resume, and identity hierarchy — with wallet <em>caps</em> remaining in §14.</p>
+      </article>
+
+      <article hidden data-page="ladder" data-title="Limit ladder" data-brief="Verisys 50k, biometric 400k (pilot 200k), enhanced 1M with four extra controls. Payments and receipts are separate buckets.">
+        <p class="lead">The first three journeys are not three products. They are one instrument with rising verification.</p>
+        <table class="data">
+          <thead><tr><th>Verification</th><th>Pilot load / month</th><th>Commercial load / month</th><th>Cash-out</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>NADRA <strong>Verisys</strong> (CNIC verification)</td>
+              <td>PKR 50,000</td>
+              <td>PKR 50,000</td>
+              <td>PKR 10,000 / day</td>
+            </tr>
+            <tr>
+              <td>NADRA <strong>biometric</strong></td>
+              <td>PKR 200,000</td>
+              <td>PKR 400,000</td>
+              <td>From risk profile. ATM: 2FA. Agent: BV or 2FA if BVS is hard.</td>
+            </tr>
+            <tr>
+              <td><strong>Enhanced</strong> (commercial + PSP&amp;OD)</td>
+              <td>—</td>
+              <td>Up to PKR 1,000,000</td>
+              <td>SoF (Annexure-J), CNIC/SIM pairing, TMS, CRP — not outsourced</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>SBP: EMI Regulations §14.I–III (PSP&amp;OD C3/2023, revised 21 Jun 2023). CCOF §F.1 is identity for opening <em>or</em> category upgrade — that is why E01, E02, and E03 are one onboarding ladder.</p>
+        <div class="callout">
+          <p class="label">Minors are not this ladder</p>
+          <p>Basic minor: 50k Verisys, funded only from the guardian wallet. Enhanced minor freelancer: 400k BV. Adult §14.I–III enhanced limits do not apply to minors.</p>
+        </div>
+      </article>
+
+      <article hidden data-page="identity" data-title="Identity documents" data-brief="NADRA card types are not A/B/C/D tags. Digital opening is only CNIC, NICOP, POC, POR, ARC.">
+        <p class="lead">SBP does not publish “CNIC class A.” It publishes identity-document types. SNIC is the same legal ID as CNIC, with a chip.</p>
+        <table class="data">
+          <thead><tr><th>Type</th><th>Who</th><th>Digital open (CCOF §C.5)</th><th>EMI must be able to collect (§12.I.c)</th></tr></thead>
+          <tbody>
+            <tr><td>CNIC / SNIC</td><td>Resident Pakistani 18+</td><td>Yes</td><td>Yes</td></tr>
+            <tr><td>NICOP / SNICOP</td><td>Overseas Pakistani</td><td>Yes</td><td>Yes</td></tr>
+            <tr><td>POC</td><td>Foreign national of Pakistani origin</td><td>Yes</td><td>Yes</td></tr>
+            <tr><td>ARC</td><td>Alien Registration Card</td><td>Yes</td><td>Yes</td></tr>
+            <tr><td>POR</td><td>Afghan refugee</td><td>Yes</td><td>Yes</td></tr>
+            <tr><td>Passport</td><td>Foreign national</td><td>No, not on the digital list</td><td>Yes, as a CDD document</td></tr>
+            <tr><td>Form-B / Juvenile / CRC</td><td>Minor</td><td>Not on the adult digital list</td><td>Minor path UJ-E13–E14, via guardian</td></tr>
+          </tbody>
+        </table>
+        <p>Happy path in this pack is adult CNIC/SNIC. Other types need Legal to sign the picker. Uniqueness is one wallet per CNIC number per EMI — not a new class of card.</p>
+        <p>A / B / C / D in the margins of these notes are <a href="#classify">requirement tags</a>, not NADRA card classes.</p>
+      </article>
+
+      <article hidden data-page="verisys" data-title="Verisys vs BV" data-brief="Both are NADRA. Verisys checks the record. BV checks the living person. A selfie is neither.">
+        <p class="lead">In this pack, “NADRA verification” means <strong>Verisys</strong>. <strong>BV</strong> is a separate NADRA service. Mixing them is how a 50k wallet gets labelled 400k in the UI.</p>
+        <table class="data">
+          <thead><tr><th></th><th>NADRA Verisys</th><th>NADRA BV</th></tr></thead>
+          <tbody>
+            <tr><th>What is checked</th><td>CNIC data against NADRA’s record</td><td>Finger / thumb / iris / NADRA face against NADRA biometrics</td></tr>
+            <tr><th>What it proves</th><td>The card number is real</td><td>This person is that card</td></tr>
+            <tr><th>Body present?</th><td>No</td><td>Yes — authenticated means</td></tr>
+            <tr><th>EMI commercial load</th><td>PKR 50,000 / month</td><td>PKR 400,000 / month</td></tr>
+            <tr><th>CCOF §F.1</th><td>Alternate when BV cannot be done</td><td>Primary identity check</td></tr>
+            <tr><th>This pack</th><td>UJ-E01</td><td>UJ-E02</td></tr>
+          </tbody>
+        </table>
+        <p>Verisys alternate (CCOF) is for permanent disability / unclear prints, seniors &gt;60, and NRP/POC abroad until BV exists for them — not “customer skipped the scanner.”</p>
+        <p><strong>Not either:</strong> app selfie, liveness, face-match to the CNIC portrait, OTP, CNIC–SIM pairing. Live photo is still required on digital open. It does not raise the limit.</p>
+      </article>
+
+      <article hidden data-page="biometric" data-title="Finger vs face" data-brief="EMI regs say “biometric from NADRA.” CCOF lists finger, iris, and face. Face BV is parked until NADRA operationalises it.">
+        <p class="lead">The EMI Regulations do not split finger and face. They only require biometric verification from NADRA. The split is CCOF §F.1, and it applies to EMI customers.</p>
+        <table class="data">
+          <thead><tr><th>Modality</th><th>SBP text</th><th>For this EMI today</th></tr></thead>
+          <tbody>
+            <tr><td>Finger / thumb</td><td>§F.1.i</td><td><strong>Live.</strong> Usual BVS / BioVerisys path.</td></tr>
+            <tr><td>Multi-finger</td><td>Footnote 8 (digital / EMI)</td><td>Same NADRA BV. Prefer where the SDK allows.</td></tr>
+            <tr><td>Iris</td><td>§F.1.i</td><td>Allowed if NADRA offers it on that channel. Rare in apps.</td></tr>
+            <tr><td>Facial recognition</td><td>§F.1.i + footnote <strong>6</strong></td><td>BV <strong>only once NADRA’s facial feature is operational</strong> for this EMI.</td></tr>
+          </tbody>
+        </table>
+        <h2>Three different faces</h2>
+        <ol>
+          <li><strong>NADRA facial BV</strong> — NADRA returns the match after footnote 6 is live. This is BV (A).</li>
+          <li><strong>CCOF live photo</strong> — capture at digital open (A). In addition to BV/Verisys, not instead.</li>
+          <li><strong>App liveness / AI match to CNIC photo</strong> — §K.iii encouraged (B/C). Not a BV substitute.</li>
+        </ol>
+        <p>Public EMI paths (SadaPay, NayaPay) use in-app <strong>fingerprint</strong> BVS for the upgrade. That matches the pack: finger is BV; selfie is live photo.</p>
+        <p>Channel is D: in-app fingerprint, NADRA e-Sahulat, or partner ATM are equivalent if the call is NADRA BV. SBP does not require a particular SDK.</p>
+        <div class="callout warn">
+          <p class="label">Until NADRA writes that face is on</p>
+          <p>Treat multi-finger as the only face of BV for 400k, cash-in, and cash redemption. Unclear prints go to the Verisys alternate (UJ-E07), not to “use the selfie camera as BV.”</p>
+        </div>
+      </article>
+
+      <article hidden data-page="decisions" data-title="Decision log" data-brief="Six decisions from the working session. Later notes link here instead of re-arguing.">
+        <p class="lead">If a screen, API, or journey contradicts this list, the list is right until Compliance and Legal change it in writing.</p>
+        <table class="data">
+          <thead><tr><th>ID</th><th>Decision</th><th>Class</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td>D-01</td><td>Customer journeys only in 05a/05b/05c. Ops in file 10.</td><td>Pack rule</td><td>STR, EDD queues, and agent ops are not customer UX.</td></tr>
+            <tr><td>D-02</td><td>Do not invent NADRA APIs.</td><td>Pack rule</td><td>Contracts name Verisys / BioVerisys / pairing. Docs do not.</td></tr>
+            <tr><td>D-03</td><td>Classification A/B/C/D on every control.</td><td>Pack rule</td><td>Stops selfie being shipped as “SBP mandatory.”</td></tr>
+            <tr><td>D-04</td><td>Tracking ID on screen at Step 0. SMS only after OTP.</td><td>A tracking; D placement</td><td><a href="#tracking">Tracking ID</a></td></tr>
+            <tr><td>D-05</td><td>No device bind gate on E01/E02. Pairing is A at E03.</td><td>A at 1M; C earlier</td><td><a href="#device">Device binding</a></td></tr>
+            <tr><td>D-06</td><td>Verisys-first issuance. BV is an upgrade. No bank debit-block on E01.</td><td>A EMI §14</td><td><a href="#compare">vs J1–J12</a></td></tr>
+          </tbody>
+        </table>
+        <p>Not in this log: minting Tracking ID only after OTP. That is an option Legal may take. It is not signed. See the <a href="#open">open register</a>.</p>
+      </article>
+
+      <article hidden data-page="tracking" data-title="Tracking ID" data-brief="CCOF requires generate + notify + status lookup. This pack shows the ID at Step 0 and SMSes after 2FA.">
+        <p class="lead">Create the ID when the application starts. Do not SMS it until OTP succeeds. Those are different events.</p>
+        <h2>What is A</h2>
+        <p>CCOF §I.2–I.4: a tracking ID is generated, the customer is notified of account opening initiation, and they can check status on app/web (and branch systems if you have them). TAT is 2 working days from a <em>complete file</em>, not from when you mint the ID. Resume incomplete sessions for 30 days (§J.iii).</p>
+        <h2>What this pack does</h2>
+        <pre style="background:#fafafa;border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:13px;overflow:auto">Open wallet
+  → create application + Tracking ID     generate (on screen)
+  → mobile OTP / 2FA                     EMI §12.II
+  → SMS Tracking ID                      first out-of-band notify</pre>
+        <p>SMS before OTP would go to an unbound number (typo, someone else’s SIM, enumeration). CCOF §K: do not leave onboarding artefacts on an untrusted channel.</p>
+        <h2>Can we create it only after OTP?</h2>
+        <p><strong>No clearance.</strong> SBP does not say “before OTP” and does not say “after OTP.” If Legal defines initiation as <code>CONTACT_VERIFIED</code>, mint + notify at that instant can still meet §I for the success path — that is what the J1–J12 PDF does for SMS.</p>
+        <p>If Legal defines initiation as the first tap, minting after OTP is a §I.2 gap. You also lose a customer-facing ID on OTP fail (UJ-E06) unless a session token covers 30-day resume.</p>
+        <p>Until that interpretation is signed, this pack keeps <strong>generate at Step 0, SMS after OTP</strong>.</p>
+      </article>
+
+      <article hidden data-page="device" data-title="Device binding" data-brief="Not required to issue a Verisys or BV wallet. CNIC/SIM pairing is A only for enhanced 1M. BPRD 04 is C until Legal says otherwise.">
+        <p class="lead">For a normal EMI wallet you do not need device binding. SBP names a device/SIM control when you offer the enhanced 1M product.</p>
+        <table class="data">
+          <thead><tr><th>Moment</th><th>What SBP requires</th><th>Class</th></tr></thead>
+          <tbody>
+            <tr><td>UJ-E01 Verisys 50k</td><td>§12 fields, 2FA, live photo, Verisys</td><td>No bind</td></tr>
+            <tr><td>UJ-E02 BV 400k</td><td>NADRA biometric</td><td>No bind</td></tr>
+            <tr><td>UJ-E03 enhanced 1M</td><td>§14.III.ii <strong>CNIC/SIM pairing of the device on which the instrument is opened</strong>, plus SoF, TMS, CRP. Not outsourced.</td><td><strong>A</strong></td></tr>
+            <tr><td>Every login (BPRD 04)</td><td>Digital banking product security, CCOF §K “as applicable”</td><td><strong>C</strong> until Legal says EMIs are in scope as A</td></tr>
+          </tbody>
+        </table>
+        <h2>Do not confuse with</h2>
+        <ul>
+          <li>Signup <strong>2FA</strong> — EMI §12.II</li>
+          <li>ATM cash-out <strong>2FA</strong></li>
+          <li>Agent cash-out BV or 2FA</li>
+          <li>Device hash / IP at Step 0 — telemetry, not a bind gate</li>
+        </ul>
+        <p>If Security wants bind on every login from day one, that is a C product control. Put it in security, not in the KYC happy path, unless Legal upgrades BPRD 04 to A for this licence.</p>
+      </article>
+
+      <article hidden data-page="compare" data-title="This pack vs J1–J12" data-brief="The downloaded bank PDF is BV-first with CCOF debit-block. This pack is Verisys-first because EMI §14 says so.">
+        <p class="lead">The file <code>KYC-User-Journeys-J1-J12.pdf</code> is a digital-bank style pack. It is not wrong for a bank. It is the wrong issuance ladder for this EMI.</p>
+        <table class="data">
+          <thead><tr><th></th><th>J1–J12 PDF</th><th>This EMI pack</th></tr></thead>
+          <tbody>
+            <tr><th>First success</th><td>BV, then full-ish product</td><td>Verisys 50k (UJ-E01)</td></tr>
+            <tr><th>If BV fails</th><td>Verisys + debit-block until BV</td><td>Stay 50k or video KYC / retry (UJ-E07). No bank debit-block on the happy path</td></tr>
+            <tr><th>Device bind</th><td>In the KYC path (BPRD 04)</td><td>Not on E01/E02. Pairing at E03</td></tr>
+            <tr><th>Tracking SMS</th><td>After 2FA</td><td>After 2FA, and ID already on screen from Step 0</td></tr>
+            <tr><th>Limit source</th><td>Bank product tables</td><td>EMI §14</td></tr>
+          </tbody>
+        </table>
+        <p>CCOF §F.1 still prefers BV first. For <em>wallet limits</em>, footnote 1 points back at EMI §14, which explicitly prices Verisys and BV differently. This pack follows that price list.</p>
+      </article>
+
+      <article hidden data-page="onboarding" data-title="Onboarding ladder" data-brief="UJ-E01, E02 and E03 are one relationship: issue, then raise the category. SBP says so in §12, §14 and CCOF F.1.">
+        <p class="lead">Onboarding is not “the first screen.” It is issuance plus every category upgrade that changes what the instrument may hold.</p>
+        <table class="data">
+          <thead><tr><th>Journey</th><th>What happens</th><th>SBP hook</th></tr></thead>
+          <tbody>
+            <tr><td>UJ-E01</td><td>Issue Verisys wallet 50k</td><td>EMI §12 CDD + §14.II Verisys cap</td></tr>
+            <tr><td>UJ-E02</td><td>Same wallet, NADRA BV, 400k</td><td>§14.II biometric cap; CCOF §F.1 upgrade</td></tr>
+            <tr><td>UJ-E03</td><td>Enhanced 1M after PSP&amp;OD</td><td>§14.III four controls, in-house</td></tr>
+          </tbody>
+        </table>
+        <p>Fails and stalls sit beside that ladder: duplicate CNIC (E05), OTP fail (E06), BV fail (E07), NADRA outage (E08), tracking/TAT (E09), sanctions (E11). They are still onboarding. They are not a second product.</p>
+        <p>Full click-through: <a href="../05c-emi-interactive-journeys.html">interactive explorer</a> · <a href="../05c-emi-customer-journeys.pdf">PDF of all 20</a> · <a href="../05b-emi-user-journeys-catalog.html">catalog</a>.</p>
+      </article>
+
+      <article hidden data-page="extras" data-title="Agents, minors, merchants" data-brief="E12–E17 are in the catalog because those paragraphs are in the EMI Regulations. v1 may defer the build. The journey stays.">
+        <p class="lead">A catalog is not a sprint board. If SBP wrote the paragraph, the pack shows the customer path — then Product can mark it out of v1.</p>
+        <table class="data">
+          <thead><tr><th>Journey</th><th>Why it exists</th><th>v1</th></tr></thead>
+          <tbody>
+            <tr><td>UJ-E12 Agents</td><td>§15 cash-in/out at agents; agent cannot open a wallet</td><td>Often later; still document the prohibition</td></tr>
+            <tr><td>UJ-E13–E14 Minors</td><td>§14.IV–V guardian-linked wallets</td><td>Defer if Legal blocks remote Form-B</td></tr>
+            <tr><td>UJ-E15–E16 Remittance / salary exclusions</td><td>§14.VI apply to SBP; BV holders; not minors</td><td>Need the SBP application</td></tr>
+            <tr><td>UJ-E17 Merchant</td><td>EMI may acquire / merchant use under the regs</td><td>Product flag</td></tr>
+          </tbody>
+        </table>
+        <p>Customer-facing means the holder or guardian still has a path. Agent <em>operations</em> (training, settlement) stay in file 10, not in these journeys.</p>
+      </article>
+
+      <article hidden data-page="classify" data-title="A / B / C / D tags" data-brief="Mandatory, expected, industry, or our choice. Never ship a C as if it were A.">
+        <p class="lead">The tags are how this pack stays honest when a vendor demo looks like a circular.</p>
+        <table class="data">
+          <thead><tr><th>Tag</th><th>Meaning</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td><strong>A</strong></td><td>Mandatory SBP / law. Do not weaken in UX.</td><td>2FA at issue; Verisys/BV limits; one CNIC; TAT; tracking ID exists; live photo; SIM pairing at 1M</td></tr>
+            <tr><td><strong>B</strong></td><td>Regulatory expectation / effective AML-KYC control</td><td>Face-match to ID portrait as support for live photo</td></tr>
+            <tr><td><strong>C</strong></td><td>Industry practice, not a named widget in EMI regs</td><td>Device bind on E01; AI liveness; in-app fingerprint vs e-Sahulat</td></tr>
+            <tr><td><strong>D</strong></td><td>This EMI’s choice</td><td>Show Tracking ID at Step 0 vs mint after OTP; copy; channel</td></tr>
+          </tbody>
+        </table>
+        <p>Placement of the Tracking ID is D. Existence of the Tracking ID is A. That distinction is the whole point of the tag system.</p>
+      </article>
+
+      <article hidden data-page="sources" data-title="SBP sources" data-brief="Primary circulars this set cites. Confirm the PDF on sbp.org.pk before go-live. This is not legal advice.">
+        <p class="lead">If a sentence in this set cannot point at one of these, it is a pack choice or an open question — not a mandate.</p>
+        <ul>
+          <li><a href="https://www.sbp.org.pk/assets/documents/circulars/psd/2023/C3-Enclosure-Regulations-EMIs.pdf">Regulations for Electronic Money Institutions</a> — revised 21 June 2023 via PSP&amp;OD Circular No. 03 of 2023. §§12, 14, 15, 17, 24 matter most here.</li>
+          <li><a href="https://www.sbp.org.pk/psd/2023/C3.htm">PSP&amp;OD Circular No. 03 of 2023</a></li>
+          <li><a href="https://www.sbp.org.pk/bprd/2025/C1.htm">BPRD Circular No. 01 of 2025</a> — Consolidated Customer Onboarding Framework. §§C, F, I, J, K.</li>
+          <li>CCOF §K also names PSP&amp;OD Circular 01/2022 (mobile app security), BPRD 04/2023 (digital banking product security), PSD 09/2018, BPRD 05/2017 — <strong>as applicable</strong>.</li>
+        </ul>
+        <p>Full clause catalog: <a href="../appendices/A-regulatory-requirement-catalog.html">Appendix A</a>. Compliance mapping: <a href="../12-sbp-compliance-mapping.html">12</a>. Pack home: <a href="../index.html">index.html</a>.</p>
+        <div class="callout warn">
+          <p class="label">Not legal advice</p>
+          <p>Confirm interpretations with Compliance, Legal, PSP&amp;OD / BPRD, and your NADRA contract before go-live. Do not treat licensed-EMI FAQs as SBP mandates.</p>
+        </div>
+      </article>
+
+      <nav class="pager" id="pager"></nav>
+    </main>
+
+    <aside class="toc">
+      <h3>On this page</h3>
+      <div id="toc-list"></div>
+    </aside>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="search-box">
+    <input id="q" type="search" placeholder="Search this set…" autocomplete="off">
+    <div class="search-hits"></div>
+  </div>
+</div>
+<script src="assets/docs.js?v=3"></script>
+</body>
+</html>

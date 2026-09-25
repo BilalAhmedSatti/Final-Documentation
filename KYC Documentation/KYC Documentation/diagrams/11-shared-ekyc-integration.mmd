@@ -1,0 +1,14 @@
+flowchart TD
+  Consent[Capture_eKYC_Consent] --> Flag{SHARED_EKYC_ENABLED}
+  Flag -->|no| Local[Full_Local_KYC]
+  Flag -->|yes| Adapter[Shared_eKYC_Adapter_Lookup]
+  Adapter -->|hit| Map[Map_Fields_with_Provenance]
+  Adapter -->|miss_or_error| Local
+  Map --> Gaps{Mandatory_Gaps}
+  Gaps -->|yes| Collect[Collect_Missing_Locally]
+  Gaps -->|no| Still[Still_Run_BV_Sanctions_Risk]
+  Collect --> Still
+  Local --> Still
+  Still --> Decision[Local_KYC_Decision]
+  Decision -->|approved_and_contribute_consent| Pub[Optional_Publish_Update]
+  Decision -->|approved| SoR[Bank_SoR_Customers_KYC]

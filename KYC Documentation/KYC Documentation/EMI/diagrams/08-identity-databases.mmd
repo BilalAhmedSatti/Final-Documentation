@@ -1,0 +1,16 @@
+flowchart LR
+  App[App / Web] --> IdSvc[Identity Service]
+  IdSvc --> IdDb[(identity_db)]
+  IdSvc --> Nadra[NADRA adapter]
+  IdSvc --> ScreenSvc[Screening Service]
+  ScreenSvc --> ScreenDb[(screening_db)]
+  IdSvc -->|events| Bus[Event bus]
+  Bus --> LedSvc[Ledger Service]
+  LedSvc --> LedDb[(ledger_db)]
+  Bus --> NtfSvc[Notify Service]
+  NtfSvc --> NtfDb[(notify_db)]
+  AgentGw[Agent gateway] --> LedSvc
+  LedSvc --> TmsSvc[TMS]
+  TmsSvc --> TmsDb[(tms_db)]
+  AmlSvc[AML / case service] --> AmlDb[(aml_db)]
+  IdSvc -.->|str_case_ref only| AmlSvc

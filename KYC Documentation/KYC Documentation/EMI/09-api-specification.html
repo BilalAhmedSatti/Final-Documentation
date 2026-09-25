@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>16. EMI KYC API specification (logical)</title>
+<link rel="stylesheet" href="assets/doc.css">
+</head>
+<body>
+<nav class="top">
+  <div class="top-inner">
+    <a href="index.html">EMI pack home</a>
+    <span class="meta"><a href="05c-emi-interactive-journeys.html">Journeys</a> · <a href="09-api-specification.md">Source .md</a></span>
+  </div>
+</nav>
+<article class="page markdown-body">
+<h1 id="16-emi-kyc-api-specification-logical">16. EMI KYC API specification (logical)</h1>
+<blockquote>
+<p>Resource-oriented capabilities on the <strong>Identity Service</strong> (<code>identity_db</code>) unless marked Ledger. <strong>Not</strong> NADRA proprietary APIs. Auth: customer session or service mTLS. Not legal advice.</p>
+</blockquote>
+<h2 id="applications">Applications</h2>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Path</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>POST</td>
+<td><code>/kyc/applications</code></td>
+<td>Open wallet application; returns <code>trackingId</code></td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/kyc/applications/{id}</code></td>
+<td>Status, next action, <code>limitTier</code> (minimal PII)</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/kyc/tracking/{trackingId}</code></td>
+<td>Public status; rate-limit; no enumeration</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/kyc/applications/{id}/contact/verify/start</code></td>
+<td>OTP / 2FA start</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/kyc/applications/{id}/contact/verify/confirm</code></td>
+<td>Bind MSISDN</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/kyc/applications/{id}/consents</code></td>
+<td>Versioned consents</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/kyc/applications/{id}/identity</code></td>
+<td>Table-A + §12</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/kyc/applications/{id}/live-photo</code></td>
+<td>Encrypted upload ticket</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/kyc/applications/{id}/verisys</code></td>
+<td>Start Verisys (adapter)</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/kyc/applications/{id}/biometric</code></td>
+<td>Start NADRA BV</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/kyc/applications/{id}/video-kyc</code></td>
+<td>Book/join</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/kyc/applications/{id}/enhanced</code></td>
+<td>Annexure-J + SIM pairing case</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/kyc/applications/{id}/withdraw</code></td>
+<td>Customer cancel</td>
+</tr>
+</tbody>
+</table>
+<h2 id="wallets-ledger">Wallets (Ledger)</h2>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Path</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td><code>/wallets/me</code></td>
+<td>Balance, tier, banners</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/wallets/me/limits/upgrade</code></td>
+<td>Start UJ-E02/E03</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/ledger/postings</code></td>
+<td>Internal; enforces §14</td>
+</tr>
+</tbody>
+</table>
+<p>Agent API: cash-in/out <strong>only</strong>. No issue-wallet route.</p>
+<h2 id="errors">Errors</h2>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DUPLICATE_CNIC</code></td>
+<td>UJ-E05</td>
+</tr>
+<tr>
+<td><code>CONSENT_REQUIRED</code></td>
+<td>UJ-E18</td>
+</tr>
+<tr>
+<td><code>SCREENING_HOLD</code></td>
+<td>No STP</td>
+</tr>
+<tr>
+<td><code>NADRA_UNAVAILABLE</code></td>
+<td>UJ-E08</td>
+</tr>
+<tr>
+<td><code>LIMIT_EXCEEDED</code></td>
+<td>Ledger</td>
+</tr>
+<tr>
+<td><code>AGENT_CANNOT_ISSUE</code></td>
+<td>Agent misuse</td>
+</tr>
+</tbody>
+</table>
+<p>Idempotency keys on all POSTs. No OTP in logs.</p>
+</article>
+<div class="pager"><a href="08-state-machine.html">← 08-state-machine</a><span></span><a href="10-aml-risk-edd-ops.html">10-aml-risk-edd-ops →</a></div>
+<footer class="note">Rendered preview of 09-api-specification.md. Markdown remains the source of truth. Not legal advice.</footer>
+
+</body>
+</html>

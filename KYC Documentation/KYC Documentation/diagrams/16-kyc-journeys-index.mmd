@@ -1,0 +1,63 @@
+flowchart TD
+  subgraph onboarding [A_Onboarding]
+    UJ01[UJ01_STP]
+    UJ02[UJ02_Shared_eKYC]
+    UJ03[UJ03_ExpiredCNIC_Token]
+    UJ04[UJ04_OTP_Lockout]
+    UJ05[UJ05_DeclineConsents]
+    UJ06[UJ06_AbandonResume]
+    UJ07[UJ07_ExpiredApp]
+    UJ08[UJ08_Withdraw]
+  end
+
+  subgraph identity [B_Identity_exceptions]
+    UJ09[UJ09_Verisys_MSISDN]
+    UJ10[UJ10_Senior_Disability]
+    UJ11[UJ11_DebitBlock_Lift]
+    UJ12[UJ12_VideoKYC_BV_Fallback]
+    UJ13[UJ13_LivePhoto_Fail]
+    UJ14[UJ14_NADRA_Outage]
+    UJ15[UJ15_Web_BV]
+  end
+
+  subgraph variants [C_ID_and_residency]
+    UJ16[UJ16_NICOP]
+    UJ17[UJ17_NRP_POC_Abroad]
+    UJ18[UJ18_POC_POR_ARC]
+    UJ19[UJ19_AnnexB_SelfDeclare]
+  end
+
+  subgraph risk [D_Risk_and_decision]
+    UJ20[UJ20_Medium_MoreInfo]
+    UJ21[UJ21_High_EDD]
+    UJ22[UJ22_PEP]
+    UJ23[UJ23_FATCA_CRS]
+    UJ24[UJ24_SanctionsReject]
+    UJ25[UJ25_DuplicateCIF]
+    UJ26[UJ26_TAT_Delay]
+    UJ27[UJ27_TrackingStatus]
+  end
+
+  subgraph life [E_Lifecycle]
+    UJ28[UJ28_LimitUpgrade]
+    UJ29[UJ29_PeriodicRefresh]
+    UJ30[UJ30_RefreshOverdue]
+    UJ31[UJ31_CNIC_Renewal]
+    UJ32[UJ32_EventRefresh]
+    UJ33[UJ33_Dormancy]
+    UJ34[UJ34_SuspectedActivity]
+  end
+
+  subgraph phase2 [F_Phase2_summary]
+    UJ35[UJ35_Joint]
+    UJ36[UJ36_MinorGuardian]
+    UJ37[UJ37_Mandate]
+    UJ38[UJ38_Entity_UBO]
+  end
+
+  UJ01 --> identity
+  UJ02 --> identity
+  identity --> variants
+  identity --> risk
+  variants --> risk
+  risk --> life

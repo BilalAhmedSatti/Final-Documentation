@@ -1,0 +1,10 @@
+flowchart TD
+  Open[Account_RESTRICTED_ACTIVE] --> Banner[Home_DebitBlock_Banner]
+  Banner --> CTA[Complete_Biometric_CTA]
+  CTA --> BV{NADRA_BV}
+  BV -->|success| Lift[Clear_debit_block_bv_pending]
+  Lift --> Active[Account_ACTIVE_FullLimits]
+  BV -->|eligible_fail| Alt[Verisys_MSISDN_or_VideoKYC]
+  Alt -->|success_policy| Lift
+  Alt -->|still_fail| Stay[Remain_RESTRICTED_ACTIVE]
+  Stay --> Banner

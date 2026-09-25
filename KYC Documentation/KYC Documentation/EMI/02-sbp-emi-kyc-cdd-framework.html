@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>5–7. SBP EMI KYC / CDD / Wallet Onboarding Framework</title>
+<link rel="stylesheet" href="assets/doc.css">
+</head>
+<body>
+<nav class="top">
+  <div class="top-inner">
+    <a href="index.html">EMI pack home</a>
+    <span class="meta"><a href="05c-emi-interactive-journeys.html">Journeys</a> · <a href="02-sbp-emi-kyc-cdd-framework.md">Source .md</a></span>
+  </div>
+</nav>
+<article class="page markdown-body">
+<h1 id="57-sbp-emi-kyc-cdd-wallet-onboarding-framework">5–7. SBP EMI KYC / CDD / Wallet Onboarding Framework</h1>
+<blockquote>
+<p>Primary EMI source: <strong>Regulations for EMIs</strong> (1 Apr 2019; revised <strong>21 Jun 2023</strong>).<br />
+Primary onboarding source for process: <strong>Consolidated Customer Onboarding Framework</strong> (BPRD Circular No. 01 of 2025) — EMIs are in scope; <strong>limits stay in EMI §14</strong>.<br />
+Primary AML: <strong>AML/CFT/CPF Regulations for SBP-REs</strong>.<br />
+Classification: <strong>A</strong> mandatory · <strong>B</strong> expectation · <strong>C</strong> industry practice · <strong>D</strong> EMI-specific.<br />
+Not legal advice.</p>
+</blockquote>
+<p>Clause catalog: <a href="appendices/A-regulatory-requirement-catalog.html">appendices/A-regulatory-requirement-catalog</a>.</p>
+<hr />
+<h2 id="5-emi-regulations-customer-due-diligence-12-a">5. EMI Regulations — Customer Due Diligence (§12) (<strong>A</strong>)</h2>
+<p>Digital onboarding is the <strong>default</strong> (“shall make their customer on boarding process digital”) subject to AML/risk.</p>
+<h3 id="51-minimum-collection-at-issuance">5.1 Minimum collection at issuance</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Name</td>
+<td></td>
+</tr>
+<tr>
+<td>Father / spouse name</td>
+<td></td>
+</tr>
+<tr>
+<td>ID</td>
+<td>CNIC, NICOP, POC, Passport, Alien Registration Card, <strong>POR for Afghan refugees</strong></td>
+</tr>
+<tr>
+<td>Mobile number</td>
+<td></td>
+</tr>
+<tr>
+<td>Residential address</td>
+<td></td>
+</tr>
+<tr>
+<td>Any other <strong>two</strong> fields <strong>not</strong> on CNIC</td>
+<td>e.g. place of birth, mother’s name</td>
+</tr>
+<tr>
+<td>Live original CNIC <strong>and</strong> live digital photo</td>
+<td>“where applicable” — Consolidated Framework makes live photo <strong>A</strong> for digital/remote opening</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Also apply Consolidated Table-A</strong> (purpose, SoI, FATCA/CRS, PEP declaration, occupation, etc.) because EMIs are SBP REs with customer relationships. Do not under-collect vs Table-A to “match a wallet FAQ.”</p>
+<h3 id="52-activation-gates-a">5.2 Activation gates (<strong>A</strong>)</h3>
+<ol>
+<li><strong>Two-factor authentication</strong> for customer verification.  </li>
+<li>Verify particulars in §12(I)–(II).  </li>
+<li><strong>Pre-screen</strong> designated/proscribed persons <strong>before</strong> initiating the relationship <strong>or</strong> allowing use of payment services.  </li>
+<li>Customer <strong>consent</strong> to T&amp;Cs including charges; T&amp;Cs available via email, website, app, IVR, etc.  </li>
+<li><strong>One CNIC → one e-money instrument with this EMI.</strong>  </li>
+<li><strong>Real-time transaction alerts</strong> for all transactions.  </li>
+<li>Identify suspicion at issuance or processing → <strong>STR to FMU</strong>.  </li>
+<li>Domestic + international <strong>TFS</strong>: freeze; do not serve UNSC / ATA designated or proscribed persons.</li>
+</ol>
+<h3 id="53-one-unverified-credit-then-fail-closed-a">5.3 One unverified credit, then fail-closed (<strong>A</strong>)</h3>
+<p>EMI <strong>may</strong> allow <strong>one</strong> credit / fund-transfer <strong>before</strong> verification of credentials. If credentials are <strong>not</strong> verified:</p>
+<ul>
+<li>Close the e-money instrument / account  </li>
+<li>File <strong>STR</strong></li>
+</ul>
+<p>Do <strong>not</strong> leave an unverified wallet operable. Product copy must not look like a free anonymous prepaid.</p>
+<h3 id="54-edd-a">5.4 EDD (<strong>A</strong>)</h3>
+<p>EDD for customers categorised <strong>high risk</strong> under SBP AML/CFT regulations and RBA guidelines. Consolidated Framework adds recorded <strong>video KYC</strong> for NFTF EDD.</p>
+<hr />
+<h2 id="6-consolidated-customer-onboarding-framework-emis">6. Consolidated Customer Onboarding Framework (EMIs)</h2>
+<p><strong>Circular:</strong> BPRD Circular No. 01 of 2025 (25 July 2025)<br />
+<strong>PDF:</strong> https://bafblob.blob.core.windows.net/data/circulars/sbp/C1-Consolidated-Customer-Onboarding-Framework.pdf  </p>
+<p><strong>§B scope (</strong>A<strong>):</strong> Banks, DFIs, MFBs, Digital Banks <strong>and EMIs</strong>.</p>
+<p><strong>Footnote 1 (</strong>A<strong>):</strong> Limits and other instructions on e-money instruments/wallets are governed by <strong>EMI Regulations</strong>.</p>
+<h3 id="61-digital-eligibility-a">6.1 Digital eligibility (<strong>A</strong>)</h3>
+<p>Digital onboarding IDs: <strong>CNIC / NICOP / POC / POR / ARC</strong> (AML definitions). Passport-only without ARC is <strong>not</strong> on the digital allow-list.</p>
+<h3 id="62-identity-verification-ladder-digital-wallet-opening-a">6.2 Identity verification ladder (digital wallet opening) (<strong>A</strong>)</h3>
+<p>Same hierarchy as banks, with EMI naming:</p>
+<ol>
+<li><strong>NADRA BV</strong> (finger/thumb, iris, or facial) for CNIC/NICOP/POC/ARC/POR <strong>before</strong> establishing the relationship — in-app, in-branch, or other authenticated means.  </li>
+<li><strong>Verisys alternate</strong> for: disability / unclear prints; seniors <strong>&gt;60</strong>; NRP/POC <strong>abroad</strong> until BV is available.  </li>
+<li>Digital/remote (except specified Asaan Mobile exceptions that <strong>do not</strong> apply to EMIs as bank products): <strong>live photo</strong> of customer with valid ID.  </li>
+<li>For <strong>digital banks and EMIs without physical presence</strong>, if BV + MSISDN pairing still fail: <strong>recorded video KYC + NADRA Verisys</strong>; record why BV was not met; optional <strong>third-party reliance</strong> on a bank with physical presence.</li>
+</ol>
+<p><strong>Design implication:</strong> A greenfield EMI typically has <strong>no branches</strong>. Budget video KYC + Verisys + (optional) partner-bank BV. Public EMIs also use <strong>NADRA e-Sahulat</strong> or <strong>partner ATM BVS</strong> as authenticated BV channels (<strong>C/D</strong>).</p>
+<h3 id="63-tat-tracking-decline-resume-a">6.3 TAT, tracking, decline, resume (<strong>A</strong>)</h3>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Individual decision TAT</td>
+<td><strong>2 working days</strong> from complete wallet-opening documents</td>
+</tr>
+<tr>
+<td>Entity TAT</td>
+<td><strong>5 working days</strong></td>
+</tr>
+<tr>
+<td>Decline</td>
+<td><strong>Specific reason in writing</strong></td>
+</tr>
+<tr>
+<td>Tracking</td>
+<td>System-generated tracking ID; web + in-app (and branches if any)</td>
+</tr>
+<tr>
+<td>Resume</td>
+<td>Incomplete application typically <strong>≤ 30 days</strong> (Consolidated)</td>
+</tr>
+<tr>
+<td>One wallet</td>
+<td>“EMI shall also ensure that an individual/entity can open only <strong>one wallet</strong> with it” (Consolidated uniqueness language — aligns with EMI §12.VII for CNIC)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="64-security-circulars-cited-by-consolidated-k-a-where-applicable">6.4 Security circulars cited by Consolidated §K (<strong>A</strong> where applicable)</h3>
+<ul>
+<li>PSP&amp;OD Circular No. 01 of 2022 — Mobile App Security Guidelines  </li>
+<li>BPRD Circular No. 04 of 2023 — Digital banking products security  </li>
+<li>PSD Circular No. 09 of 2018 — Security of Digital Payments  </li>
+<li>BPRD Circular No. 05 of 2017 — Enterprise Technology Governance  </li>
+</ul>
+<hr />
+<h2 id="7-wallet-limit-ladder-emi-14-a">7. Wallet limit ladder (EMI §14) (<strong>A</strong>)</h2>
+<p>Payments and receipts are <strong>separate</strong> limit buckets on EMI instruments.</p>
+<h3 id="71-pilot-vs-commercial">7.1 Pilot vs commercial</h3>
+<table>
+<thead>
+<tr>
+<th>Verification</th>
+<th>Pilot monthly <strong>load</strong></th>
+<th>Commercial monthly <strong>load</strong></th>
+<th>Cash-out</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NADRA <strong>Verisys</strong> (CNIC verification)</td>
+<td>PKR <strong>50,000</strong></td>
+<td>PKR <strong>50,000</strong></td>
+<td><strong>PKR 10,000 / day</strong> (commercial Verisys; pilot: 10,000/day with BV <strong>or</strong> 2FA)</td>
+</tr>
+<tr>
+<td>NADRA <strong>biometric</strong></td>
+<td>PKR <strong>200,000</strong></td>
+<td>PKR <strong>400,000</strong></td>
+<td>Commercial: EMI sets cash-out from <strong>risk profile</strong>. ATM cash-out: <strong>2FA</strong>. Agent cash-out: BV <strong>or</strong> 2FA if BVS is a major challenge</td>
+</tr>
+</tbody>
+</table>
+<h3 id="72-enhanced-wallets-commercial-licence-pspod-approval">7.2 Enhanced wallets (commercial licence + PSP&amp;OD approval)</h3>
+<p>Up to <strong>PKR 1,000,000</strong> individual instrument limits if <strong>all</strong> of:</p>
+<ol>
+<li>Income proof and source of funds (<strong>Annexure-J</strong>)  </li>
+<li><strong>CNIC/SIM pairing</strong> of the device on which the instrument is opened  </li>
+<li><strong>TMS</strong> with robust scenarios (one-to-many, many-to-one, etc.)  </li>
+<li>Detailed <strong>customer risk profiling</strong>  </li>
+</ol>
+<p>Verification of (1)–(4) <strong>must not be outsourced</strong>.</p>
+<h3 id="73-minors">7.3 Minors</h3>
+<table>
+<thead>
+<tr>
+<th>Product</th>
+<th>Linkage</th>
+<th>Monthly load</th>
+<th>Cash-out</th>
+<th>Funding</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Basic minor</td>
+<td>Parent/guardian wallet <strong>only</strong>, via <strong>their app</strong></td>
+<td>PKR <strong>50,000</strong> Verisys</td>
+<td>PKR <strong>10,000</strong>/day</td>
+<td>Parent/guardian wallet <strong>only</strong></td>
+</tr>
+<tr>
+<td>Enhanced minor (freelancer)</td>
+<td>Same linkage</td>
+<td>PKR <strong>400,000</strong> <strong>BV</strong></td>
+<td>PKR <strong>10,000</strong>/day</td>
+<td>Parent/guardian <strong>or</strong> EMI-verified income sources</td>
+</tr>
+</tbody>
+</table>
+<p>Plus: guardian digital/written <strong>undertaking</strong> of liability; TMS; EMI + AML CDD on minor path; <strong>§14.I–III enhanced adult limits do not apply</strong> to minors; record retention per §24.II.</p>
+<p>Consolidated digital ID list is adult CNIC-family — <strong>confirm Legal</strong> before remote Form-B/Juvenile minor opening.</p>
+<h3 id="74-exclusions-from-wallet-limits-apply-to-sbp-bv-holders-not-minors">7.4 Exclusions from wallet limits (apply to SBP; BV holders; <strong>not</strong> minors)</h3>
+<p>Fully licensed EMIs with a proven compliance track record <strong>may apply</strong> to exclude from limits:</p>
+<ol>
+<li><strong>Salary credit</strong> from employer via authorised FI (employer’s nominated bank) — EMI must verify employer  </li>
+<li><strong>Inward remittances</strong> via Authorized Dealers <strong>up to PKR 1,500,000</strong>  </li>
+<li><strong>Utility bill payments</strong></li>
+</ol>
+<h3 id="75-issuance-funding-redemption-15-a">7.5 Issuance, funding, redemption (§15) (<strong>A</strong>)</h3>
+<ul>
+<li>Issue <strong>at par</strong>, without delay, on receipt of funds.  </li>
+<li>Fund via <strong>IBFT</strong> (any ADC) or <strong>cash-in</strong> at EMI locations / agents / ATMs / bank branches <strong>subject to BV</strong>.  </li>
+<li>Redeem at par <strong>any time</strong>, <strong>no charges</strong>; <strong>cash redemption requires BV</strong>.</li>
+</ul>
+<hr />
+<h2 id="amlcft-overlay-emi-22-aml-regs-a">AML/CFT overlay (EMI §22 + AML regs) (<strong>A</strong>)</h2>
+<ul>
+<li>Automated <strong>TMS</strong> to monitor for ML/TF.  </li>
+<li>Risk-based approach; comply with <strong>all</strong> SBP AML/CFT laws, guidelines, regulations.  </li>
+<li><strong>New product / technology</strong> ML/TF risk assessment <strong>before</strong> launch (Reg–12 analogue).  </li>
+<li>Record retention: EMI §24.II — <strong>at least 10 years</strong> or as required by law; call-centre recordings <strong>1 year</strong>; CDD records after end of relationship per relevant laws. (AML regs commonly cite 5 years — <strong>implement the stricter applicable rule; Legal to confirm</strong>.)  </li>
+<li>Annual audited FS within 3 months of year-end; quarterly capital returns; trust balances; fraud/cyber reporting (<strong>48 hours</strong> for major cyber; Annexure F).</li>
+</ul>
+<hr />
+<h2 id="practical-interpretation-for-engineering">Practical interpretation for engineering</h2>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>System must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Signup</td>
+<td>Collect §12 + Table-A; 2FA; consents; tracking ID <strong>on screen</strong> before SMS (no mobile yet)</td>
+</tr>
+<tr>
+<td>First credit optional</td>
+<td>Flag <code>unverified_one_credit</code>; timer; if NADRA/screen fail → close + STR queue</td>
+</tr>
+<tr>
+<td>Verisys pass, no BV</td>
+<td><code>WALLET_ACTIVE</code> + <code>limit_tier=VERISYS</code> + 50k load / 10k cash-out</td>
+</tr>
+<tr>
+<td>BV pass</td>
+<td><code>limit_tier=BV</code> + 400k load; cash-out from CRP</td>
+</tr>
+<tr>
+<td>Enhanced approved</td>
+<td><code>limit_tier=ENHANCED</code>; Annexure-J artefacts; SIM pairing; TMS scenarios on</td>
+</tr>
+<tr>
+<td>Duplicate CNIC</td>
+<td>Block new instrument; route to existing login</td>
+</tr>
+<tr>
+<td>Sanctions true match</td>
+<td>No services; freeze; STR/TFS ops — customer gets <strong>written</strong> decline</td>
+</tr>
+<tr>
+<td>Agent</td>
+<td>Cash-in/out only; never <code>POST /wallets</code> from agent channel</td>
+</tr>
+</tbody>
+</table>
+</article>
+<div class="pager"><a href="01-regulatory-landscape-and-emis.html">← 01-regulatory-landscape-and-emis</a><span></span><a href="03-shared-ekyc-and-emi.html">03-shared-ekyc-and-emi →</a></div>
+<footer class="note">Rendered preview of 02-sbp-emi-kyc-cdd-framework.md. Markdown remains the source of truth. Not legal advice.</footer>
+
+</body>
+</html>

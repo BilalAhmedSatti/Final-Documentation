@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>12. Architecture and services (EMI)</title>
+<link rel="stylesheet" href="assets/doc.css">
+</head>
+<body>
+<nav class="top">
+  <div class="top-inner">
+    <a href="index.html">EMI pack home</a>
+    <span class="meta"><a href="05c-emi-interactive-journeys.html">Journeys</a> · <a href="06-architecture-and-services.md">Source .md</a></span>
+  </div>
+</nav>
+<article class="page markdown-body">
+<h1 id="12-architecture-and-services-emi">12. Architecture and services (EMI)</h1>
+<blockquote>
+<p>Capabilities and adapters — <strong>no proprietary NADRA/PBA payloads</strong>. Not legal advice.</p>
+</blockquote>
+<h2 id="context">Context</h2>
+<pre class="mermaid">flowchart TB
+  App[Mobile / web]
+  KYC[Identity Service]
+  Wal[Wallet / Ledger Service]
+  Trust[Trust Account adapter]
+  NADRA[NADRA adapter]
+  Screen[Sanctions PEP]
+  Risk[Risk Engine]
+  TMS[TMS]
+  Agent[Agent channel]
+  AD[Authorized Dealer / IBFT]
+  App --&gt; KYC
+  KYC --&gt; NADRA
+  KYC --&gt; Screen
+  KYC --&gt; Risk
+  KYC --&gt; Wal
+  Wal --&gt; Trust
+  Wal --&gt; TMS
+  Agent --&gt; Wal
+  AD --&gt; Wal</pre>
+
+<h2 id="service-responsibilities">Service responsibilities</h2>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Owns</th>
+<th>Must not</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Identity Service</strong> (KYC / CDD)</td>
+<td>Application state, CDD evidence, <code>limit_tier</code> <strong>eligibility</strong>, CNIC uniqueness, consents. Database: <code>identity_db</code></td>
+<td>Move money; hold wallet balances</td>
+</tr>
+<tr>
+<td><strong>Wallet / Ledger</strong></td>
+<td>E-money balances, load/cash-out <strong>enforcement</strong>, alerts. Database: <code>ledger_db</code></td>
+<td>Change KYC state</td>
+</tr>
+<tr>
+<td><strong>Trust adapter</strong></td>
+<td>Postings to trustee bank; 50% concentration check</td>
+<td>Mix operating funds</td>
+</tr>
+<tr>
+<td><strong>NADRA adapter</strong></td>
+<td>Verisys / BV / MSISDN pairing</td>
+<td>Store raw biometrics</td>
+</tr>
+<tr>
+<td><strong>Screening</strong></td>
+<td>UNSC/ATA/PEP/watchlist</td>
+<td>Approve wallets</td>
+</tr>
+<tr>
+<td><strong>Risk Engine</strong></td>
+<td>CRP</td>
+<td>Bypass TFS</td>
+</tr>
+<tr>
+<td><strong>TMS</strong></td>
+<td>Scenarios including 1:N / N:1 (<strong>A</strong> especially for enhanced)</td>
+<td>Be outsourced for enhanced-control verification</td>
+</tr>
+<tr>
+<td><strong>Agent gateway</strong></td>
+<td>Cash-in/out sessions</td>
+<td><code>issue_wallet</code></td>
+</tr>
+<tr>
+<td><strong>Case / video KYC</strong></td>
+<td>EDD recordings</td>
+<td>Skip audit</td>
+</tr>
+</tbody>
+</table>
+<h2 id="limit-enforcement">Limit enforcement</h2>
+<p><code>limit_tier</code> × <code>licence_phase</code> → monthly load, daily cash-out, enhanced flags. Ledger <strong>rejects</strong> over-limit postings even if the app UI is wrong (<strong>A</strong>).</p>
+<h2 id="databases">Databases</h2>
+<p><strong>One database per service.</strong> No shared tables, no cross-database foreign keys. Identity publishes <code>subject_id</code> and events; Ledger stores a replica of <code>limit_tier</code> and still rejects over-limit postings.</p>
+<p>Onboarding tables and ERD: <a href="07-database-and-erd.html">07-database-and-erd</a>. Context: <a href="diagrams/08-identity-databases.mmd">diagrams/08-identity-databases.mmd</a>.</p>
+<p>Also: <code>notify_db</code>, <code>screening_db</code>, <code>tms_db</code>, <code>aml_db</code>, <code>agent_db</code>. STR casework is not in Identity — only <code>str_case_ref</code>.</p>
+<h2 id="isolation">Isolation</h2>
+<ul>
+<li>Customer float <strong>≠</strong> EMI operating account.  </li>
+<li>Enhanced §14.III verification functions <strong>in-house</strong>.  </li>
+<li>No offshore outsourcing without SBP written approval.  </li>
+<li>Cloud: BPRD Circular 01/2023.</li>
+</ul>
+<h2 id="notifications">Notifications</h2>
+<p>Real-time alerts for <strong>all</strong> transactions (<strong>A</strong>). Tracking ID SMS <strong>after</strong> OTP only.</p>
+</article>
+<div class="pager"><a href="05b-emi-user-journeys-catalog.html">← 05b-emi-user-journeys-catalog</a><span></span><a href="07-database-and-erd.html">07-database-and-erd →</a></div>
+<footer class="note">Rendered preview of 06-architecture-and-services.md. Markdown remains the source of truth. Not legal advice.</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: "neutral", darkMode: false, flowchart: { useMaxWidth: true }, er: { useMaxWidth: false } });</script>
+
+</body>
+</html>

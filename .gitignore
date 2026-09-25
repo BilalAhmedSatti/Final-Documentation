@@ -1,0 +1,14 @@
+node_modules/
+.DS_Store
+Thumbs.db
+.env
+.env.*
+*.log
+.vercel/
+.idea/
+.vscode/
+*.local
+
+# Nested repos / tooling noise
+**/.git/
+KYC Documentation/**/.git/

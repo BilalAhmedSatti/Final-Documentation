@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>13–14. Identity Service data model and ERD</title>
+<link rel="stylesheet" href="assets/doc.css">
+</head>
+<body>
+<nav class="top">
+  <div class="top-inner">
+    <a href="index.html">EMI pack home</a>
+    <span class="meta"><a href="05c-emi-interactive-journeys.html">Journeys</a> · <a href="07-database-and-erd.md">Source .md</a></span>
+  </div>
+</nav>
+<article class="page markdown-body">
+<h1 id="1314-identity-service-data-model-and-erd">13–14. Identity Service data model and ERD</h1>
+<blockquote>
+<p><strong>This database is the Identity Service (onboarding / CDD) only.</strong> Other capabilities keep their own databases. Logical PostgreSQL-oriented model — not production DDL, not a NADRA spec, not legal advice.</p>
+</blockquote>
+<p>Companion: <a href="06-architecture-and-services.html">06 architecture</a> · <a href="08-state-machine.html">08 states</a> · <a href="09-api-specification.html">09 API</a> · <a href="14-srs.html">14 SRS</a><br />
+Diagrams: <a href="diagrams/08-identity-databases.mmd">08-identity-databases.mmd</a> · <a href="diagrams/08-identity-erd.mmd">08-identity-erd.mmd</a></p>
+<hr />
+<h2 id="1-one-database-per-service">1. One database per service</h2>
+<p>No shared tables across services. No cross-database foreign keys. Identity publishes <strong>opaque IDs</strong> and <strong>events</strong>. Consumers store those IDs in <em>their</em> schema.</p>
+<table>
+<thead>
+<tr>
+<th>Database</th>
+<th>Service</th>
+<th>Owns</th>
+<th>Must not store</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>identity_db</code></strong> (this document)</td>
+<td>Identity / KYC</td>
+<td>Applications, Tracking ID, 2FA bind, consents, §12 / Table-A, live-photo refs, NADRA <strong>vendor refs</strong>, uniqueness of CNIC, <code>limit_tier</code> <strong>eligibility</strong>, guardian links, KYC audit</td>
+<td>Balances, postings, trust float, agent cash, TMS alerts, STR casework, OTP plaintext, raw biometric templates</td>
+</tr>
+<tr>
+<td><code>ledger_db</code></td>
+<td>Wallet / Ledger</td>
+<td>Instruments, balances, §14 <strong>enforcement</strong>, trust postings, alerts hook</td>
+<td>KYC state, consents, NADRA payloads</td>
+</tr>
+<tr>
+<td><code>notify_db</code></td>
+<td>Notify</td>
+<td>Delivery of SMS/push/email</td>
+<td>Tracking ID <em>generation</em> (Identity mints it)</td>
+</tr>
+<tr>
+<td><code>screening_db</code></td>
+<td>Screening</td>
+<td>List versions, match engine</td>
+<td>Wallet approval</td>
+</tr>
+<tr>
+<td><code>tms_db</code></td>
+<td>TMS</td>
+<td>Scenarios, 1:N / N:1 alerts</td>
+<td>KYC decisions</td>
+</tr>
+<tr>
+<td><code>aml_db</code></td>
+<td>AML / cases</td>
+<td>STR/TFS filings, EDD ops queues</td>
+<td>Customer happy-path state</td>
+</tr>
+<tr>
+<td><code>agent_db</code></td>
+<td>Agent gateway</td>
+<td>Approved agents, cash sessions</td>
+<td><code>issue_wallet</code></td>
+</tr>
+</tbody>
+</table>
+<p>Identity is the <strong>only writer of KYC states</strong>. Ledger is the <strong>only writer of money</strong>. Ledger <strong>copies</strong> <code>subject_id</code> + <code>limit_tier</code> from Identity events and still rejects over-limit postings (<strong>FR-E27</strong>).</p>
+<pre class="mermaid">flowchart LR
+  App[App / Web] --&gt; IdSvc[Identity Service]
+  IdSvc --&gt; IdDb[(identity_db)]
+  IdSvc --&gt; Nadra[NADRA adapter]
+  IdSvc --&gt; ScreenSvc[Screening Service]
+  ScreenSvc --&gt; ScreenDb[(screening_db)]
+  IdSvc --&gt;|events| Bus[Event bus]
+  Bus --&gt; LedSvc[Ledger Service]
+  LedSvc --&gt; LedDb[(ledger_db)]
+  Bus --&gt; NtfSvc[Notify Service]
+  NtfSvc --&gt; NtfDb[(notify_db)]
+  AgentGw[Agent gateway] --&gt; LedSvc
+  LedSvc --&gt; TmsSvc[TMS]
+  TmsSvc --&gt; TmsDb[(tms_db)]
+  AmlSvc[AML / case service] --&gt; AmlDb[(aml_db)]
+  IdSvc -.-&gt;|str_case_ref only| AmlSvc</pre>
+
+<hr />
+<h2 id="2-design-principles">2. Design principles</h2>
+<ol>
+<li><strong>Application before subject.</strong> Prospect data lives on <code>kyc_applications</code> until uniqueness + Verisys (and screening) allow a <code>subjects</code> row and a <code>WALLET_ELIGIBLE</code> event.  </li>
+<li><strong>Uniqueness is an Identity lock, not a ledger query.</strong> One <strong>open instrument claim</strong> per CNIC hash (<strong>FR-E13</strong>). Ledger cannot mint a second wallet without that claim.  </li>
+<li><strong>Eligibility ≠ enforcement.</strong> Identity sets <code>limit_eligibility.limit_tier</code>. Ledger enforces PKR caps.  </li>
+<li><strong>Append-only evidence.</strong> Verifications, screenings, audit, status history: insert-only.  </li>
+<li><strong>Vendor refs, not templates.</strong> NADRA columns are <code>vendor</code>, <code>vendor_reference</code>, adapter status — no invented API payloads (<strong>FR-E23</strong>).  </li>
+<li><strong>No KYC artefacts on the device.</strong> <code>evidence_objects</code> point at encrypted object storage (<strong>FR-E05</strong>, <strong>NFR-E02</strong>).  </li>
+<li><strong>Soft close, hard retain.</strong> <code>REJECTED</code> / <code>WITHDRAWN</code> / <code>EXPIRED</code> / <code>CLOSED_UNVERIFIED</code> stay for ≥ 10 years (<strong>FR-E39</strong>). Silent reopen of a closed CNIC is <strong>off</strong> until Legal signs (<strong>FR-E14</strong>, <strong>O-07</strong>).</li>
+</ol>
+<hr />
+<h2 id="3-identity-erd">3. Identity ERD</h2>
+<p>Wallets are <strong>not</strong> on these diagrams. After Identity emits <code>identity.wallet.eligible</code>, Ledger inserts its own instrument keyed by <code>subject_id</code>.</p>
+<h3 id="31-core-application-becomes-a-subject">3.1 Core — application becomes a subject</h3>
+<pre class="mermaid">erDiagram
+  KYC_APPLICATIONS ||--o{ CONTACTS : has
+  KYC_APPLICATIONS ||--o{ CONSENTS : has
+  KYC_APPLICATIONS ||--o{ IDENTITY_DOCUMENTS : has
+  KYC_APPLICATIONS ||--o{ VERIFICATIONS : has
+  KYC_APPLICATIONS ||--o{ SCREENING_RESULTS : has
+  VERIFICATIONS ||--o{ VERIFICATION_ATTEMPTS : attempts
+  KYC_APPLICATIONS }o--o| SUBJECTS : becomes
+  SUBJECTS ||--o| IDENTITY_UNIQUENESS_KEYS : cnic_slot
+  SUBJECTS ||--o| LIMIT_ELIGIBILITY : eligible_tier
+
+  KYC_APPLICATIONS {
+    uuid id PK
+    string tracking_id UK
+    string state
+    string case_type
+    uuid subject_id FK
+  }
+  SUBJECTS {
+    uuid id PK
+    string status
+    string id_number_hash
+  }
+  IDENTITY_UNIQUENESS_KEYS {
+    string id_number_hash
+    string instrument_status
+  }
+  LIMIT_ELIGIBILITY {
+    uuid subject_id PK
+    string limit_tier
+    string licence_phase
+  }
+  VERIFICATIONS {
+    string verification_type
+    string status
+    string vendor_reference
+  }</pre>
+
+<h3 id="32-application-case-while-onboarding">3.2 Application case (while onboarding)</h3>
+<pre class="mermaid">erDiagram
+  KYC_APPLICATIONS ||--o{ KYC_APPLICATION_PARTIES : parties
+  KYC_APPLICATIONS ||--o{ KYC_STATUS_HISTORY : history
+  KYC_APPLICATIONS ||--o{ CONTACTS : contacts
+  KYC_APPLICATIONS ||--o{ OTP_CHALLENGES : otp
+  KYC_APPLICATIONS ||--o{ CONSENTS : consents
+  CONSENT_CATALOG ||--o{ CONSENTS : versions
+  KYC_APPLICATIONS ||--o| CDD_PROFILES : cdd
+  KYC_APPLICATIONS ||--o{ IDENTITY_DOCUMENTS : documents
+  KYC_APPLICATIONS ||--o{ EVIDENCE_OBJECTS : evidence
+  KYC_APPLICATIONS ||--o{ FACE_CHECKS : liveness
+  KYC_APPLICATIONS ||--o{ DEVICE_CAPTURES : open_gadget
+  KYC_APPLICATIONS ||--o{ VERIFICATIONS : verifications
+  VERIFICATIONS ||--o{ VERIFICATION_ATTEMPTS : attempts
+  KYC_APPLICATIONS ||--o{ SCREENING_RESULTS : screens
+  KYC_APPLICATIONS ||--o{ RISK_ASSESSMENTS : scores
+  KYC_APPLICATIONS ||--o{ KYC_CASES : cases
+  KYC_CASES ||--o{ KYC_CASE_ACTIONS : actions
+  KYC_APPLICATIONS ||--o{ KYC_DECISIONS : decisions
+  KYC_APPLICATIONS ||--o{ KYC_AUDIT_LOGS : audited</pre>
+
+<h3 id="33-subject-after-eligibility">3.3 Subject after eligibility</h3>
+<pre class="mermaid">erDiagram
+  SUBJECTS ||--o{ KYC_APPLICATIONS : files
+  SUBJECTS ||--o| IDENTITY_UNIQUENESS_KEYS : cnic_slot
+  SUBJECTS ||--o| LIMIT_ELIGIBILITY : eligible_tier
+  SUBJECTS ||--o| RISK_PROFILES : current_crp
+  SUBJECTS ||--o{ GUARDIAN_LINKS : guardian_of
+  SUBJECTS ||--o{ SIM_PAIRINGS : pairing
+  SUBJECTS ||--o| REFRESH_SCHEDULES : refresh
+  SUBJECTS ||--o{ CONTACTS : bound_contact</pre>
+
+<hr />
+<h2 id="4-table-catalog-identity_db">4. Table catalog (<code>identity_db</code>)</h2>
+<table>
+<thead>
+<tr>
+<th>Table</th>
+<th>Purpose</th>
+<th>FR</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>licence_settings</code></td>
+<td>Singleton: <code>PILOT</code> / <code>COMMERCIAL</code>, PSP&amp;OD enhanced flag, exclusion grants</td>
+<td>A-E03, FR-E31, FR-E34</td>
+</tr>
+<tr>
+<td><code>kyc_applications</code></td>
+<td>Onboarding / upgrade / refresh header; Tracking ID; state</td>
+<td>FR-E01–E04, E40</td>
+</tr>
+<tr>
+<td><code>kyc_application_parties</code></td>
+<td>Primary, guardian, associated persons to screen</td>
+<td>FR-E15, FR-E32</td>
+</tr>
+<tr>
+<td><code>kyc_status_history</code></td>
+<td>Append-only state transitions</td>
+<td>FR-E39</td>
+</tr>
+<tr>
+<td><code>device_captures</code></td>
+<td>Channel, device hash, IP, geo at open (<strong>A</strong> location)</td>
+<td>FR-E05</td>
+</tr>
+<tr>
+<td><code>contacts</code></td>
+<td>MSISDN / email; bound flag after OTP</td>
+<td>FR-E06</td>
+</tr>
+<tr>
+<td><code>otp_challenges</code></td>
+<td>Hashed OTP, attempts, lockout — <strong>never</strong> store the code</td>
+<td>FR-E07, NFR-E03</td>
+</tr>
+<tr>
+<td><code>consent_catalog</code></td>
+<td>Versioned T&amp;Cs / privacy / NADRA</td>
+<td>FR-E09</td>
+</tr>
+<tr>
+<td><code>consents</code></td>
+<td>Customer accept/refuse per version</td>
+<td>FR-E09, UC-E18</td>
+</tr>
+<tr>
+<td><code>cdd_profiles</code></td>
+<td>§12 + Table-A fields (purpose, SoI, FATCA/CRS, PEP declaration, occupation)</td>
+<td>FR-E10</td>
+</tr>
+<tr>
+<td><code>identity_documents</code></td>
+<td>ID type + encrypted number + hash</td>
+<td>FR-E10, FR-E13</td>
+</tr>
+<tr>
+<td><code>evidence_objects</code></td>
+<td>Object-store pointers: live photo, live CNIC, video, Annexure-J</td>
+<td>FR-E11, FR-E31</td>
+</tr>
+<tr>
+<td><code>face_checks</code></td>
+<td>Liveness / selfie match (<strong>B/C</strong>, not NADRA BV)</td>
+<td>FR-E11</td>
+</tr>
+<tr>
+<td><code>identity_uniqueness_keys</code></td>
+<td>One <strong>OPEN</strong> instrument claim per CNIC hash</td>
+<td>FR-E13–E14, UC-E05</td>
+</tr>
+<tr>
+<td><code>verifications</code></td>
+<td>Verisys / BV / SIM-pair / video KYC <strong>cases</strong></td>
+<td>FR-E19–E23, E31</td>
+</tr>
+<tr>
+<td><code>verification_attempts</code></td>
+<td>Retries, outage, eligible BV fail</td>
+<td>FR-E21–E22, UC-E07–E08</td>
+</tr>
+<tr>
+<td><code>screening_results</code></td>
+<td>TFS/PEP <strong>outcome</strong> Identity used to move state</td>
+<td>FR-E15–E16</td>
+</tr>
+<tr>
+<td><code>risk_assessments</code></td>
+<td>Each CRP run</td>
+<td>FR-E17, FR-E31</td>
+</tr>
+<tr>
+<td><code>risk_profiles</code></td>
+<td>Current rating on the subject</td>
+<td>FR-E17</td>
+</tr>
+<tr>
+<td><code>subjects</code></td>
+<td>Natural-person master once eligible (not a bank CIF)</td>
+<td>FR-E12</td>
+</tr>
+<tr>
+<td><code>guardian_links</code></td>
+<td>Minor subject ↔ guardian subject</td>
+<td>FR-E32–E33</td>
+</tr>
+<tr>
+<td><code>sim_pairings</code></td>
+<td>CNIC/SIM pairing of the <strong>opening</strong> device (enhanced <strong>A</strong>)</td>
+<td>FR-E31</td>
+</tr>
+<tr>
+<td><code>limit_eligibility</code></td>
+<td>Source of truth for tier Identity may grant</td>
+<td>FR-E19–E20, E24–E26</td>
+</tr>
+<tr>
+<td><code>exclusion_eligibility</code></td>
+<td>Remittance / salary / utility flags if SBP granted</td>
+<td>FR-E34</td>
+</tr>
+<tr>
+<td><code>kyc_cases</code></td>
+<td>EDD, sanctions review, video KYC booking</td>
+<td>FR-E17, UC-E11</td>
+</tr>
+<tr>
+<td><code>kyc_case_actions</code></td>
+<td>Maker-checker (ops; not customer UX)</td>
+<td>FR-E17</td>
+</tr>
+<tr>
+<td><code>kyc_decisions</code></td>
+<td>Written decline / approve with reason</td>
+<td>FR-E04, FR-E16</td>
+</tr>
+<tr>
+<td><code>refresh_schedules</code></td>
+<td>Ongoing CDD</td>
+<td>UC-E20</td>
+</tr>
+<tr>
+<td><code>kyc_audit_logs</code></td>
+<td>Reconstructible KYC actions, insert-only</td>
+<td>FR-E39, NFR-E01</td>
+</tr>
+<tr>
+<td><code>integration_outbox</code></td>
+<td>Reliable events to Ledger / Notify</td>
+<td>D</td>
+</tr>
+<tr>
+<td><code>idempotency_keys</code></td>
+<td>All Identity POSTs</td>
+<td>NFR-E03</td>
+</tr>
+</tbody>
+</table>
+<h3 id="intentionally-not-in-identity_db">Intentionally not in <code>identity_db</code></h3>
+<table>
+<thead>
+<tr>
+<th>Would-be table</th>
+<th>Lives in</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>wallets</code>, <code>postings</code>, <code>balances</code></td>
+<td><code>ledger_db</code></td>
+<td>Identity must not move money</td>
+</tr>
+<tr>
+<td><code>trust_postings</code></td>
+<td><code>ledger_db</code></td>
+<td>FR-E30</td>
+</tr>
+<tr>
+<td><code>agents</code>, <code>cash_sessions</code></td>
+<td><code>agent_db</code> + ledger legs</td>
+<td>FR-E35; agents cannot <code>POST /wallets</code></td>
+</tr>
+<tr>
+<td><code>tms_alerts</code></td>
+<td><code>tms_db</code></td>
+<td>FR-E38</td>
+</tr>
+<tr>
+<td><code>str_cases</code></td>
+<td><code>aml_db</code></td>
+<td>Identity stores <code>str_case_ref</code> only</td>
+</tr>
+<tr>
+<td><code>notify_messages</code></td>
+<td><code>notify_db</code></td>
+<td>SMS of Tracking ID <strong>after</strong> OTP (<strong>FR-E08</strong>)</td>
+</tr>
+<tr>
+<td><code>screening_list_entries</code></td>
+<td><code>screening_db</code></td>
+<td>Identity stores outcomes, not the UN lists</td>
+</tr>
+<tr>
+<td>Raw biometric templates</td>
+<td>nowhere</td>
+<td>FR-E23</td>
+</tr>
+</tbody>
+</table>
+<p>Phase-2 (P6) add-ins in the <strong>same</strong> Identity DB when Legal opens the flag: <code>entities</code>, <code>entity_parties</code>, <code>beneficial_owners</code> (UC-E17). Do not put them in ledger.</p>
+<hr />
+<h2 id="5-column-structures">5. Column structures</h2>
+<p>Audit pattern on mutable tables: <code>created_at</code>, <code>updated_at</code>, <code>created_by</code>, <code>updated_by</code>, <code>version</code>. Evidence tables: <code>created_at</code> only.</p>
+<h3 id="51-licence_settings-one-row">5.1 <code>licence_settings</code> (one row)</h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td><code>SMALLINT</code> PK</td>
+<td>Always <code>1</code></td>
+</tr>
+<tr>
+<td><code>licence_phase</code></td>
+<td><code>VARCHAR(16)</code></td>
+<td><code>PILOT</code> | <code>COMMERCIAL</code></td>
+</tr>
+<tr>
+<td><code>enhanced_approved</code></td>
+<td><code>BOOLEAN</code></td>
+<td>PSP&amp;OD §14.III</td>
+</tr>
+<tr>
+<td><code>exclusions_granted</code></td>
+<td><code>BOOLEAN</code></td>
+<td>Salary / remittance / utility</td>
+</tr>
+<tr>
+<td><code>one_credit_enabled</code></td>
+<td><code>BOOLEAN</code></td>
+<td>Default <strong>false</strong> (FR-E18)</td>
+</tr>
+<tr>
+<td><code>updated_at</code></td>
+<td><code>TIMESTAMPTZ</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>App <strong>must not</strong> display a cap this row cannot grant (<strong>A-E03</strong>).</p>
+<h3 id="52-kyc_applications">5.2 <code>kyc_applications</code></h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td><code>UUID</code> PK</td>
+<td></td>
+</tr>
+<tr>
+<td><code>tracking_id</code></td>
+<td><code>VARCHAR(32)</code> UK</td>
+<td>Minted at insert; shown in-app immediately (<strong>FR-E01</strong>)</td>
+</tr>
+<tr>
+<td><code>case_type</code></td>
+<td><code>VARCHAR(32)</code></td>
+<td><code>OPEN</code> | <code>UPGRADE_BV</code> | <code>UPGRADE_ENHANCED</code> | <code>REFRESH</code> | <code>MINOR_OPEN</code> | <code>MINOR_FREELANCER</code> | <code>EXCLUSION</code> | <code>ENTITY_OPEN</code></td>
+</tr>
+<tr>
+<td><code>channel</code></td>
+<td><code>VARCHAR(32)</code></td>
+<td><code>MOBILE_IOS</code> | <code>MOBILE_ANDROID</code> | <code>WEB</code></td>
+</tr>
+<tr>
+<td><code>state</code></td>
+<td><code>VARCHAR(64)</code></td>
+<td>See <a href="08-state-machine.html">08</a></td>
+</tr>
+<tr>
+<td><code>subject_id</code></td>
+<td><code>UUID</code> NULL FK</td>
+<td>Set when subject is created</td>
+</tr>
+<tr>
+<td><code>guardian_subject_id</code></td>
+<td><code>UUID</code> NULL</td>
+<td>Minor opens <strong>from</strong> guardian app</td>
+</tr>
+<tr>
+<td><code>resume_expires_at</code></td>
+<td><code>TIMESTAMPTZ</code></td>
+<td><code>created_at + 30 days</code> (<strong>FR-E03</strong>)</td>
+</tr>
+<tr>
+<td><code>complete_file_at</code></td>
+<td><code>TIMESTAMPTZ</code></td>
+<td>Starts 2 WD TAT (<strong>FR-E04</strong>)</td>
+</tr>
+<tr>
+<td><code>tat_due_at</code></td>
+<td><code>TIMESTAMPTZ</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>tat_notified_at</code></td>
+<td><code>TIMESTAMPTZ</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>sms_tracking_sent_at</code></td>
+<td><code>TIMESTAMPTZ</code></td>
+<td>Set only after <code>CONTACT_VERIFIED</code> (<strong>FR-E08</strong>)</td>
+</tr>
+<tr>
+<td><code>wallet_ref</code></td>
+<td><code>UUID</code> NULL</td>
+<td>Opaque ledger instrument id after ack — <strong>not</strong> an FK</td>
+</tr>
+<tr>
+<td><code>str_case_ref</code></td>
+<td><code>UUID</code> NULL</td>
+<td>Opaque <code>aml_db</code> id</td>
+</tr>
+<tr>
+<td><code>idempotency_key</code></td>
+<td><code>VARCHAR(64)</code> UK</td>
+<td></td>
+</tr>
+<tr>
+<td><code>correlation_id</code></td>
+<td><code>VARCHAR(64)</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Unique: <code>tracking_id</code>. Index: <code>(state, tat_due_at)</code>, <code>(resume_expires_at)</code> where state is resumable.</p>
+<h3 id="53-kyc_application_parties">5.3 <code>kyc_application_parties</code></h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td><code>UUID</code> PK</td>
+<td></td>
+</tr>
+<tr>
+<td><code>application_id</code></td>
+<td><code>UUID</code> FK</td>
+<td></td>
+</tr>
+<tr>
+<td><code>role</code></td>
+<td><code>VARCHAR(16)</code></td>
+<td><code>PRIMARY</code> | <code>GUARDIAN</code> | <code>ASSOCIATED</code></td>
+</tr>
+<tr>
+<td><code>subject_id</code></td>
+<td><code>UUID</code> NULL</td>
+<td>Guardian already exists</td>
+</tr>
+<tr>
+<td><code>full_name</code></td>
+<td><code>VARCHAR(200)</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>id_number_hash</code></td>
+<td><code>CHAR(64)</code></td>
+<td>For associated-person screening</td>
+</tr>
+</tbody>
+</table>
+<h3 id="54-kyc_status_history-insert-only">5.4 <code>kyc_status_history</code> (insert-only)</h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td><code>BIGSERIAL</code> PK</td>
+<td></td>
+</tr>
+<tr>
+<td><code>application_id</code></td>
+<td><code>UUID</code> FK</td>
+<td></td>
+</tr>
+<tr>
+<td><code>from_state</code></td>
+<td><code>VARCHAR(64)</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>to_state</code></td>
+<td><code>VARCHAR(64)</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>triggered_by_type</code></td>
+<td><code>VARCHAR(16)</code></td>
+<td><code>SYSTEM</code> | <code>CUSTOMER</code> | <code>OPS</code></td>
+</tr>
+<tr>
+<td><code>reason_code</code></td>
+<td><code>VARCHAR(64)</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>correlation_id</code></td>
+<td><code>VARCHAR(64)</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>created_at</code></td>
+<td><code>TIMESTAMPTZ</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="55-device_captures">5.5 <code>device_captures</code></h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td><code>UUID</code> PK</td>
+<td></td>
+</tr>
+<tr>
+<td><code>application_id</code></td>
+<td><code>UUID</code> FK</td>
+<td></td>
+</tr>
+<tr>
+<td><code>device_hash</code></td>
+<td><code>VARCHAR(128)</code></td>
+<td>Not BPRD-04 bind; open-gadget capture (<strong>FR-E05</strong>)</td>
+</tr>
+<tr>
+<td><code>ip_address</code></td>
+<td><code>INET</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>geo_latitude</code></td>
+<td><code>NUMERIC(9,6)</code></td>
+<td>If permitted</td>
+</tr>
+<tr>
+<td><code>geo_longitude</code></td>
+<td><code>NUMERIC(9,6)</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>user_agent</code></td>
+<td><code>VARCHAR(256)</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>captured_at</code></td>
+<td><code>TIMESTAMPTZ</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>This is <strong>not</strong> <code>device_bindings</code> as an E01/E02 issuance gate (<strong>O-02</strong>).</p>
+<h3 id="56-contacts-and-otp_challenges">5.6 <code>contacts</code> and <code>otp_challenges</code></h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>contacts.id</code></td>
+<td><code>UUID</code> PK</td>
+<td></td>
+</tr>
+<tr>
+<td><code>application_id</code> / <code>subject_id</code></td>
+<td><code>UUID</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>kind</code></td>
+<td><code>VARCHAR(16)</code></td>
+<td><code>MSISDN</code> | <code>EMAIL</code></td>
+</tr>
+<tr>
+<td><code>value_encrypted</code></td>
+<td><code>BYTEA</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>value_hash</code></td>
+<td><code>CHAR(64)</code></td>
+<td>Lookup</td>
+</tr>
+<tr>
+<td><code>pta_registered</code></td>
+<td><code>BOOLEAN</code> NULL</td>
+<td>If the adapter can say</td>
+</tr>
+<tr>
+<td><code>bound_at</code></td>
+<td><code>TIMESTAMPTZ</code></td>
+<td>OTP success → <code>CONTACT_VERIFIED</code></td>
+</tr>
+<tr>
+<td><code>otp_challenges.id</code></td>
+<td><code>UUID</code> PK</td>
+<td></td>
+</tr>
+<tr>
+<td><code>contact_id</code></td>
+<td><code>UUID</code> FK</td>
+<td></td>
+</tr>
+<tr>
+<td><code>code_hash</code></td>
+<td><code>CHAR(64)</code></td>
+<td>Argon2/bcrypt; <strong>no</strong> plaintext, <strong>no</strong> log</td>
+</tr>
+<tr>
+<td><code>expires_at</code></td>
+<td><code>TIMESTAMPTZ</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>attempt_count</code></td>
+<td><code>INT</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>max_attempts</code></td>
+<td><code>INT</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>locked_until</code></td>
+<td><code>TIMESTAMPTZ</code></td>
+<td>Cool-down (<strong>D</strong>)</td>
+</tr>
+<tr>
+<td><code>consumed_at</code></td>
+<td><code>TIMESTAMPTZ</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Wrong/expired OTP does <strong>not</strong> advance state (<strong>FR-E07</strong>).</p>
+<h3 id="57-consents">5.7 Consents</h3>
+<p><code>consent_catalog(code, version, mandatory, locale, body_ref)</code><br />
+<code>consents(application_id, catalog_id, accepted, accepted_at, ip, device_hash)</code></p>
+<p>Refusal of a <strong>mandatory</strong> row → cannot issue (<code>WITHDRAWN</code> / <code>REJECTED</code>), not a silent skip (<strong>UC-E18</strong>).</p>
+<h3 id="58-cdd_profiles-and-identity_documents">5.8 <code>cdd_profiles</code> and <code>identity_documents</code></h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>full_name</code></td>
+<td><code>VARCHAR(200)</code></td>
+<td>§12.I</td>
+</tr>
+<tr>
+<td><code>father_spouse_name</code></td>
+<td><code>VARCHAR(200)</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>mother_maiden_name_encrypted</code></td>
+<td><code>BYTEA</code></td>
+<td>Extra field not on CNIC</td>
+</tr>
+<tr>
+<td><code>date_of_birth</code></td>
+<td><code>DATE</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>nationality</code></td>
+<td><code>VARCHAR(64)</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>residential_address</code></td>
+<td>encrypted / or <code>addresses</code> child</td>
+<td></td>
+</tr>
+<tr>
+<td><code>occupation</code></td>
+<td><code>VARCHAR(128)</code></td>
+<td>Table-A</td>
+</tr>
+<tr>
+<td><code>purpose_of_relationship</code></td>
+<td><code>VARCHAR(128)</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>source_of_income</code></td>
+<td><code>VARCHAR(128)</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>pep_self_declared</code></td>
+<td><code>BOOLEAN</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>fatca_crs_status</code></td>
+<td><code>VARCHAR(32)</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>expected_turnover_band</code></td>
+<td><code>VARCHAR(32)</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>identity_documents.id_type</code></td>
+<td><code>VARCHAR(16)</code></td>
+<td><code>CNIC</code> | <code>SNIC</code> | <code>NICOP</code> | <code>POC</code> | <code>PASSPORT</code> | <code>ARC</code> | <code>POR</code></td>
+</tr>
+<tr>
+<td><code>id_number_encrypted</code></td>
+<td><code>BYTEA</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>id_number_hash</code></td>
+<td><code>CHAR(64)</code></td>
+<td>Uniqueness lookups</td>
+</tr>
+<tr>
+<td><code>issue_date</code> / <code>expiry_date</code></td>
+<td><code>DATE</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>happy_path_digital</code></td>
+<td>derived</td>
+<td>Adult CNIC/SNIC until Legal opens others (<strong>O-04</strong>)</td>
+</tr>
+</tbody>
+</table>
+<p>UI masks CNIC as <code>xxxxx-xxxxxxx-x</code> (<strong>NFR-E01</strong>).</p>
+<h3 id="59-evidence-and-face-checks">5.9 Evidence and face checks</h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>evidence_objects.kind</code></td>
+<td><code>VARCHAR(32)</code></td>
+<td><code>LIVE_PHOTO</code> | <code>LIVE_CNIC</code> | <code>VIDEO_KYC</code> | <code>ANNEXURE_J</code> | <code>UNDERTAKING</code></td>
+</tr>
+<tr>
+<td><code>storage_uri</code></td>
+<td><code>VARCHAR(512)</code></td>
+<td>Encrypted object store</td>
+</tr>
+<tr>
+<td><code>content_sha256</code></td>
+<td><code>CHAR(64)</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>retention_until</code></td>
+<td><code>DATE</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>legal_hold</code></td>
+<td><code>BOOLEAN</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>face_checks.liveness_result</code></td>
+<td><code>VARCHAR(32)</code></td>
+<td><strong>B/C</strong> — not Verisys, not BV</td>
+</tr>
+<tr>
+<td><code>face_match_score</code></td>
+<td><code>NUMERIC(5,2)</code> NULL</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Selfie / AI face-match <strong>never</strong> sets <code>limit_tier=BV</code>.</p>
+<h3 id="510-identity_uniqueness_keys">5.10 <code>identity_uniqueness_keys</code></h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id_number_hash</code></td>
+<td><code>CHAR(64)</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>id_type</code></td>
+<td><code>VARCHAR(16)</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>instrument_status</code></td>
+<td><code>VARCHAR(16)</code></td>
+<td><code>OPEN</code> | <code>CLOSED</code> | <code>BLOCKED</code></td>
+</tr>
+<tr>
+<td><code>subject_id</code></td>
+<td><code>UUID</code> NULL</td>
+<td></td>
+</tr>
+<tr>
+<td><code>opened_application_id</code></td>
+<td><code>UUID</code></td>
+<td>The OPEN case that won the slot</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Partial unique index:</strong> <code>(id_number_hash) WHERE instrument_status = 'OPEN'</code>. Duplicate attempt → <code>DUPLICATE_CNIC</code>, redirect to recovery (<strong>UC-E05</strong>). Closed rows remain for audit; reopen is off (<strong>FR-E14</strong>).</p>
+<h3 id="511-verifications">5.11 Verifications</h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>verification_type</code></td>
+<td><code>VARCHAR(32)</code></td>
+<td><code>VERISYS</code> | <code>BV</code> | <code>SIM_PAIR</code> | <code>VIDEO_KYC</code> | <code>ALTERNATE_ID</code></td>
+</tr>
+<tr>
+<td><code>channel</code></td>
+<td><code>VARCHAR(32)</code></td>
+<td><code>IN_APP</code> | <code>E_SAHULAT</code> | <code>ATM</code> | <code>VIDEO</code> — <strong>D</strong> except pairing at enhanced</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td><code>VARCHAR(32)</code></td>
+<td><code>PENDING</code> | <code>IN_PROGRESS</code> | <code>PASSED</code> | <code>FAILED</code> | <code>ELIGIBLE_FAIL</code> | <code>VENDOR_UNAVAILABLE</code></td>
+</tr>
+<tr>
+<td><code>vendor</code></td>
+<td><code>VARCHAR(64)</code></td>
+<td>Adapter name, not a NADRA RPC</td>
+</tr>
+<tr>
+<td><code>vendor_reference</code></td>
+<td><code>VARCHAR(128)</code></td>
+<td>Token only</td>
+</tr>
+<tr>
+<td><code>eligible_fail_reason</code></td>
+<td><code>VARCHAR(32)</code></td>
+<td><code>DISABILITY</code> | <code>UNCLEAR_PRINTS</code> | <code>AGE_OVER_60</code></td>
+</tr>
+<tr>
+<td><code>attempts.attempt_no</code></td>
+<td><code>INT</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>attempts.result_code</code></td>
+<td><code>VARCHAR(64)</code></td>
+<td>Include timeout/503 — stay in progress, <strong>no</strong> silent 400k</td>
+</tr>
+</tbody>
+</table>
+<p>BV success is the <strong>only</strong> path to <code>limit_tier=BV</code>. Finger/thumb/iris, or NADRA face <strong>if</strong> the contract says facial BioVerisys is live (<strong>O-03</strong>).</p>
+<h3 id="512-screening-and-risk">5.12 Screening and risk</h3>
+<p><code>screening_results</code>: <code>SANCTIONS</code> | <code>PEP</code> | <code>WATCHLIST</code>; status <code>CLEAR</code> | <code>POTENTIAL_HIT</code> | <code>CONFIRMED_HIT</code> | <code>ERROR</code>; <code>list_version</code>; <code>raw_result_ref</code> (encrypted blob pointer); <code>adjudicated_by</code> / <code>at</code>.</p>
+<p>Confirmed hit → application <code>REJECTED</code>, <strong>never</strong> <code>WALLET_ACTIVE</code>, no STP retry (<strong>UC-E10</strong>). Identity emits <code>identity.application.rejected</code>; AML service opens STR.</p>
+<p><code>risk_assessments</code>: <code>model_version</code>, <code>risk_rating</code> (<code>LOW</code>/<code>MEDIUM</code>/<code>HIGH</code>), <code>edd_required</code>, <code>factors</code> JSONB (no extra PII). High / PEP → <code>EDD_REQUIRED</code> + video KYC (<strong>UC-E11</strong>).</p>
+<h3 id="513-subjects-guardians-sim-pairing-eligibility">5.13 <code>subjects</code>, guardians, SIM pairing, eligibility</h3>
+<table>
+<thead>
+<tr>
+<th>Table</th>
+<th>Key columns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>subjects</code></td>
+<td><code>id</code>, <code>status</code> (<code>ELIGIBLE</code> | <code>ACTIVE_CLAIM</code> | <code>CLOSED</code> | <code>REJECTED</code>), <code>id_number_hash</code>, <code>created_from_application_id</code> (no FK — insert application first, then subject, then set <code>applications.subject_id</code>)</td>
+</tr>
+<tr>
+<td><code>guardian_links</code></td>
+<td><code>minor_subject_id</code> UK, <code>guardian_subject_id</code>, <code>funding_rule</code> (<code>GUARDIAN_ONLY</code> | <code>GUARDIAN_OR_VERIFIED_INCOME</code>), <code>undertaking_evidence_id</code></td>
+</tr>
+<tr>
+<td><code>sim_pairings</code></td>
+<td><code>subject_id</code>, <code>msisdn_hash</code>, <code>device_hash</code>, <code>paired_at</code>, <code>vendor_reference</code> — required for <strong>ENHANCED</strong> only</td>
+</tr>
+<tr>
+<td><code>limit_eligibility</code></td>
+<td><code>subject_id</code> PK, <code>limit_tier</code> (<code>VERISYS</code> | <code>BV</code> | <code>ENHANCED</code> | <code>MINOR_BASIC</code> | <code>MINOR_FREELANCER</code>), <code>licence_phase</code> snapshot, <code>granted_at</code>, <code>granted_by_verification_id</code></td>
+</tr>
+<tr>
+<td><code>exclusion_eligibility</code></td>
+<td><code>subject_id</code>, <code>remittance</code> / <code>salary</code> / <code>utility</code> booleans — BV holders, not minors, only if <code>licence_settings.exclusions_granted</code></td>
+</tr>
+</tbody>
+</table>
+<p>Adult §14.I–III enhanced limits <strong>do not</strong> apply to minors (<strong>FR-E32</strong>).</p>
+<h3 id="514-cases-decisions-refresh-audit-outbox">5.14 Cases, decisions, refresh, audit, outbox</h3>
+<ul>
+<li><code>kyc_cases</code>: <code>MANUAL_REVIEW</code> | <code>EDD</code> | <code>SANCTIONS_HIT</code> | <code>VIDEO_KYC</code> | <code>DUPLICATE</code> | <code>DOC_EXCEPTION</code>; <code>sla_due_at</code>.  </li>
+<li><code>kyc_decisions</code>: <code>APPROVE</code> | <code>DECLINE</code> | <code>REQUEST_INFO</code>; <code>reason_code</code>; <code>reason_text</code> (customer-visible, specific, in writing).  </li>
+<li><code>refresh_schedules</code>: <code>next_due_at</code>, <code>last_completed_application_id</code>.  </li>
+<li><code>kyc_audit_logs</code>: insert-only; <code>action</code>, <code>actor_*</code>, <code>payload_hash</code>, <code>previous_state</code>, <code>new_state</code>; <strong>no OTP values</strong>.  </li>
+<li><code>integration_outbox</code>: <code>event_type</code>, <code>payload</code> JSONB (minimal PII), <code>published_at</code>.  </li>
+<li><code>idempotency_keys</code>: <code>(key, request_hash)</code> unique.</li>
+</ul>
+<hr />
+<h2 id="6-ddl-sketch-core">6. DDL sketch (core)</h2>
+<pre><code class="language-sql">CREATE TABLE licence_settings (
+  id SMALLINT PRIMARY KEY CHECK (id = 1),
+  licence_phase VARCHAR(16) NOT NULL CHECK (licence_phase IN ('PILOT','COMMERCIAL')),
+  enhanced_approved BOOLEAN NOT NULL DEFAULT FALSE,
+  exclusions_granted BOOLEAN NOT NULL DEFAULT FALSE,
+  one_credit_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE subjects (
+  id UUID PRIMARY KEY,
+  status VARCHAR(32) NOT NULL,
+  id_number_hash CHAR(64) NOT NULL,
+  created_from_application_id UUID NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  version INT NOT NULL DEFAULT 1
+);
+
+CREATE TABLE kyc_applications (
+  id UUID PRIMARY KEY,
+  tracking_id VARCHAR(32) NOT NULL UNIQUE,
+  case_type VARCHAR(32) NOT NULL,
+  channel VARCHAR(32) NOT NULL,
+  state VARCHAR(64) NOT NULL,
+  subject_id UUID REFERENCES subjects(id),
+  guardian_subject_id UUID REFERENCES subjects(id),
+  resume_expires_at TIMESTAMPTZ NOT NULL,
+  complete_file_at TIMESTAMPTZ,
+  tat_due_at TIMESTAMPTZ,
+  tat_notified_at TIMESTAMPTZ,
+  sms_tracking_sent_at TIMESTAMPTZ,
+  wallet_ref UUID,
+  str_case_ref UUID,
+  idempotency_key VARCHAR(64) UNIQUE,
+  correlation_id VARCHAR(64),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  version INT NOT NULL DEFAULT 1
+);
+
+CREATE TABLE identity_uniqueness_keys (
+  id UUID PRIMARY KEY,
+  id_number_hash CHAR(64) NOT NULL,
+  id_type VARCHAR(16) NOT NULL,
+  instrument_status VARCHAR(16) NOT NULL,
+  subject_id UUID REFERENCES subjects(id),
+  opened_application_id UUID NOT NULL REFERENCES kyc_applications(id),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE UNIQUE INDEX uq_open_cnic_instrument
+  ON identity_uniqueness_keys (id_number_hash)
+  WHERE instrument_status = 'OPEN';
+
+CREATE TABLE contacts (
+  id UUID PRIMARY KEY,
+  application_id UUID NOT NULL REFERENCES kyc_applications(id),
+  subject_id UUID REFERENCES subjects(id),
+  kind VARCHAR(16) NOT NULL,
+  value_encrypted BYTEA NOT NULL,
+  value_hash CHAR(64) NOT NULL,
+  bound_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE otp_challenges (
+  id UUID PRIMARY KEY,
+  contact_id UUID NOT NULL REFERENCES contacts(id),
+  code_hash CHAR(64) NOT NULL,
+  expires_at TIMESTAMPTZ NOT NULL,
+  attempt_count INT NOT NULL DEFAULT 0,
+  max_attempts INT NOT NULL,
+  locked_until TIMESTAMPTZ,
+  consumed_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE verifications (
+  id UUID PRIMARY KEY,
+  application_id UUID NOT NULL REFERENCES kyc_applications(id),
+  verification_type VARCHAR(32) NOT NULL,
+  channel VARCHAR(32),
+  status VARCHAR(32) NOT NULL,
+  vendor VARCHAR(64),
+  vendor_reference VARCHAR(128),
+  eligible_fail_reason VARCHAR(32),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  completed_at TIMESTAMPTZ
+);
+
+CREATE TABLE limit_eligibility (
+  subject_id UUID PRIMARY KEY REFERENCES subjects(id),
+  limit_tier VARCHAR(32) NOT NULL,
+  licence_phase VARCHAR(16) NOT NULL,
+  granted_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  granted_by_verification_id UUID REFERENCES verifications(id)
+);
+
+CREATE TABLE kyc_audit_logs (
+  id BIGSERIAL PRIMARY KEY,
+  occurred_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  application_id UUID,
+  subject_id UUID,
+  actor_type VARCHAR(16) NOT NULL,
+  actor_id VARCHAR(64),
+  action VARCHAR(64) NOT NULL,
+  previous_state VARCHAR(64),
+  new_state VARCHAR(64),
+  correlation_id VARCHAR(64),
+  payload_hash CHAR(64) NOT NULL,
+  schema_version INT NOT NULL DEFAULT 1
+);
+-- GRANT INSERT, SELECT ON kyc_audit_logs TO identity_app; -- no UPDATE/DELETE
+</code></pre>
+<p>Remaining tables follow the column lists in §5. App role: no <code>DELETE</code> on evidence, uniqueness, audit, or history.</p>
+<hr />
+<h2 id="7-integration-contract-no-shared-db">7. Integration contract (no shared DB)</h2>
+<p>Identity <strong>outbox</strong> events (minimal PII):</p>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>When</th>
+<th>Consumed by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>identity.application.initiated</code></td>
+<td>Tracking ID minted, state <code>INITIATED</code></td>
+<td>Analytics / audit replica</td>
+</tr>
+<tr>
+<td><code>identity.contact.verified</code></td>
+<td>OTP success</td>
+<td><strong>Notify</strong> — SMS Tracking ID to bound MSISDN</td>
+</tr>
+<tr>
+<td><code>identity.wallet.eligible</code></td>
+<td>Screening + Verisys pass; uniqueness OPEN; <code>limit_tier=VERISYS</code></td>
+<td><strong>Ledger</strong> — create instrument at par when funded</td>
+</tr>
+<tr>
+<td><code>identity.limit_tier.changed</code></td>
+<td>BV / enhanced / minor freelancer</td>
+<td><strong>Ledger</strong> — switch policy; still reject over-cap</td>
+</tr>
+<tr>
+<td><code>identity.application.rejected</code></td>
+<td>Sanctions / consent refuse / written decline</td>
+<td>Ledger (do not issue), AML, Notify</td>
+</tr>
+<tr>
+<td><code>identity.application.closed_unverified</code></td>
+<td>One-credit flag failed</td>
+<td>Ledger close, AML STR</td>
+</tr>
+<tr>
+<td><code>identity.duplicate_cnic</code></td>
+<td>Uniqueness hit</td>
+<td>App redirect; no second instrument</td>
+</tr>
+</tbody>
+</table>
+<p>Ledger stores <code>subject_id UUID NOT NULL</code> and <code>limit_tier VARCHAR(32)</code> as a <strong>replica</strong>. If replica and Identity disagree, <strong>Identity wins eligibility</strong>; <strong>Ledger wins the posting</strong> (fail closed on cap).</p>
+<p>Notify does not generate Tracking IDs. Agent APIs never call Identity <code>POST /kyc/applications</code> to issue.</p>
+<hr />
+<h2 id="8-ledger-db-stub-not-this-service">8. Ledger DB (stub — not this service)</h2>
+<p>Enough to keep money out of Identity. Full ledger model is a separate document when that service is designed.</p>
+<table>
+<thead>
+<tr>
+<th>Table</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>wallets</code></td>
+<td><code>id</code>, <code>subject_id</code>, <code>status</code>, <code>limit_tier</code> replica, <code>opened_at</code></td>
+</tr>
+<tr>
+<td><code>limit_policies</code></td>
+<td><code>limit_tier</code> × <code>licence_phase</code> → monthly load, daily cash-out</td>
+</tr>
+<tr>
+<td><code>postings</code></td>
+<td>Legs; payments vs receipts <strong>separate buckets</strong> (<strong>FR-E24</strong>)</td>
+</tr>
+<tr>
+<td><code>trust_postings</code></td>
+<td>Par issue/redeem vs trustee</td>
+</tr>
+<tr>
+<td><code>alert_outbox</code></td>
+<td>Real-time alert per posting (<strong>FR-E37</strong>)</td>
+</tr>
+</tbody>
+</table>
+<p>Unique open wallet per <code>subject_id</code> where status in (<code>ACTIVE</code>,<code>RESTRICTED</code>) — <strong>defence in depth</strong>; Identity uniqueness remains authoritative for CNIC.</p>
+<hr />
+<h2 id="9-retention-and-pii">9. Retention and PII</h2>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CDD + decisions + uniqueness + audit</td>
+<td>≥ <strong>10 years</strong> (EMI §24.II) or stricter law</td>
+</tr>
+<tr>
+<td>Call / video KYC recordings</td>
+<td><strong>1 year</strong> unless Legal hold</td>
+</tr>
+<tr>
+<td>OTP hashes</td>
+<td>Until consumed + short cool-down; never the code</td>
+</tr>
+<tr>
+<td>Object-store KYC media</td>
+<td>Encrypted; not on capture device; purpose-limited</td>
+</tr>
+</tbody>
+</table>
+<p>Encryption at rest for CNIC, mother’s name, MSISDN, vendor biometric <strong>tokens</strong>. Cloud: BPRD 01/2023. No offshore without SBP written approval (<strong>NFR-E05</strong>).</p>
+<hr />
+<h2 id="10-traceability-table-use-case">10. Traceability (table → use case)</h2>
+<table>
+<thead>
+<tr>
+<th>Cluster</th>
+<th>UC</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>applications + tracking + history</td>
+<td>UC-E01, E09, E19, S01</td>
+<td>Tracking in-app at Step 0</td>
+</tr>
+<tr>
+<td>otp + contacts</td>
+<td>UC-E06</td>
+<td>Stay <code>INITIATED</code> on fail</td>
+</tr>
+<tr>
+<td>consents</td>
+<td>UC-E18</td>
+<td></td>
+</tr>
+<tr>
+<td>uniqueness</td>
+<td>UC-E05</td>
+<td></td>
+</tr>
+<tr>
+<td>verifications VERISYS</td>
+<td>UC-E01</td>
+<td></td>
+</tr>
+<tr>
+<td>verifications BV</td>
+<td>UC-E02, E07, E08</td>
+<td></td>
+</tr>
+<tr>
+<td>sim_pairings + Annexure-J evidence</td>
+<td>UC-E03</td>
+<td>P5</td>
+</tr>
+<tr>
+<td>screening_results</td>
+<td>UC-E10, S02</td>
+<td></td>
+</tr>
+<tr>
+<td>kyc_cases video</td>
+<td>UC-E11</td>
+<td>Ops UI not a customer journey</td>
+</tr>
+<tr>
+<td>guardian_links</td>
+<td>UC-E13, E14</td>
+<td>P6</td>
+</tr>
+<tr>
+<td>exclusion_eligibility</td>
+<td>UC-E15, E16</td>
+<td>P6</td>
+</tr>
+<tr>
+<td>limit_eligibility</td>
+<td>UC-S03 (event to ledger)</td>
+<td></td>
+</tr>
+<tr>
+<td>outbox → notify</td>
+<td>UC-S04 is <strong>ledger</strong> alerts; Tracking SMS is Notify on E08</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>QA IDs J-E01–J-E07 still exercise the customer path; they do not read <code>ledger_db</code>.</p>
+</article>
+<div class="pager"><a href="06-architecture-and-services.html">← 06-architecture-and-services</a><span></span><a href="08-state-machine.html">08-state-machine →</a></div>
+<footer class="note">Rendered preview of 07-database-and-erd.md. Markdown remains the source of truth. Not legal advice.</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: "neutral", darkMode: false, flowchart: { useMaxWidth: true }, er: { useMaxWidth: false } });</script>
+
+</body>
+</html>

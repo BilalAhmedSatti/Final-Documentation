@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>9–10. Public EMI KYC benchmarks</title>
+<link rel="stylesheet" href="assets/doc.css">
+</head>
+<body>
+<nav class="top">
+  <div class="top-inner">
+    <a href="index.html">EMI pack home</a>
+    <span class="meta"><a href="05c-emi-interactive-journeys.html">Journeys</a> · <a href="04-emi-benchmarks.md">Source .md</a></span>
+  </div>
+</nav>
+<article class="page markdown-body">
+<h1 id="910-public-emi-kyc-benchmarks">9–10. Public EMI KYC benchmarks</h1>
+<blockquote>
+<p>Public help centres and press only. <strong>Not</strong> SBP examination findings. Extra product limits beyond EMI §14 are <strong>D</strong> unless Legal maps them to regulation. Not legal advice.</p>
+</blockquote>
+<h2 id="method">Method</h2>
+<ul>
+<li>Use <strong>official help / T&amp;Cs</strong> where available.  </li>
+<li>Map to <strong>Verisys 50k / BV 400k / remittance 1.5m exclusion</strong>.  </li>
+<li>JazzCash / EasyPaisa Bank / Mashreq NEO are <strong>out of cohort</strong> (not EMIs).</li>
+</ul>
+<h2 id="summary-matrix">Summary matrix</h2>
+<table>
+<thead>
+<tr>
+<th>EMI</th>
+<th>Signup (public)</th>
+<th>Default monthly incoming</th>
+<th>Upgrade to 400k</th>
+<th>Other public signals</th>
+<th>Confidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>SadaPay</strong></td>
+<td>App; CNIC; SBP 50k default stated</td>
+<td>PKR 50,000</td>
+<td>In-app fingerprint BVS <strong>or</strong> NADRA e-Sahulat barcode receipt via chat</td>
+<td>Help lists max balance, debit cycles, ATM — treat as product <strong>D</strong></td>
+<td>High (help.sadapay.pk)</td>
+</tr>
+<tr>
+<td><strong>NayaPay</strong></td>
+<td>CNIC, mobile, live selfie</td>
+<td>PKR 50,000</td>
+<td>In-app fingerprint <strong>or</strong> Meezan ATM biometric (no card)</td>
+<td>Help Jun 2025: cash-out 10k→50k; remittance →1.5m; merchant/P2P rows</td>
+<td>High (help.nayapay.com)</td>
+</tr>
+<tr>
+<td><strong>Finja / OPay</strong></td>
+<td>Not publicly disclosed in this pass</td>
+<td>Assume regulatory ladder until proven</td>
+<td>Unknown channel</td>
+<td>Legal entity vs brand: confirm</td>
+<td>Low</td>
+</tr>
+<tr>
+<td><strong>Digitt+ (Akhtar Fuiou)</strong></td>
+<td>Not publicly disclosed</td>
+<td>Assume ladder</td>
+<td>Unknown</td>
+<td>—</td>
+<td>Low</td>
+</tr>
+<tr>
+<td><strong>OneZapp (EPS)</strong></td>
+<td>Not publicly disclosed</td>
+<td>Assume ladder</td>
+<td>Unknown</td>
+<td>FSR: consumers, merchants, agents</td>
+<td>Low</td>
+</tr>
+<tr>
+<td><strong>Keenu (Wemsol)</strong></td>
+<td>Not publicly disclosed</td>
+<td>Assume ladder</td>
+<td>Unknown</td>
+<td>Wallet <strong>+ gateway</strong> on commercial licence</td>
+<td>Low</td>
+</tr>
+</tbody>
+</table>
+<p>Sources:</p>
+<ul>
+<li>https://help.sadapay.pk/en/articles/7185807-what-are-my-personal-account-limits  </li>
+<li>https://help.sadapay.pk/en/articles/6404720-how-do-i-increase-my-sadapay-wallet-limit-via-in-app-bvs  </li>
+<li>https://help.sadapay.pk/en/articles/4939283-how-do-i-increase-my-sadapay-wallet-limit-wallet-limit-via-nadra-e-sahulat-centre  </li>
+<li>https://help.nayapay.com/article/68-are-there-any-account-limits  </li>
+</ul>
+<h2 id="patterns-we-should-copy-c-not-a">Patterns we should copy (C, not A)</h2>
+<ol>
+<li><strong>Explicit SBP 50k copy</strong> on the home/limit screen — customers understand BV is the upgrade.  </li>
+<li><strong>Two BV channels:</strong> in-app SDK <strong>and</strong> offline authenticated NADRA/ATM/agent BV (helps seniors / poor prints).  </li>
+<li><strong>Refund e-Sahulat fee</strong> (SadaPay) — product <strong>D</strong>, good UX.  </li>
+<li><strong>ATM BVS without inserting a card</strong> (NayaPay + Meezan) — partnership <strong>D</strong>.  </li>
+<li>Do <strong>not</strong> copy undocumented max-balance or yearly international rows into “SBP mandatory.”</li>
+</ol>
+<h2 id="patterns-we-must-not-copy-blindly">Patterns we must not copy blindly</h2>
+<ul>
+<li>Treating selfie as sufficient for <strong>400k</strong> (it is not BV).  </li>
+<li>Opening a second wallet for the same CNIC.  </li>
+<li>Agent-led <strong>issuance</strong>.  </li>
+<li>Paying profit on wallet float (DRB competitive response — <strong>illegal</strong> for EMI).  </li>
+<li>Silent STP if screening/NADRA is down.</li>
+</ul>
+<p>Full grid: <a href="appendices/B-comparative-emi-matrix.html">appendices/B-comparative-emi-matrix</a>.</p>
+</article>
+<div class="pager"><a href="03-shared-ekyc-and-emi.html">← 03-shared-ekyc-and-emi</a><span></span><a href="05-recommended-emi-kyc-process.html">05-recommended-emi-kyc-process →</a></div>
+<footer class="note">Rendered preview of 04-emi-benchmarks.md. Markdown remains the source of truth. Not legal advice.</footer>
+
+</body>
+</html>

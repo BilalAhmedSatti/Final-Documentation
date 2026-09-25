@@ -1,0 +1,39 @@
+flowchart LR
+  subgraph appdb [KYC_Application_Store]
+    APP[kyc_applications]
+    IDN[customer_identities]
+    CON[customer_contacts]
+    ADDR[customer_addresses]
+    INC[customer_occupations_income]
+    TAX[customer_tax_profiles]
+    CNS[kyc_consents]
+  end
+  subgraph evidence [Evidence_Store]
+    VER[kyc_verifications]
+    ATT[kyc_verification_attempts]
+    FACE[face_checks]
+    DOC[kyc_documents]
+    SCR[screening_results]
+  end
+  subgraph decision [Decision_Store]
+    RISK[customer_risk_assessments]
+    CASE[kyc_cases]
+    DEC[kyc_decisions]
+    HIST[kyc_status_history]
+  end
+  subgraph post [Post_KYC]
+    CUST[customers]
+    ACCT[accounts]
+    REF[kyc_refresh_schedules]
+  end
+  AUD[(kyc_audit_logs_append_only)]
+  OBJ[(Encrypted_Object_Store)]
+  APP --> IDN
+  APP --> VER
+  APP --> SCR
+  APP --> RISK
+  APP --> CASE
+  DOC --> OBJ
+  DEC --> CUST --> ACCT
+  VER --> ATT
+  APP --> AUD

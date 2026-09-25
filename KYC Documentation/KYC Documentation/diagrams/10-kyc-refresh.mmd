@@ -1,0 +1,13 @@
+flowchart TD
+  Sched[Scheduler_by_Risk_Interval] --> Due[Mark_REFRESH_DUE]
+  Due --> Notify[Notify_Customer]
+  Notify --> Update[Customer_Updates_Profile]
+  Update --> Screen[ReScreen_Sanctions_PEP]
+  Screen --> Risk[ReScore_CRP]
+  Risk --> Mat{Material_Change_or_HighRisk}
+  Mat -->|yes| EDD[EDD_or_Manual]
+  Mat -->|no| Done[Complete_Refresh_Set_Next_Due]
+  EDD --> Done
+  Due --> Overdue{Overdue_Policy}
+  Overdue -->|yes| Restrict[Restrict_Debit_or_Freeze]
+  Restrict --> Notify

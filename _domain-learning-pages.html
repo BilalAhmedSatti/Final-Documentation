@@ -1,0 +1,420 @@
+<!-- DOMAIN LEARNING — inserted into index.html -->
+<section class="page" id="page-domain">
+  <p class="eyebrow">Domain Learning</p>
+  <h1>Unified Digital Banking &amp; EMI Domain Master Specification</h1>
+  <p class="lede">
+    The complete domain picture for our multi-tenant, multi-region Digital Banking &amp; EMI platform —
+    accounting, regulation, KYC, payments, fees, risk, cards, reporting, and FX — in one place for the whole team.
+  </p>
+
+  <div class="eli5">
+    <h3>In plain English</h3>
+    <p>
+      An EMI wallet is digital money. Customers hold a balance; we hold matching reserves at a trustee bank.
+      Every payment moves value with double-entry bookkeeping. Every market (Pakistan → UAE → Saudi) has its own
+      central bank rules, ID system, and payment rails — but the same eleven capability pillars.
+    </p>
+    <p class="analogy">
+      <strong>Analogy:</strong> Think of a city. The ledger is the electricity grid (power must balance).
+      KYC is the ID checkpoint. Payment rails are the highways to other cities. Fees and tax are tolls.
+      Fraud rules are traffic police. Audit logs are CCTV that never forgets.
+    </p>
+  </div>
+
+  <div class="callout warn">
+    <strong>How this relates to J1–J19</strong>
+    <p>
+      <strong>Journeys J1–J19</strong> are the Pakistan EMI KYC companion paths (CCOF / map).
+      <strong>Domain Learning</strong> is the wider platform blueprint (ledger, rails, fees, multi-market).
+      Where numbers differ (for example licence limit bands vs commercial EMI §14 bands), confirm the
+      active <code>licence_phase</code> / product config — official circulars always prevail.
+    </p>
+  </div>
+
+  <h2>Jump to a section</h2>
+  <div class="toc-jump">
+    <a class="pill blue" href="#domain-pillars" data-page="domain-pillars">11 pillars glance</a>
+    <a class="pill" href="#domain" data-page="domain">1 · Scope</a>
+    <a class="pill green" href="#domain" data-page="domain">2 · Ledger</a>
+    <a class="pill green" href="#domain" data-page="domain">3 · Regulators</a>
+    <a class="pill violet" href="#audit" data-page="audit">SBP audit page</a>
+    <a class="pill amber" href="#domain-practice" data-page="domain-practice">Team exercises</a>
+  </div>
+
+  <h2 id="dl-scope">1. Executive summary &amp; domain scope</h2>
+  <p class="prose">
+    This specification synthesizes core banking capabilities, regulatory frameworks, compliance rules,
+    financial accounting mechanics, and operational workflows into a single authoritative reference for
+    the multi-tenant, multi-region platform.
+  </p>
+  <div class="callout ok">
+    <strong>Launch sequence</strong>
+    <p><strong>Pakistan (SBP)</strong> → <strong>UAE (CBUAE)</strong> → <strong>Saudi Arabia (SAMA)</strong>.</p>
+  </div>
+  <ul class="detail-list">
+    <li><strong>Multi-tenant</strong> — one platform serving multiple institutions / brands with isolation.</li>
+    <li><strong>Multi-region</strong> — country packs for ID, rails, tax, residency, and limits.</li>
+    <li><strong>EMI / digital banking</strong> — e-money and payment services under central-bank licences (not a generic fintech toy).</li>
+  </ul>
+
+  <h2 id="dl-p1">2. Pillar 1 — Double-entry ledger (TigerBeetle + PostgreSQL)</h2>
+  <div class="eli5">
+    <h3>In plain English</h3>
+    <p>
+      Money is never “created from thin air” inside the ledger. Every move is a pair:
+      something is debited and something is credited by the same amount.
+      Formula: <strong>sum of debits = sum of credits</strong>.
+    </p>
+  </div>
+  <h3>Non‑negotiable invariants</h3>
+  <ol class="detail-list">
+    <li><strong>Integer minor units only</strong> — store paisa / fils / cents as <code>bigint</code> (e.g. <code>@platform/money</code>). Floating point (<code>float</code>/<code>double</code>) is forbidden.</li>
+    <li><strong>Account types</strong>
+      <ul>
+        <li><em>Asset</em> (↑ debit, ↓ credit) — e.g. commercial bank escrow balances we hold.</li>
+        <li><em>Liability</em> (↑ credit, ↓ debit) — customer wallets (our obligation to the customer).</li>
+        <li><em>Equity / Income / Expense</em> — fees revenue and operating costs.</li>
+      </ul>
+    </li>
+    <li><strong>Reversals over edits</strong> — ledgers are append-only. Mistakes get an opposite reversing post — never delete or overwrite history.</li>
+    <li><strong>TigerBeetle</strong> — authoritative posting engine for balances and 2-phase holds (debits = credits). <strong>PostgreSQL</strong> keeps append-only journal metadata (ADR-0004).</li>
+  </ol>
+  <div class="callout danger">
+    <strong>Fail closed for money math</strong>
+    <p>If a transfer cannot balance, do not post a one-sided entry. Hold, reverse, or leave in-flight for reconciliation — never “fix” the balance.</p>
+  </div>
+
+  <h2 id="dl-p2">3. Pillar 2 — Regulatory frameworks (SBP, CBUAE, SAMA)</h2>
+  <p class="prose">EMIs operate under central-bank licences that define verification tiers, limits, and reserve backing.</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Aspect</th>
+          <th>Pakistan (SBP EMI)</th>
+          <th>UAE (CBUAE SVF)</th>
+          <th>Saudi (SAMA PSP)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Level 0 limit</strong></td>
+          <td>25,000 PKR / month</td>
+          <td>Basic Wallet tier</td>
+          <td>Basic Sandbox tier</td>
+        </tr>
+        <tr>
+          <td><strong>Level 1 limit</strong></td>
+          <td>200,000 PKR / month (CNIC + NADRA eKYC)</td>
+          <td>Standard SVF tier</td>
+          <td>Standard PSP tier</td>
+        </tr>
+        <tr>
+          <td><strong>Level 2 limit</strong></td>
+          <td>1,000,000 PKR / month (Video KYC path in this matrix)</td>
+          <td>Enhanced tier</td>
+          <td>Enhanced tier</td>
+        </tr>
+        <tr>
+          <td><strong>National digital ID</strong></td>
+          <td>NADRA eKYC / CNIC</td>
+          <td>UAE PASS</td>
+          <td>Yakeen / Nafath</td>
+        </tr>
+        <tr>
+          <td><strong>Credit bureau</strong></td>
+          <td>eCIB</td>
+          <td>AECB</td>
+          <td>SIMAH</td>
+        </tr>
+        <tr>
+          <td><strong>Data residency</strong></td>
+          <td>Local cloud region</td>
+          <td>Local cloud region</td>
+          <td>Strict KSA residency (no cross-border processing)</td>
+        </tr>
+        <tr>
+          <td><strong>Reserve backing</strong></td>
+          <td>100% escrow at SBP bank</td>
+          <td>100% ring-fenced escrow</td>
+          <td>100% safeguarded escrow at SAMA bank</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="prose muted-lead">
+    Pakistan day-to-day KYC bands in <a href="#limits" data-page="limits">Limits &amp; EMI 14.VI</a> and journeys
+    (e.g. Verisys / biometric commercial bands) may use the CCOF companion numbers — treat this matrix as the
+    multi-market learning frame and confirm product config for production.
+  </p>
+
+  <h2 id="dl-p3">4. Pillar 3 — Onboarding, eKYC &amp; compliance screening</h2>
+  <div class="eli5">
+    <h3>In plain English</h3>
+    <p>
+      Nobody gets a working wallet until identity and sanctions checks finish safely.
+      If a check times out or fails, the case goes to <strong>HOLD / MANUAL_REVIEW</strong> —
+      it is never auto-approved “optimistically.”
+    </p>
+  </div>
+  <pre class="mermaid">flowchart TD
+    A[Open wallet / application] --> B[Capture ID + live evidence]
+    B --> C[Sanctions / PEP / watchlist]
+    C -->|Clear| D[eKYC / NADRA or market ID]
+    C -->|Hit| E[Decline / TFS path]
+    C -->|Timeout| F[HOLD · fail closed]
+    D -->|Pass| G[Risk rating]
+    D -->|Fail / timeout| F
+    G -->|Low/Med| H[Activate after cool-off]
+    G -->|High| I[EDD + senior approval]
+    I -->|Approved| H
+    I -->|Refused| E
+    F --> J[Retry or manual review]
+    J --> C
+  </pre>
+  <div class="callout danger">
+    <strong>Fail-closed rule</strong>
+    <p>Screening timeout or eKYC failure → MANUAL_REVIEW / HOLD. An account is <strong>never</strong> auto-cleared optimistically. Same spirit as journeys <a href="#J5" data-page="J5">J5</a>, <a href="#J11" data-page="J11">J11</a>, and the <a href="#audit" data-page="audit">SBP audit readiness</a> page.</p>
+  </div>
+
+  <h2 id="dl-p4">5. Pillar 4 — Payment rails, clearing &amp; settlement sagas</h2>
+  <p class="prose">External money movement uses national instant rails through SPI adapters.</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Jurisdiction</th><th>Instant rail</th><th>RTGS / clearing</th><th>SPI adapter</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Pakistan</td><td>Raast (SBP)</td><td>PRISM</td><td>PayoutRailPort (Raast)</td></tr>
+        <tr><td>UAE</td><td>Aani (CBUAE)</td><td>UAEFT</td><td>PayoutRailPort (Aani)</td></tr>
+        <tr><td>Saudi Arabia</td><td>Sarie (SAMA)</td><td>SARIE RTGS</td><td>PayoutRailPort (Sarie)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>Transfer saga lifecycle</h3>
+  <ol class="story-steps">
+    <li><strong>Authorize</strong> — Lock customer funds on TigerBeetle (pending hold).</li>
+    <li><strong>Execute</strong> — Submit payload to the national rail via SPI adapter.</li>
+    <li><strong>Settle / confirm</strong>
+      <ul>
+        <li><strong>SUCCESS</strong> — Commit hold → Debit customer wallet, Credit outbound settlement account.</li>
+        <li><strong>FAILURE</strong> — Void hold → funds return to customer.</li>
+        <li><strong>TIMEOUT</strong> — Leave <code>IN_FLIGHT</code>; run automated reconciliation query.</li>
+      </ul>
+    </li>
+  </ol>
+
+  <h2 id="dl-p5">6. Pillar 5 — Dynamic fee engine &amp; tax withholding</h2>
+  <p class="prose">Pricing (service 10) calculates revenue fees and government tax.</p>
+  <h3>Fee structures</h3>
+  <ul class="detail-list">
+    <li><strong>Fixed</strong> — flat amount (e.g. 15 PKR ATM fee).</li>
+    <li><strong>Percentage</strong> — e.g. 0.5% international spend.</li>
+    <li><strong>Slab</strong> — tiered ranges (0–25k free, above that fee applies).</li>
+  </ul>
+  <h3>Tax withholding (examples)</h3>
+  <ul class="detail-list">
+    <li><strong>Pakistan (FBR)</strong> — WHT for non-filers + provincial sales tax (about 13–16% SST/PST).</li>
+    <li><strong>Saudi Arabia (ZATCA)</strong> — 15% VAT on processing fees.</li>
+    <li><strong>UAE (FTA)</strong> — 5% VAT on processing fees.</li>
+  </ul>
+  <div class="callout danger">
+    <strong>Fail closed</strong>
+    <p>Missing tax rate pack <strong>halts startup</strong> — never silently process as zero-tax.</p>
+  </div>
+
+  <h2 id="dl-p6">7. Pillar 6 — Three-way reconciliation &amp; settlement</h2>
+  <div class="eli5">
+    <h3>In plain English</h3>
+    <p>Every day we prove our books match the outside world — three statements must tell the same story.</p>
+  </div>
+  <pre class="mermaid">flowchart LR
+    A[Internal ledger postings] --- B[Rail gateway settlement file]
+    B --- C[Partner bank escrow statement]
+    A --- C
+  </pre>
+  <p class="prose"><strong>Breakage:</strong> unmatched debits/credits go to automated <em>Suspense</em> accounts for ops to resolve — they are not ignored.</p>
+
+  <h2 id="dl-p7">8. Pillar 7 — Transaction risk, fraud &amp; velocity</h2>
+  <ul class="detail-list">
+    <li><strong>Velocity</strong> — e.g. max 3 transactions / minute → automated 15-minute cool-off.</li>
+    <li><strong>PIN failures</strong> — 5 wrong PINs in a row → <code>LOCKED_FAILED_PIN</code>.</li>
+    <li><strong>Mule patterns</strong> — detect rapid pass-through (money in and straight out within seconds).</li>
+  </ul>
+  <p class="prose muted-lead">Related KYC journeys: new device <a href="#J9" data-page="J9">J9</a>, monitoring <a href="#J10" data-page="J10">J10</a>, cash channels <a href="#J19" data-page="J19">J19</a>.</p>
+
+  <h2 id="dl-p8">9. Pillar 8 — Support, disputes &amp; account holds</h2>
+  <ul class="detail-list">
+    <li><strong>Judicial / administrative freeze</strong> — court or central-bank order → <code>FROZEN_JUDICIAL</code> (blocks outbound transfers).</li>
+    <li><strong>Erroneous transfer reversals</strong> — recipient consent required before reversing misdirected transfers, unless proven fraud.</li>
+  </ul>
+
+  <h2 id="dl-p9">10. Pillar 9 — Card management (CMS &amp; 3DS)</h2>
+  <p class="prose">Virtual and physical debit cards (Visa, Mastercard, PayPak, mada):</p>
+  <ol class="detail-list">
+    <li>Instant virtual card</li>
+    <li>Physical personalization</li>
+    <li>Courier delivery</li>
+    <li>In-app activation</li>
+  </ol>
+  <p class="prose"><strong>Controls:</strong> dynamic CVV, channel toggles (POS / ATM / e-commerce), 3-D Secure OTP.</p>
+
+  <h2 id="dl-p10">11. Pillar 10 — Regulatory reporting (STR / CTR)</h2>
+  <ul class="detail-list">
+    <li><strong>STR</strong> — Suspicious Transaction Reports to FIUs (e.g. FMU in Pakistan, SAFIU in Saudi) when structuring / laundering patterns appear.</li>
+    <li><strong>CTR</strong> — Currency Transaction Reports for large amounts (example threshold: &gt; 2,000,000 PKR).</li>
+    <li><strong>10-year retention</strong> — keep compliance logs and verification cases immutably for ~10 years.</li>
+  </ul>
+  <p class="prose">Deep dive for Pakistan auditors: <a href="#audit" data-page="audit">SBP audit readiness</a>.</p>
+
+  <h2 id="dl-p11">12. Pillar 11 — Multi-currency &amp; FX treasury</h2>
+  <ul class="detail-list">
+    <li><strong>FX quote</strong> — FX Lib mid-market → Pricing spread → immutable <code>quote_id</code> valid ~60 seconds (scale-8 precision).</li>
+    <li><strong>Position accounts</strong> — FX position accounts in the ledger keep multi-currency double-entry balanced.</li>
+  </ul>
+
+  <div class="toc-jump" style="margin-top:1.5rem">
+    <a class="pill blue" href="#domain-pillars" data-page="domain-pillars">11 pillars at a glance →</a>
+    <a class="pill amber" href="#domain-practice" data-page="domain-practice">Team exercises →</a>
+    <a class="pill green" href="#J1" data-page="J1">Back to KYC J1 →</a>
+  </div>
+</section>
+
+<section class="page" id="page-domain-pillars">
+  <p class="eyebrow">Domain Learning</p>
+  <h1>The 11 master domain pillars</h1>
+  <p class="lede">One diagram for the whole platform. Click through to the full specification for detail.</p>
+
+  <div class="eli5">
+    <h3>Why eleven pillars?</h3>
+    <p>
+      KYC alone does not make a licensed EMI. Money must balance, rails must settle, fees must tax correctly,
+      fraud must be watched, and reports must reach the regulator. These eleven pillars are that map.
+    </p>
+  </div>
+
+  <pre class="mermaid">flowchart TB
+    subgraph core [Money core]
+      P1[1 Ledger · TigerBeetle + PG]
+      P6[6 3-way reconciliation]
+      P11[11 FX &amp; multi-currency]
+    end
+    subgraph trust [Trust &amp; licence]
+      P2[2 Regulators SBP/CBUAE/SAMA]
+      P3[3 Onboarding eKYC screening]
+      P10[10 STR / CTR reporting]
+    end
+    subgraph move [Move money]
+      P4[4 Rails · Raast/Aani/Sarie]
+      P5[5 Fees &amp; tax]
+      P9[9 Cards CMS &amp; 3DS]
+    end
+    subgraph protect [Protect]
+      P7[7 Fraud &amp; velocity]
+      P8[8 Support · disputes · freezes]
+    end
+    P3 --> P1
+    P1 --> P4
+    P4 --> P5
+    P4 --> P6
+    P3 --> P10
+    P7 --> P4
+    P8 --> P1
+    P9 --> P4
+    P11 --> P1
+    P2 -.-> P3
+    P2 -.-> P10
+  </pre>
+
+  <div class="detail-grid">
+    <div class="detail-box"><h4>1 · Ledger</h4><p>Double-entry, integer money, TigerBeetle posts, PG journal.</p></div>
+    <div class="detail-box"><h4>2 · Regulators</h4><p>SBP → CBUAE → SAMA; tiers, ID, residency, escrow.</p></div>
+    <div class="detail-box"><h4>3 · eKYC</h4><p>Fail-closed screening; HOLD not optimistic clear.</p></div>
+    <div class="detail-box"><h4>4 · Rails</h4><p>Raast / Aani / Sarie sagas: authorize → execute → settle.</p></div>
+    <div class="detail-box"><h4>5 · Fees &amp; tax</h4><p>Fixed / % / slab; WHT/VAT packs required at startup.</p></div>
+    <div class="detail-box"><h4>6 · Recon</h4><p>Ledger ⇔ rail file ⇔ escrow statement; suspense for breaks.</p></div>
+    <div class="detail-box"><h4>7 · Fraud</h4><p>Velocity, PIN lock, mule pass-through detection.</p></div>
+    <div class="detail-box"><h4>8 · Support</h4><p>Judicial freeze; careful erroneous reversals.</p></div>
+    <div class="detail-box"><h4>9 · Cards</h4><p>Virtual → physical → activate; 3DS &amp; channel controls.</p></div>
+    <div class="detail-box"><h4>10 · Reporting</h4><p>STR / CTR + ~10-year immutable retention.</p></div>
+    <div class="detail-box full"><h4>11 · FX treasury</h4><p>Quoted FX with short TTL; position accounts keep books balanced across currencies.</p></div>
+  </div>
+
+  <div class="toc-jump">
+    <a class="pill violet" href="#domain" data-page="domain">Open full master specification →</a>
+    <a class="pill amber" href="#domain-practice" data-page="domain-practice">Practice exercises →</a>
+  </div>
+</section>
+
+<section class="page" id="page-domain-practice">
+  <p class="eyebrow">Domain Learning</p>
+  <h1>Practical team learning exercises</h1>
+  <p class="lede">Build fluency across engineering and product — not by memorising acronyms, but by tracing real flows.</p>
+
+  <div class="eli5">
+    <h3>How to use this page</h3>
+    <p>Pick one exercise per week. Whiteboard it. Then map the same story onto <strong>J1–J19</strong> (KYC) and the <strong>11 pillars</strong> (platform).</p>
+  </div>
+
+  <div class="step-block">
+    <h3>Exercise 1 — Real-world app reverse engineering</h3>
+    <p class="prose">Download SadaPay / NayaPay / STC Pay (or similar). Audit onboarding screens, limit banners, error messages, and PDF statements.</p>
+    <ul class="detail-list">
+      <li>Where is the Tracking ID / application status shown?</li>
+      <li>What happens when verification is delayed?</li>
+      <li>How are limits explained after KYC?</li>
+    </ul>
+  </div>
+
+  <div class="step-block">
+    <h3>Exercise 2 — Monorepo design-spec audits</h3>
+    <p class="prose">Deep-dive design docs such as <code>02_identity.design.md</code>, <code>04_ledger.design.md</code>, <code>05_payments.design.md</code>, <code>06_wallets.design.md</code>, and <code>AGENTS.md</code>.</p>
+    <ul class="detail-list">
+      <li>Find the money invariant (integer minor units).</li>
+      <li>Find the fail-closed KYC rule.</li>
+      <li>Find how holds / reversals are described.</li>
+    </ul>
+  </div>
+
+  <div class="step-block">
+    <h3>Exercise 3 — Central bank rulebook review</h3>
+    <p class="prose">Read SBP EMI Regulations, CBUAE SVF Rules, and SAMA PSP Guidelines (official sources).</p>
+    <ul class="detail-list">
+      <li>Compare ID systems: NADRA vs UAE PASS vs Nafath/Yakeen.</li>
+      <li>Compare reserve / escrow wording.</li>
+      <li>Note data-residency differences (especially KSA).</li>
+    </ul>
+  </div>
+
+  <div class="step-block">
+    <h3>Exercise 4 — Weekly flow whiteboarding (45 minutes)</h3>
+    <p class="prose">Trace end-to-end, for example:</p>
+    <pre class="mermaid">flowchart LR
+      A[Customer registration] --> B[NADRA / market eKYC]
+      B --> C[Screening fail-closed]
+      C --> D[Cooling-off]
+      D --> E[TigerBeetle CoA / wallet liability]
+      E --> F[First funded credit]
+      F --> G[Raast / rail payout saga]
+    </pre>
+    <ul class="detail-list">
+      <li>Mark every fail-closed gate.</li>
+      <li>Mark every ledger posting (which account debit/credit).</li>
+      <li>Mark what an auditor would ask for at each step.</li>
+    </ul>
+  </div>
+
+  <div class="callout ok">
+    <strong>Suggested pairing</strong>
+    <p>
+      After whiteboarding, open <a href="#J1" data-page="J1">J1</a> + <a href="#audit" data-page="audit">SBP audit readiness</a> +
+      Pillar 1 (ledger) on the <a href="#domain" data-page="domain">master specification</a> — connect customer story ↔ money story ↔ audit story.
+    </p>
+  </div>
+
+  <div class="toc-jump">
+    <a class="pill violet" href="#domain" data-page="domain">Master specification</a>
+    <a class="pill blue" href="#domain-pillars" data-page="domain-pillars">11 pillars</a>
+    <a class="pill green" href="#spine" data-page="spine">KYC master spine</a>
+  </div>
+</section>

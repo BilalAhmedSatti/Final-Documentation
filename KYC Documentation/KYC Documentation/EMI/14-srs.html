@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>14. Software Requirements Specification — EMI wallet KYC / CDD</title>
+<link rel="stylesheet" href="assets/doc.css">
+</head>
+<body>
+<nav class="top">
+  <div class="top-inner">
+    <a href="index.html">EMI pack home</a>
+    <span class="meta"><a href="05c-emi-interactive-journeys.html">Journeys</a> · <a href="14-srs.md">Source .md</a></span>
+  </div>
+</nav>
+<article class="page markdown-body">
+<h1 id="14-software-requirements-specification-emi-wallet-kyc-cdd">14. Software Requirements Specification — EMI wallet KYC / CDD</h1>
+<blockquote>
+<p>Extracted from EMI Regulations §7–24, Consolidated Customer Onboarding Framework (BPRD C1/2025), AML/CFT overlay, and this pack’s journeys, state machine, and API.<br />
+<strong>Not legal advice.</strong> Confirm with Compliance and Legal before freezing a build. Do not invent NADRA APIs.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Product</td>
+<td>SBP-licensed <strong>Electronic Money Institution</strong> wallet (e-money instrument, not a bank deposit)</td>
+</tr>
+<tr>
+<td>Audience</td>
+<td>Product, engineering, QA, compliance</td>
+</tr>
+<tr>
+<td>Sources</td>
+<td><a href="appendices/A-regulatory-requirement-catalog.html">Appendix A</a>, <a href="02-sbp-emi-kyc-cdd-framework.html">02 framework</a>, <a href="05-recommended-emi-kyc-process.html">05 process</a>, <a href="08-state-machine.html">08 states</a>, <a href="09-api-specification.html">09 API</a>, <a href="12-sbp-compliance-mapping.html">12 mapping</a></td>
+</tr>
+<tr>
+<td>Companion</td>
+<td><a href="15-use-cases.html">15 — Use cases</a></td>
+</tr>
+<tr>
+<td>Class tags</td>
+<td><strong>A</strong> mandatory · <strong>B</strong> expectation · <strong>C</strong> industry practice · <strong>D</strong> this EMI’s choice</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="1-purpose-and-scope">1. Purpose and scope</h2>
+<h3 id="11-purpose">1.1 Purpose</h3>
+<p>Specify what the system <strong>must</strong> do to onboard a natural-person wallet holder, raise the instrument’s limit tier, enforce §14 limits, and fail closed on sanctions, duplicates, and unverified one-credit — without treating the product as a digital-bank deposit account.</p>
+<h3 id="12-in-scope">1.2 In scope</h3>
+<ul>
+<li>Customer-facing digital onboarding and category upgrade (Verisys → BV → enhanced).  </li>
+<li>Tracking ID, 2FA, consents, §12 / Table-A identity, live photo, TFS/PEP screen, NADRA Verisys/BV adapters, video KYC fallback.  </li>
+<li>One instrument per CNIC; <code>limit_tier</code> as a first-class state; ledger enforcement.  </li>
+<li>Agent <strong>cash-in/out</strong> only; trust-account posting at par; real-time alerts; audit reconstructability.</li>
+</ul>
+<h3 id="13-out-of-scope-this-srs">1.3 Out of scope (this SRS)</h3>
+<ul>
+<li>Conventional Digital Retail Bank deposit KYC (parent-folder pack).  </li>
+<li>NADRA proprietary request/response payloads.  </li>
+<li>Agent recruitment, STR casework UI, FMU filing ops (see <a href="10-aml-risk-edd-ops.html">10</a>).  </li>
+<li>Trustee-bank core, IBFT rails internals, virtual currencies.  </li>
+<li>Device bind as an E01/E02 issuance gate (C until Legal upgrades BPRD 04).  </li>
+<li>Minting Tracking ID only after OTP (unsigned; pack default is generate at Step 0).</li>
+</ul>
+<h3 id="14-licence-phases-constraint">1.4 Licence phases (constraint)</h3>
+<table>
+<thead>
+<tr>
+<th><code>licence_phase</code></th>
+<th>Allowed load after BV</th>
+<th>Enhanced 1M</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PILOT</code></td>
+<td>PKR <strong>200,000</strong>/month</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>COMMERCIAL</code></td>
+<td>PKR <strong>400,000</strong>/month</td>
+<td>Only after PSP&amp;OD approval + §14.III</td>
+</tr>
+</tbody>
+</table>
+<p>The app <strong>must not</strong> display a cap the licence cannot grant (<strong>A-E03</strong>).</p>
+<hr />
+<h2 id="2-actors">2. Actors</h2>
+<table>
+<thead>
+<tr>
+<th>Actor</th>
+<th>May</th>
+<th>Must not</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Customer</strong> (adult digital-ID holder)</td>
+<td>Open wallet, 2FA, upgrade limits, view tracking/status, cash-in/out as rules allow</td>
+<td>Hold two instruments at this EMI; skip 2FA</td>
+</tr>
+<tr>
+<td><strong>Guardian</strong></td>
+<td>Open linked <strong>minor</strong> wallet from <em>their</em> app</td>
+<td>Open a standalone adult wallet for the minor</td>
+</tr>
+<tr>
+<td><strong>Agent</strong></td>
+<td>Cash-in / cash-out for an existing wallet</td>
+<td><code>POST /wallets</code> or create applications</td>
+</tr>
+<tr>
+<td><strong>KYC Service</strong></td>
+<td>Write KYC states, uniqueness, evidence</td>
+<td>Move money</td>
+</tr>
+<tr>
+<td><strong>Ledger</strong></td>
+<td>Post e-money, enforce limits, fire alerts</td>
+<td>Change KYC state or <code>limit_tier</code> eligibility</td>
+</tr>
+<tr>
+<td><strong>NADRA adapter</strong></td>
+<td>Verisys / BV / pairing <strong>refs</strong></td>
+<td>Store raw biometric templates</td>
+</tr>
+<tr>
+<td><strong>Screening</strong></td>
+<td>TFS/PEP results</td>
+<td>Approve wallets</td>
+</tr>
+<tr>
+<td><strong>Ops / compliance</strong></td>
+<td>EDD, STR, declines, video KYC</td>
+<td>Appear in customer happy-path UX as “approve to skip NADRA”</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-assumptions-and-open-items">3. Assumptions and open items</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Item</th>
+<th>Until signed</th>
+<th>System does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O-01</td>
+<td>“Initiation” = first tap vs OTP success</td>
+<td>Legal</td>
+<td>Generate Tracking ID at <code>INITIATED</code>; SMS after OTP (<strong>D</strong> placement)</td>
+</tr>
+<tr>
+<td>O-02</td>
+<td>BPRD 04 device bind binds this EMI as A</td>
+<td>Legal</td>
+<td>No bind gate on E01/E02; §14.III pairing on enhanced</td>
+</tr>
+<tr>
+<td>O-03</td>
+<td>NADRA facial BioVerisys operational</td>
+<td>NADRA contract</td>
+<td>Finger / multi-finger is the only NADRA BV</td>
+</tr>
+<tr>
+<td>O-04</td>
+<td>Digital open for NICOP/POC/POR/ARC</td>
+<td>Legal vs CCOF §C.5</td>
+<td>Happy path = adult CNIC/SNIC</td>
+</tr>
+<tr>
+<td>O-05</td>
+<td>CCOF debit-block on EMI wallets</td>
+<td>Compliance</td>
+<td>Do not use bank debit-block; keep <code>limit_tier=VERISYS</code></td>
+</tr>
+<tr>
+<td>O-06</td>
+<td>v1 enhanced 1M / minors / exclusions</td>
+<td>Product + PSP&amp;OD</td>
+<td>Journeys exist; feature-flag off until approved</td>
+</tr>
+<tr>
+<td>O-07</td>
+<td>Record retention 10y vs AML 5y</td>
+<td>Legal</td>
+<td>Implement the <strong>stricter</strong> rule</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-functional-requirements">4. Functional requirements</h2>
+<p>Priority: <strong>P0</strong> must ship before first digital open; <strong>P1</strong> Verisys wallet; <strong>P2</strong> BV; <strong>P3</strong> EDD/video; <strong>P4</strong> cash/TMS/refresh; <strong>P5–P6</strong> enhanced / minors / exclusions.</p>
+<p>Each FR cites Appendix A (<code>A-E*</code>) and the use case (<code>UC-E*</code> / <code>UC-S*</code>).</p>
+<h3 id="41-application-tracking-resume">4.1 Application, tracking, resume</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Class</th>
+<th>Pri</th>
+<th>Trace</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FR-E01</td>
+<td>On Open wallet, create a <code>kyc_application</code> in <code>INITIATED</code> and issue a <strong>system-generated Tracking ID</strong>. Show it <strong>in-app immediately</strong>. Do not SMS until <code>CONTACT_VERIFIED</code>.</td>
+<td>A tracking; D placement</td>
+<td>P0</td>
+<td>A-E18, UC-E01, UC-S01</td>
+</tr>
+<tr>
+<td>FR-E02</td>
+<td>Customer can look up status with Tracking ID on app/web <strong>without extra PII</strong>. Rate-limit; no enumeration.</td>
+<td>A</td>
+<td>P0</td>
+<td>A-E18, UC-S01</td>
+</tr>
+<tr>
+<td>FR-E03</td>
+<td>Incomplete applications are <strong>resumable ≤ 30 days</strong> at the last incomplete step. Day 31+ → <code>EXPIRED</code>; new application.</td>
+<td>A</td>
+<td>P0</td>
+<td>A-E18, UC-E19</td>
+</tr>
+<tr>
+<td>FR-E04</td>
+<td>Individual decision TAT is <strong>2 working days</strong> from a <strong>complete</strong> file. If exceeded, notify. Entity TAT <strong>5 WD</strong> (merchant/entity path). Decline states a <strong>specific reason in writing</strong>.</td>
+<td>A</td>
+<td>P1</td>
+<td>A-E18, UC-E09</td>
+</tr>
+<tr>
+<td>FR-E05</td>
+<td>Capture channel, device hash, IP, and geo of the digital gadget used to open (<strong>A</strong> location). Do not store KYC artefacts on the device; realtime encrypted upload.</td>
+<td>A</td>
+<td>P1</td>
+<td>A-E18, CCOF §K</td>
+</tr>
+</tbody>
+</table>
+<h3 id="42-contact-2fa">4.2 Contact / 2FA</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Class</th>
+<th>Pri</th>
+<th>Trace</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FR-E06</td>
+<td>At least <strong>two-factor authentication</strong> to verify the customer (EMI §12.II). Typical: PTA-registered mobile + OTP.</td>
+<td>A</td>
+<td>P0</td>
+<td>A-E05, UC-E01, UC-E06</td>
+</tr>
+<tr>
+<td>FR-E07</td>
+<td>Wrong or expired OTP <strong>does not</strong> advance to <code>CONTACT_VERIFIED</code>. Attempt counters, resend limits, cool-down (<strong>D</strong>).</td>
+<td>A</td>
+<td>P0</td>
+<td>UC-E06</td>
+</tr>
+<tr>
+<td>FR-E08</td>
+<td>After OTP success, SMS the Tracking ID to the <strong>bound</strong> number.</td>
+<td>D</td>
+<td>P0</td>
+<td>UC-E01</td>
+</tr>
+</tbody>
+</table>
+<h3 id="43-consents-and-identity-capture">4.3 Consents and identity capture</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Class</th>
+<th>Pri</th>
+<th>Trace</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FR-E09</td>
+<td>Capture <strong>versioned</strong> mandatory consents (T&amp;Cs including charges, privacy, NADRA/BV). Refusal → cannot issue (<code>REJECTED</code> / withdrawn), not a silent skip.</td>
+<td>A</td>
+<td>P0</td>
+<td>A-E05, A-E07, UC-E18</td>
+</tr>
+<tr>
+<td>FR-E10</td>
+<td>Collect EMI §12.I minimum: name; father/spouse; ID type+number (CNIC, NICOP, POC, Passport, ARC, POR); mobile; residential address; <strong>two fields not on the CNIC</strong>. Apply Consolidated <strong>Table-A</strong> as applicable (purpose, SoI, FATCA/CRS, PEP declaration, occupation).</td>
+<td>A</td>
+<td>P0</td>
+<td>A-E05, A-E19, UC-E01</td>
+</tr>
+<tr>
+<td>FR-E11</td>
+<td>Digital/remote open: <strong>live original CNIC</strong> (where applicable) and <strong>live digital photo</strong>. Liveness/AI face-match is <strong>B/C</strong>, not NADRA BV.</td>
+<td>A photo; B/C liveness</td>
+<td>P1</td>
+<td>A-E05, A-E18, UC-E01</td>
+</tr>
+<tr>
+<td>FR-E12</td>
+<td>No anonymous or fictitious wallets.</td>
+<td>A</td>
+<td>P0</td>
+<td>A-E19</td>
+</tr>
+</tbody>
+</table>
+<h3 id="44-uniqueness">4.4 Uniqueness</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Class</th>
+<th>Pri</th>
+<th>Trace</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FR-E13</td>
+<td><strong>One e-money instrument per CNIC per this EMI.</strong> Duplicate attempt → <code>DUPLICATE_CNIC</code>, redirect to login/recovery — not a vague policy reject.</td>
+<td>A</td>
+<td>P0</td>
+<td>A-E08, UC-E05</td>
+</tr>
+<tr>
+<td>FR-E14</td>
+<td>Uniqueness is on <strong>open</strong> instruments. Closed/STR records remain for audit. Silent reopen of a closed CNIC is <strong>off</strong> until Legal defines reuse.</td>
+<td>A / D reopen</td>
+<td>P0</td>
+<td>A-E08</td>
+</tr>
+</tbody>
+</table>
+<h3 id="45-screening-and-fail-closed">4.5 Screening and fail-closed</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Class</th>
+<th>Pri</th>
+<th>Trace</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FR-E15</td>
+<td><strong>Pre-screen</strong> customer (and associated persons) against UNSC and ATA 1997 lists <strong>before</strong> establishing the relationship <strong>or</strong> allowing payment services.</td>
+<td>A</td>
+<td>P1</td>
+<td>A-E06, A-E19, UC-E10</td>
+</tr>
+<tr>
+<td>FR-E16</td>
+<td>True sanctions/fraud match → <code>REJECTED</code>, no instrument, freeze as required, written decline, STR/TFS ops. <strong>Never</strong> <code>WALLET_ACTIVE</code>. No STP retry.</td>
+<td>A</td>
+<td>P1</td>
+<td>A-E06, UC-E10</td>
+</tr>
+<tr>
+<td>FR-E17</td>
+<td>PEP / high CRP → <code>EDD_REQUIRED</code>. Non-face-to-face EDD: recorded <strong>video KYC</strong>. Senior approval is ops-side.</td>
+<td>A</td>
+<td>P3</td>
+<td>A-E19, UC-E11</td>
+</tr>
+<tr>
+<td>FR-E18</td>
+<td>Optional <strong>one inbound credit</strong> before verification (<strong>product flag, default off</strong>). If credentials never verify → close instrument + <strong>STR</strong> (<code>CLOSED_UNVERIFIED</code>).</td>
+<td>A</td>
+<td>P1</td>
+<td>A-E07, UC-E04</td>
+</tr>
+</tbody>
+</table>
+<h3 id="46-nadra-identity-verification">4.6 NADRA identity verification</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Class</th>
+<th>Pri</th>
+<th>Trace</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FR-E19</td>
+<td>Issue first wallet on <strong>NADRA Verisys</strong> (CNIC verification) when Verisys and screening pass. Set <code>limit_tier=VERISYS</code>. Selfie is not Verisys.</td>
+<td>A</td>
+<td>P1</td>
+<td>A-E10, A-E17, UC-E01</td>
+</tr>
+<tr>
+<td>FR-E20</td>
+<td>Raise to <code>limit_tier=BV</code> only after <strong>NADRA biometric verification</strong> (finger/thumb/iris, or NADRA face <strong>if</strong> the contract says facial BioVerisys is operational). Channel (in-app / e-Sahulat / ATM) is <strong>D</strong>.</td>
+<td>A; D channel</td>
+<td>P2</td>
+<td>A-E10, UC-E02</td>
+</tr>
+<tr>
+<td>FR-E21</td>
+<td>Eligible BV failure (disability, unclear prints, age <strong>&gt;60</strong>) → stay Verisys <strong>or</strong> Verisys + documented alternate; <strong>or</strong> recorded <strong>video KYC + Verisys</strong> (no physical presence). Do not pretend BV succeeded.</td>
+<td>A</td>
+<td>P2</td>
+<td>A-E18, UC-E07</td>
+</tr>
+<tr>
+<td>FR-E22</td>
+<td>NADRA timeout/outage: stay <code>IDENTITY_VERIFICATION_IN_PROGRESS</code>. Retry with backoff. <strong>No</strong> silent 400k.</td>
+<td>A</td>
+<td>P1</td>
+<td>UC-E08</td>
+</tr>
+<tr>
+<td>FR-E23</td>
+<td>Adapter stores <strong>vendor references</strong>, not raw biometric templates. Do not invent NADRA API names in this SRS.</td>
+<td>A / pack</td>
+<td>P1</td>
+<td>§K, 06 architecture</td>
+</tr>
+</tbody>
+</table>
+<h3 id="47-limit-ladder-and-ledger">4.7 Limit ladder and ledger</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Class</th>
+<th>Pri</th>
+<th>Trace</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FR-E24</td>
+<td>Payments and receipts are <strong>separate</strong> limit buckets.</td>
+<td>A</td>
+<td>P1</td>
+<td>A-E10</td>
+</tr>
+<tr>
+<td>FR-E25</td>
+<td>Commercial Verisys: monthly <strong>load PKR 50,000</strong>; cash-out <strong>PKR 10,000/day</strong>.</td>
+<td>A</td>
+<td>P1</td>
+<td>A-E10, UC-E01</td>
+</tr>
+<tr>
+<td>FR-E26</td>
+<td>Commercial BV: monthly load <strong>PKR 400,000</strong>; pilot BV <strong>PKR 200,000</strong>. BV cash-out from CRP. ATM cash-out always <strong>2FA</strong>.</td>
+<td>A</td>
+<td>P2</td>
+<td>A-E10, UC-E02</td>
+</tr>
+<tr>
+<td>FR-E27</td>
+<td>Ledger <strong>rejects</strong> over-limit postings even if the UI is wrong. Caps come from <code>limit_tier</code> × <code>licence_phase</code> × <code>limit_policies</code>.</td>
+<td>A</td>
+<td>P1</td>
+<td>UC-S03</td>
+</tr>
+<tr>
+<td>FR-E28</td>
+<td>Issue instrument <strong>at par, without delay</strong>, on receipt of funds. Redeem at par <strong>any time, no charges</strong>.</td>
+<td>A</td>
+<td>P1</td>
+<td>A-E12</td>
+</tr>
+<tr>
+<td>FR-E29</td>
+<td>No interest / return / idle “growth” on e-money. No issue at a discount. No VCs. Copy must not say deposit/savings/insurance.</td>
+<td>A</td>
+<td>P0</td>
+<td>A-E01, A-E02</td>
+</tr>
+<tr>
+<td>FR-E30</td>
+<td>Customer float posts to a <strong>trust account</strong> at an A-rated bank; no co-mingle with operating funds.</td>
+<td>A</td>
+<td>P1</td>
+<td>A-E13</td>
+</tr>
+</tbody>
+</table>
+<h3 id="48-enhanced-minors-exclusions">4.8 Enhanced, minors, exclusions</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Class</th>
+<th>Pri</th>
+<th>Trace</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FR-E31</td>
+<td>Enhanced up to <strong>PKR 1,000,000</strong> only if commercial + PSP&amp;OD <strong>and</strong> all of: Annexure-J SoF; <strong>CNIC/SIM pairing</strong> of the opening device; robust TMS; detailed CRP. Verification of these <strong>not outsourced</strong>.</td>
+<td>A</td>
+<td>P5</td>
+<td>A-E11, UC-E03</td>
+</tr>
+<tr>
+<td>FR-E32</td>
+<td>Basic minor: opened <strong>only</strong> from guardian app, linked, Verisys <strong>50k</strong>, funded <strong>only</strong> from guardian wallet, guardian undertaking, TMS. Adult §14.I–III enhanced limits <strong>do not</strong> apply.</td>
+<td>A</td>
+<td>P6</td>
+<td>A-E10, UC-E13</td>
+</tr>
+<tr>
+<td>FR-E33</td>
+<td>Minor freelancer: same linkage, <strong>400k BV</strong>, funding guardian <strong>or</strong> EMI-verified income. Still not adult 1M. Digital Form-B eligibility: Legal.</td>
+<td>A</td>
+<td>P6</td>
+<td>UC-E14</td>
+</tr>
+<tr>
+<td>FR-E34</td>
+<td>Salary / inward remittance (up to 1.5m via AD) / utility <strong>exclusions</strong> apply only if SBP granted them, only to <strong>BV holders</strong>, <strong>not</strong> minors. Remittance via Authorized Dealers + EPD as §13.</td>
+<td>A</td>
+<td>P6</td>
+<td>A-E20, UC-E15, UC-E16</td>
+</tr>
+</tbody>
+</table>
+<h3 id="49-cash-agents-alerts-audit">4.9 Cash, agents, alerts, audit</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Class</th>
+<th>Pri</th>
+<th>Trace</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FR-E35</td>
+<td>Agent channel: SBP-approved agents only. <strong>Cash-in/out</strong>. Cash-in: <strong>BV</strong>. Cash-out: BV or 2FA if BVS is a major challenge. <strong>No issue-wallet route</strong> (<code>AGENT_CANNOT_ISSUE</code>).</td>
+<td>A</td>
+<td>P4</td>
+<td>A-E14, UC-E12</td>
+</tr>
+<tr>
+<td>FR-E36</td>
+<td><strong>Cash redemption</strong> of e-money requires NADRA BV. ATM cash-out: 2FA.</td>
+<td>A</td>
+<td>P4</td>
+<td>A-E12, UC-E12</td>
+</tr>
+<tr>
+<td>FR-E37</td>
+<td><strong>Real-time alerts for all transactions.</strong> Channel (push/SMS/email) is <strong>D</strong>; existence is <strong>A</strong>. Not end-of-day batch as a substitute.</td>
+<td>A</td>
+<td>P1</td>
+<td>A-E09, UC-S04</td>
+</tr>
+<tr>
+<td>FR-E38</td>
+<td>Automated <strong>TMS</strong> (including 1:N / N:1 for enhanced). New product/technology ML/TF assessment <strong>before launch</strong>.</td>
+<td>A</td>
+<td>P4</td>
+<td>A-E15</td>
+</tr>
+<tr>
+<td>FR-E39</td>
+<td>Every KYC decision, limit upgrade, screening adjudication, agent cash session, and trust posting is <strong>reconstructible</strong>. Retention ≥ <strong>10 years</strong> or stricter applicable law; call recordings <strong>1 year</strong>.</td>
+<td>A</td>
+<td>P0</td>
+<td>A-E16</td>
+</tr>
+<tr>
+<td>FR-E40</td>
+<td>Customer may <strong>withdraw</strong> an incomplete application. Mandatory-consent refusal cannot issue.</td>
+<td>A / D save-draft</td>
+<td>P0</td>
+<td>UC-E18</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-non-functional-requirements">5. Non-functional requirements</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Class</th>
+<th>Pri</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NFR-E01</td>
+<td>PII (CNIC, mother’s name, biometric <strong>tokens</strong>) encrypted at rest; masked in UI (<code>xxxxx-xxxxxxx-x</code>).</td>
+<td>A/B</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>NFR-E02</td>
+<td>No KYC data stored on capture devices; realtime transfer to EMI systems (CCOF §K.iv).</td>
+<td>A</td>
+<td>P1</td>
+</tr>
+<tr>
+<td>NFR-E03</td>
+<td>No OTP values in logs. Idempotency keys on all POSTs.</td>
+<td>A/B</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>NFR-E04</td>
+<td>Tracking/status endpoints: rate-limit; no ID-or-CNIC enumeration.</td>
+<td>A</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>NFR-E05</td>
+<td>Cloud per BPRD 01/2023. No offshore outsourcing without SBP written approval.</td>
+<td>A</td>
+<td>P1</td>
+</tr>
+<tr>
+<td>NFR-E06</td>
+<td>Systems audit (SBP-approved panel) <strong>before pilot</strong> and <strong>annually</strong>.</td>
+<td>A</td>
+<td>Process</td>
+</tr>
+<tr>
+<td>NFR-E07</td>
+<td>Security breach: notify including PSP&OD; detailed report <strong>15 days</strong>. Major cyber: <strong>48 hours</strong>.</td>
+<td>A</td>
+<td>Process</td>
+</tr>
+<tr>
+<td>NFR-E08</td>
+<td>BCP/DRP drills: half-yearly first two pilot years, quarterly thereafter.</td>
+<td>A</td>
+<td>Process</td>
+</tr>
+<tr>
+<td>NFR-E09</td>
+<td>Individual KYC decision path designed so complete files can finish within <strong>2 WD</strong> (STP where policy allows).</td>
+<td>A</td>
+<td>P1</td>
+</tr>
+<tr>
+<td>NFR-E10</td>
+<td>Ledger limit check is authoritative vs UI (defence in depth).</td>
+<td>A</td>
+<td>P1</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-states-and-apis-normative-pointers">6. States and APIs (normative pointers)</h2>
+<p><strong>Identity Service</strong> is the <strong>only</strong> writer of KYC states (<code>identity_db</code>). Ledger reads a <strong>replica</strong> of <code>limit_tier</code> + <code>wallet_status</code> in <code>ledger_db</code> and enforces caps. See <a href="07-database-and-erd.html">07</a>.</p>
+<p>Happy path: <code>INITIATED</code> → <code>CONTACT_VERIFIED</code> → <code>CONSENT_CAPTURED</code> → <code>IDENTITY_CAPTURED</code> → <code>LIVE_PHOTO_CAPTURED</code> → screening → NADRA → <code>WALLET_ACTIVE</code> (<code>VERISYS</code> then optional <code>BV</code> / <code>ENHANCED</code>).</p>
+<p>Fail closed: sanctions → <code>REJECTED</code>; one-credit fail → <code>CLOSED_UNVERIFIED</code>; NADRA 503 → stay in progress.</p>
+<p>Logical API: <a href="09-api-specification.html">09-api-specification</a> (<code>POST /kyc/applications</code> returns <code>trackingId</code>; agent API has no issue-wallet).</p>
+<hr />
+<h2 id="7-traceability-requirement-journey">7. Traceability (requirement → journey)</h2>
+<table>
+<thead>
+<tr>
+<th>FR</th>
+<th>Primary journeys / system UC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FR-E01–E05, E08</td>
+<td>UJ-E01, UJ-E09, UJ-E19</td>
+</tr>
+<tr>
+<td>FR-E06–E07</td>
+<td>UJ-E01, UJ-E06</td>
+</tr>
+<tr>
+<td>FR-E09–E12</td>
+<td>UJ-E01, UJ-E18</td>
+</tr>
+<tr>
+<td>FR-E13–E14</td>
+<td>UJ-E05</td>
+</tr>
+<tr>
+<td>FR-E15–E18</td>
+<td>UJ-E04, UJ-E10, UJ-E11</td>
+</tr>
+<tr>
+<td>FR-E19–E23</td>
+<td>UJ-E01, UJ-E02, UJ-E07, UJ-E08</td>
+</tr>
+<tr>
+<td>FR-E24–E30</td>
+<td>UJ-E01–E03, UC-S03, UC-S04</td>
+</tr>
+<tr>
+<td>FR-E31</td>
+<td>UJ-E03</td>
+</tr>
+<tr>
+<td>FR-E32–E34</td>
+<td>UJ-E13–E16</td>
+</tr>
+<tr>
+<td>FR-E35–E36</td>
+<td>UJ-E12</td>
+</tr>
+<tr>
+<td>FR-E37–E40</td>
+<td>UJ-E18, UJ-E20, UC-S04</td>
+</tr>
+</tbody>
+</table>
+<p>Clause-level mapping remains in <a href="12-sbp-compliance-mapping.html">12-sbp-compliance-mapping</a> and <a href="appendices/A-regulatory-requirement-catalog.html">Appendix A</a>.</p>
+<hr />
+<h2 id="8-phased-delivery-vs-srs">8. Phased delivery vs SRS</h2>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Must satisfy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0</td>
+<td>FR-E01–E03, E06–E10, E12–E14, E29, E39, NFR-E01, E03, E04</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>FR-E04–E05, E11, E15–E19, E22, E24–E25, E27–E28, E30, E37</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>FR-E20–E21, E26</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>FR-E17</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>FR-E35–E36, E38, UJ-E20</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>FR-E31</td>
+</tr>
+<tr>
+<td>P6</td>
+<td>FR-E32–E34</td>
+</tr>
+</tbody>
+</table>
+<p>Use cases that are P5/P6 stay in the catalog even if v1 flags them off — the paragraph exists in the regulations.</p>
+</article>
+<div class="pager"><a href="13-implementation-gaps-references.html">← 13-implementation-gaps-references</a><span></span><a href="15-use-cases.html">15-use-cases →</a></div>
+<footer class="note">Rendered preview of 14-srs.md. Markdown remains the source of truth. Not legal advice.</footer>
+
+</body>
+</html>

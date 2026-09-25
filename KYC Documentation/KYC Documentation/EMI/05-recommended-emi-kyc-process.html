@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>11. Recommended EMI wallet KYC process</title>
+<link rel="stylesheet" href="assets/doc.css">
+</head>
+<body>
+<nav class="top">
+  <div class="top-inner">
+    <a href="index.html">EMI pack home</a>
+    <span class="meta"><a href="05c-emi-interactive-journeys.html">Journeys</a> · <a href="05-recommended-emi-kyc-process.md">Source .md</a></span>
+  </div>
+</nav>
+<article class="page markdown-body">
+<h1 id="11-recommended-emi-wallet-kyc-process">11. Recommended EMI wallet KYC process</h1>
+<blockquote>
+<p>Combines EMI Regulations §12–15, Consolidated Framework, and AML RBA. UX labels <strong>D</strong>. Not legal advice.</p>
+</blockquote>
+<h2 id="design-goals">Design goals</h2>
+<ol>
+<li>Digital-only issuance (no agent-opened wallets).  </li>
+<li>Fail-closed sanctions; fail-controlled NADRA.  </li>
+<li>Limit tier is a <strong>first-class state</strong>, not a hidden flag.  </li>
+<li>One CNIC, one instrument.  </li>
+<li>Trust-account posting is orthogonal to KYC state but <strong>blocked</strong> until screening allows use of payment services (except the single pre-verification credit if we enable that product flag).</li>
+</ol>
+<h2 id="high-level-flow">High-level flow</h2>
+<pre><code class="language-text">Open wallet
+  → Tracking ID on screen
+  → Mobile OTP (2FA)
+  → SMS Tracking ID
+  → Consents (T&amp;Cs, privacy, NADRA/BV, charges)
+  → Identity (Table-A + EMI §12 extras)
+  → Live photo + live CNIC image
+  → Sanctions / PEP pre-screen
+  → NADRA Verisys (minimum) ──► WALLET_ACTIVE · VERISYS · 50k
+         │
+         └─ optional / prompted NADRA BV ──► BV · 400k
+                │
+                └─ later: SoF + SIM pairing + CRP + PSP&amp;OD ──► ENHANCED · up to 1M
+</code></pre>
+<p><strong>Pilot licence:</strong> BV monthly load cap is <strong>200k</strong>, not 400k. Gate this by <code>licence_phase</code>.</p>
+<h2 id="decisioning">Decisioning</h2>
+<table>
+<thead>
+<tr>
+<th>Outcome</th>
+<th>When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>STP Verisys wallet</td>
+<td>ID valid, Verisys pass, screening clear, CRP LOW/MEDIUM per policy, consents OK</td>
+</tr>
+<tr>
+<td>STP BV wallet</td>
+<td>Same + NADRA BV success</td>
+</tr>
+<tr>
+<td>Hold</td>
+<td>NADRA timeout; screening potential hit; incomplete docs</td>
+</tr>
+<tr>
+<td>Video KYC</td>
+<td>BV and eligible Verisys+MSISDN fail; no branch</td>
+</tr>
+<tr>
+<td>Decline</td>
+<td>True sanctions/fraud; duplicate CNIC (redirect not “policy reject”); consent refusal</td>
+</tr>
+<tr>
+<td>Close + STR</td>
+<td>One-credit used and credentials never verified</td>
+</tr>
+</tbody>
+</table>
+<h2 id="phasing">Phasing</h2>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0</td>
+<td>State machine, §12 fields, OTP 2FA, consents, tracking ID, audit, uniqueness</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>Verisys + live photo + screening + 50k wallet</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>NADRA BV in-app + offline BV receipt/ATM adapter + 400k (or 200k if pilot)</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>Video KYC, EDD, PEP, case management</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>TMS go-live quality, agent cash-in/out, refresh</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>Enhanced 1M (after commercial + PSP&amp;OD)</td>
+</tr>
+<tr>
+<td>P6</td>
+<td>Minors / merchants / remittance exclusions</td>
+</tr>
+</tbody>
+</table>
+<p>Screens: <a href="05a-emi-user-journey.html">05a-emi-user-journey</a>.<br />
+All paths: <a href="05b-emi-user-journeys-catalog.html">05b-emi-user-journeys-catalog</a>.</p>
+</article>
+<div class="pager"><a href="04-emi-benchmarks.html">← 04-emi-benchmarks</a><span></span><a href="05a-emi-user-journey.html">05a-emi-user-journey →</a></div>
+<footer class="note">Rendered preview of 05-recommended-emi-kyc-process.md. Markdown remains the source of truth. Not legal advice.</footer>
+
+</body>
+</html>

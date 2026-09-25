@@ -1,0 +1,37 @@
+erDiagram
+  KYC_APPLICATIONS ||--o{ CONTACTS : has
+  KYC_APPLICATIONS ||--o{ CONSENTS : has
+  KYC_APPLICATIONS ||--o{ IDENTITY_DOCUMENTS : has
+  KYC_APPLICATIONS ||--o{ VERIFICATIONS : has
+  KYC_APPLICATIONS ||--o{ SCREENING_RESULTS : has
+  VERIFICATIONS ||--o{ VERIFICATION_ATTEMPTS : attempts
+  KYC_APPLICATIONS }o--o| SUBJECTS : becomes
+  SUBJECTS ||--o| IDENTITY_UNIQUENESS_KEYS : cnic_slot
+  SUBJECTS ||--o| LIMIT_ELIGIBILITY : eligible_tier
+
+  KYC_APPLICATIONS {
+    uuid id PK
+    string tracking_id UK
+    string state
+    string case_type
+    uuid subject_id FK
+  }
+  SUBJECTS {
+    uuid id PK
+    string status
+    string id_number_hash
+  }
+  IDENTITY_UNIQUENESS_KEYS {
+    string id_number_hash
+    string instrument_status
+  }
+  LIMIT_ELIGIBILITY {
+    uuid subject_id PK
+    string limit_tier
+    string licence_phase
+  }
+  VERIFICATIONS {
+    string verification_type
+    string status
+    string vendor_reference
+  }

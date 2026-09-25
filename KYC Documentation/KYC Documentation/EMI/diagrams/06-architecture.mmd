@@ -1,0 +1,9 @@
+flowchart LR
+  App[App / Web] --> KYC[KYC Service]
+  KYC --> NADRA[NADRA adapter]
+  KYC --> SCR[Screening]
+  KYC --> RISK[Risk]
+  KYC --> LED[Wallet ledger]
+  LED --> TRUST[Trustee bank]
+  LED --> TMS[TMS]
+  AG[Agent] --> LED

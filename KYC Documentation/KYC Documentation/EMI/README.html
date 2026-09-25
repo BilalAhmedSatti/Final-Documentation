@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pakistan Electronic Money Institution (EMI) KYC / CDD Documentation Pack</title>
+<link rel="stylesheet" href="assets/doc.css">
+</head>
+<body>
+<nav class="top">
+  <div class="top-inner">
+    <a href="index.html">EMI pack home</a>
+    <span class="meta"><a href="05c-emi-interactive-journeys.html">Journeys</a> · <a href="README.md">Source .md</a></span>
+  </div>
+</nav>
+<article class="page markdown-body">
+<h1 id="pakistan-electronic-money-institution-emi-kyc-cdd-documentation-pack">Pakistan Electronic Money Institution (EMI) KYC / CDD Documentation Pack</h1>
+<p><strong>Open this pack in a browser:</strong> <a href="index.html">index.html</a> — cover, onboarding ladder, role guides, and document library. <strong>Guided reading (Takaful-style):</strong> <a href="docs/index.html">docs/index.html</a>. Each markdown note also has a matching <code>.html</code> preview (for example <a href="02-sbp-emi-kyc-cdd-framework.html">02-sbp-emi-kyc-cdd-framework.html</a>).</p>
+<p><strong>Journeys:</strong> <a href="05c-emi-interactive-journeys.html">interactive explorer</a> · <a href="05c-emi-customer-journeys.pdf">all 20 as PDF</a></p>
+<p><strong>Audience:</strong> Product Manager, Solution Architect, Backend Developer, Database Architect, KYC/AML Compliance Officer, QA Engineer<br />
+<strong>Institution model:</strong> SBP-licensed <strong>Electronic Money Institution</strong> (non-bank e-money issuer)<br />
+<strong>Research date:</strong> September 2026<br />
+<strong>Status:</strong> Technical / regulatory research reference — <strong>not legal advice</strong></p>
+<p>This folder is <strong>separate</strong> from the Conventional Digital Retail Bank pack in the parent directory. Do not treat DRB deposit-account rules as EMI wallet rules.</p>
+<p>Confirm all normative interpretations with SBP (PSP&amp;OD and BPRD as applicable), internal Compliance, and Legal before go-live. Do not treat industry wallet FAQs as SBP mandates.</p>
+<hr />
+<h2 id="how-this-pack-differs-from-the-digital-bank-pack">How this pack differs from the digital bank pack</h2>
+<table>
+<thead>
+<tr>
+<th>Topic</th>
+<th>Digital Retail Bank</th>
+<th>EMI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Legal nature</td>
+<td>Bank (BCO 1962 / digital bank framework)</td>
+<td>Non-bank issuer of <strong>e-money</strong> (PS&amp;EFT Act 2007)</td>
+</tr>
+<tr>
+<td>Customer product</td>
+<td>Deposit / current / savings account</td>
+<td>Prepaid <strong>e-money wallet / instrument</strong></td>
+</tr>
+<tr>
+<td>Interest on balances</td>
+<td>Bank products may pay return</td>
+<td><strong>Must not</strong> pay interest/return or add monetary value for holding e-money</td>
+</tr>
+<tr>
+<td>Lending public funds</td>
+<td>Banking business</td>
+<td><strong>Prohibited</strong> (except permitted investment of safeguarded funds)</td>
+</tr>
+<tr>
+<td>Funds location</td>
+<td>Bank’s own books</td>
+<td><strong>Trust account</strong> at an ‘A’-rated licensed bank (Trustee)</td>
+</tr>
+<tr>
+<td>Limit source</td>
+<td>Product + AML + Consolidated Framework</td>
+<td><strong>EMI Regulations §14</strong> + Consolidated Framework for onboarding</td>
+</tr>
+<tr>
+<td>One relationship</td>
+<td>CNIC uniqueness for CIF (AML / policy)</td>
+<td><strong>One e-money instrument per CNIC per EMI</strong> (<strong>A</strong>)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="how-to-use-this-pack">How to use this pack</h2>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Start here</th>
+<th>Then read</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Compliance / Legal</td>
+<td><a href="00-executive-summary.html">00-executive-summary</a>, <a href="02-sbp-emi-kyc-cdd-framework.html">02-sbp-emi-kyc-cdd-framework</a></td>
+<td><a href="12-sbp-compliance-mapping.html">12-sbp-compliance-mapping</a>, <a href="appendices/A-regulatory-requirement-catalog.html">appendices/A-regulatory-requirement-catalog</a></td>
+</tr>
+<tr>
+<td>Product</td>
+<td><a href="00-executive-summary.html">00-executive-summary</a>, <a href="05a-emi-user-journey.html">05a-emi-user-journey</a></td>
+<td><a href="05-recommended-emi-kyc-process.html">05-recommended-emi-kyc-process</a>, <a href="04-emi-benchmarks.html">04-emi-benchmarks</a></td>
+</tr>
+<tr>
+<td>UX / QA</td>
+<td><a href="05a-emi-user-journey.html">05a-emi-user-journey</a>, <a href="05b-emi-user-journeys-catalog.html">05b-emi-user-journeys-catalog</a>, <a href="05c-emi-interactive-journeys.html">05c-emi-interactive-journeys.html</a>, <a href="05c-emi-customer-journeys.pdf">05c-emi-customer-journeys.pdf</a></td>
+<td><a href="08-state-machine.html">08-state-machine</a></td>
+</tr>
+<tr>
+<td>Solution / Backend</td>
+<td><a href="06-architecture-and-services.html">06-architecture-and-services</a>, <a href="08-state-machine.html">08-state-machine</a></td>
+<td><a href="09-api-specification.html">09-api-specification</a>, <a href="14-srs.html">14-srs</a>, <a href="15-use-cases.html">15-use-cases</a></td>
+</tr>
+<tr>
+<td>DBA</td>
+<td><a href="07-database-and-erd.html">07-database-and-erd</a></td>
+<td><a href="diagrams/08-identity-erd.mmd">diagrams/08-identity-erd.mmd</a>, <a href="diagrams/08-identity-databases.mmd">diagrams/08-identity-databases.mmd</a></td>
+</tr>
+<tr>
+<td>Security</td>
+<td><a href="11-security-fraud-audit.html">11-security-fraud-audit</a></td>
+<td><a href="06-architecture-and-services.html">06-architecture-and-services</a></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="document-map">Document map</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Topic</th>
+<th>File</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>—</td>
+<td>Pack home (open in browser)</td>
+<td><a href="index.html">index.html</a></td>
+</tr>
+<tr>
+<td>—</td>
+<td>Guided docs (role paths, decisions, domain)</td>
+<td><a href="docs/index.html">docs/index.html</a></td>
+</tr>
+<tr>
+<td>1</td>
+<td>Executive summary</td>
+<td><a href="00-executive-summary.html">00-executive-summary</a></td>
+</tr>
+<tr>
+<td>2–4</td>
+<td>Regulatory landscape &amp; licensed EMIs</td>
+<td><a href="01-regulatory-landscape-and-emis.html">01-regulatory-landscape-and-emis</a></td>
+</tr>
+<tr>
+<td>5–7</td>
+<td>EMI CDD, Consolidated Framework, wallet limits</td>
+<td><a href="02-sbp-emi-kyc-cdd-framework.html">02-sbp-emi-kyc-cdd-framework</a></td>
+</tr>
+<tr>
+<td>8</td>
+<td>Shared e-KYC and EMI</td>
+<td><a href="03-shared-ekyc-and-emi.html">03-shared-ekyc-and-emi</a></td>
+</tr>
+<tr>
+<td>9–10</td>
+<td>Public EMI KYC benchmarks</td>
+<td><a href="04-emi-benchmarks.html">04-emi-benchmarks</a>, <a href="appendices/B-comparative-emi-matrix.html">appendices/B-comparative-emi-matrix</a></td>
+</tr>
+<tr>
+<td>11</td>
+<td>Recommended wallet KYC process</td>
+<td><a href="05-recommended-emi-kyc-process.html">05-recommended-emi-kyc-process</a></td>
+</tr>
+<tr>
+<td>11a</td>
+<td>Customer screens (happy path + upgrade)</td>
+<td><a href="05a-emi-user-journey.html">05a-emi-user-journey</a></td>
+</tr>
+<tr>
+<td>11b</td>
+<td>All EMI customer journeys</td>
+<td><a href="05b-emi-user-journeys-catalog.html">05b-emi-user-journeys-catalog</a></td>
+</tr>
+<tr>
+<td>11c</td>
+<td>Interactive journey explorer (open in browser)</td>
+<td><a href="05c-emi-interactive-journeys.html">05c-emi-interactive-journeys.html</a></td>
+</tr>
+<tr>
+<td>11d</td>
+<td>All 20 customer journeys as one PDF</td>
+<td><a href="05c-emi-customer-journeys.pdf">05c-emi-customer-journeys.pdf</a></td>
+</tr>
+<tr>
+<td>12</td>
+<td>Architecture</td>
+<td><a href="06-architecture-and-services.html">06-architecture-and-services</a></td>
+</tr>
+<tr>
+<td>13–14</td>
+<td>Identity Service data model and ERD</td>
+<td><a href="07-database-and-erd.html">07-database-and-erd</a></td>
+</tr>
+<tr>
+<td>15</td>
+<td>State machine</td>
+<td><a href="08-state-machine.html">08-state-machine</a></td>
+</tr>
+<tr>
+<td>16</td>
+<td>API specification</td>
+<td><a href="09-api-specification.html">09-api-specification</a></td>
+</tr>
+<tr>
+<td>17–21</td>
+<td>AML, TMS, EDD, agents, refresh</td>
+<td><a href="10-aml-risk-edd-ops.html">10-aml-risk-edd-ops</a></td>
+</tr>
+<tr>
+<td>22–24</td>
+<td>Security, fraud, audit</td>
+<td><a href="11-security-fraud-audit.html">11-security-fraud-audit</a></td>
+</tr>
+<tr>
+<td>25–26</td>
+<td>Compliance mapping</td>
+<td><a href="12-sbp-compliance-mapping.html">12-sbp-compliance-mapping</a></td>
+</tr>
+<tr>
+<td>27–29</td>
+<td>Implementation, gaps, references</td>
+<td><a href="13-implementation-gaps-references.html">13-implementation-gaps-references</a></td>
+</tr>
+<tr>
+<td>30</td>
+<td>Software requirements (SRS)</td>
+<td><a href="14-srs.html">14-srs</a></td>
+</tr>
+<tr>
+<td>31</td>
+<td>Use cases (UC-E01–E20, UC-S01–S04)</td>
+<td><a href="15-use-cases.html">15-use-cases</a></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="classification-legend">Classification legend</h2>
+<table>
+<thead>
+<tr>
+<th>Tag</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A</strong></td>
+<td>Mandatory regulatory requirement (SBP / law)</td>
+</tr>
+<tr>
+<td><strong>B</strong></td>
+<td>Regulatory expectation / effective AML-KYC control</td>
+</tr>
+<tr>
+<td><strong>C</strong></td>
+<td>Industry best practice (not explicitly mandated as a specific tech)</td>
+</tr>
+<tr>
+<td><strong>D</strong></td>
+<td>EMI-specific implementation choice</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="source-priority">Source priority</h2>
+<ol>
+<li>State Bank of Pakistan (PSP&amp;OD EMI Regulations; BPRD Consolidated Onboarding Framework; AML/CFT/CPF Regulations)  </li>
+<li>PS&amp;EFT Act, 2007; AML Act, 2010  </li>
+<li>Financial Monitoring Unit  </li>
+<li>Official EMI help centres / T&amp;Cs (public KYC signals only)  </li>
+<li>Reputable industry sources (supplementary; mark confidence)</li>
+</ol>
+<p>Where an EMI does not publicly disclose a control, this pack records <strong>Not publicly disclosed</strong>.</p>
+</article>
+<div class="pager"><span></span><a href="00-executive-summary.html">00-executive-summary →</a></div>
+<footer class="note">Rendered preview of README.md. Markdown remains the source of truth. Not legal advice.</footer>
+
+</body>
+</html>

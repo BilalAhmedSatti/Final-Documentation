@@ -1,0 +1,26 @@
+flowchart LR
+  Customer[Customer_MobileWeb]
+  Ops[KYC_Ops_Analyst]
+  NADRA[NADRA_Verification]
+  ScreenProv[Screening_Providers]
+  EKYC[Shared_eKYC_Platform]
+  Core[Core_Banking]
+  FMU[FMU_Reporting]
+
+  subgraph bank [Digital_Bank_KYC_System]
+    KYC[(KYC_Database)]
+  end
+
+  Customer -->|"identity_CDD_docs_consents"| KYC
+  KYC -->|"OTP_status_decision"| Customer
+  Ops -->|"case_actions_adjudication"| KYC
+  KYC -->|"case_queues_PII_need_to_know"| Ops
+  KYC -->|"BV_Verisys_MSISDN_requests"| NADRA
+  NADRA -->|"verification_results"| KYC
+  KYC -->|"name_DOB_screening_queries"| ScreenProv
+  ScreenProv -->|"hit_clear_results"| KYC
+  KYC -->|"consent_gated_fetch_publish"| EKYC
+  EKYC -->|"KYC_attributes_refs"| KYC
+  KYC -->|"CIF_account_open_commands"| Core
+  Core -->|"CIF_IBAN_status"| KYC
+  KYC -->|"STR_CTR_evidence_packs"| FMU

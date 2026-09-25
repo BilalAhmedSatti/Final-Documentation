@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EMI wallet KYC journeys — 20 workflows</title>
+<style>
+  :root {
+    --ink: #1a2332;
+    --muted: #5c6b80;
+    --line: #d8dee8;
+    --accent: #1e4e8c;
+    --bg: #f4f6f8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    color: var(--ink);
+    font: 11pt/1.45 "Segoe UI", system-ui, sans-serif;
+  }
+  @page {
+    size: A4;
+    margin: 14mm 12mm 16mm;
+  }
+  .cover, .toc { page-break-after: always; }
+  .journey { page-break-before: always; }
+  .journey:first-of-type { page-break-before: auto; }
+  .cover {
+    min-height: 240mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 18mm 8mm 10mm;
+  }
+  .cover h1 {
+    font-size: 32pt;
+    letter-spacing: -0.03em;
+    margin: 12px 0 8px;
+    line-height: 1.15;
+  }
+  .eyebrow {
+    color: var(--accent);
+    font-weight: 650;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: 10pt;
+  }
+  .lede { color: var(--muted); max-width: 140mm; }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 22px 0;
+  }
+  .stat {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 12px 14px;
+    background: var(--bg);
+  }
+  .stat b { display: block; font-size: 18pt; color: var(--accent); }
+  .stat span { color: var(--muted); font-size: 9pt; }
+  .legend {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 18px;
+    font-size: 10pt;
+    color: var(--muted);
+  }
+  .legend i {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 2px;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  .toc { padding: 4mm 2mm; }
+  .toc h2 { margin: 0 0 8px; font-size: 18pt; }
+  .toc h3 {
+    margin: 14px 0 6px;
+    font-size: 11pt;
+    color: var(--accent);
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 4px;
+  }
+  .toc ul { list-style: none; margin: 0; padding: 0; }
+  .toc li {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 4px 0;
+    border-bottom: 1px dotted #e6ebf2;
+    font-size: 10pt;
+  }
+  .toc a { color: var(--ink); text-decoration: none; }
+  .toc a span { font-weight: 650; color: var(--accent); margin-right: 8px; }
+  .toc em { color: var(--muted); font-style: normal; font-size: 9pt; }
+  .journey { padding: 0 1mm 8mm; }
+  .kicker {
+    margin: 0;
+    color: var(--accent);
+    font-weight: 650;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-size: 9pt;
+  }
+  .journey h2 { margin: 4px 0 2px; font-size: 18pt; letter-spacing: -0.02em; }
+  .persona, .why { margin: 4px 0; color: var(--muted); }
+  .why {
+    background: #e8f0fa;
+    color: var(--ink);
+    padding: 6px 8px;
+    border-radius: 6px;
+    font-size: 10pt;
+  }
+  .facts {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+    margin: 8px 0;
+  }
+  .facts div {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 6px 8px;
+    background: var(--bg);
+  }
+  .facts b {
+    display: block;
+    font-size: 8pt;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .facts span { font-size: 9.5pt; }
+  .related { font-size: 9.5pt; margin: 6px 0 10px; }
+  .related a { color: var(--accent); text-decoration: none; font-weight: 650; }
+  h3 {
+    margin: 12px 0 8px;
+    font-size: 11pt;
+    color: var(--accent);
+  }
+  .flow {
+    overflow: hidden;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 6px 8px;
+    text-align: center;
+  }
+  .flow svg {
+    display: inline-block;
+    max-width: 186mm;
+    height: auto;
+  }
+  tr { break-inside: avoid; page-break-inside: avoid; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8.5pt;
+    margin-top: 4px;
+  }
+  th, td {
+    border: 1px solid var(--line);
+    padding: 6px 7px;
+    vertical-align: top;
+    text-align: left;
+  }
+  th {
+    background: #e8f0fa;
+    font-size: 8pt;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--muted);
+  }
+  td:nth-child(1) { width: 6mm; color: var(--muted); }
+  td:nth-child(2) { width: 32mm; }
+  td:nth-child(3) { width: 28mm; }
+  .sub { color: var(--muted); font-size: 7.5pt; margin-top: 2px; }
+  .dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 2px;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  .dot.action { background: #1e4e8c; }
+  .dot.decision { background: #8a5a00; }
+  .dot.success { background: #0f6b45; }
+  .dot.fail { background: #b42318; }
+  .dot.wait { background: #5b4aa8; }
+  .foot {
+    margin-top: 18px;
+    font-size: 8.5pt;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+<section class="cover">
+  <div>
+    <p class="eyebrow">Pakistan Electronic Money Institution</p>
+    <h1>EMI wallet KYC journeys</h1>
+    <p class="lede">All 20 customer-facing wallet workflows from the EMI KYC/CDD documentation pack. Each journey includes the flowchart, trigger / success / alternate, and every step with what the customer sees and what the system does. This is e-money, not a bank deposit account.</p>
+    <div class="stats">
+      <div class="stat"><b>20</b><span>Customer journeys UJ-E01 to UJ-E20</span></div>
+      <div class="stat"><b>4</b><span>Families: core wallet, identity, AML and tracking, lifecycle</span></div>
+      <div class="stat"><b>Sep 2026</b><span>Research pack — not legal advice</span></div>
+    </div>
+    <div class="legend">
+      <div><i style="background:#1e4e8c"></i>Action</div>
+      <div><i style="background:#8a5a00"></i>Decision</div>
+      <div><i style="background:#0f6b45"></i>Success</div>
+      <div><i style="background:#b42318"></i>Fail / stop</div>
+      <div><i style="background:#5b4aa8"></i>Wait</div>
+      <div>Actors: customer on app/web only</div>
+    </div>
+  </div>
+  <p class="foot">Source: EMI 05b catalog and 05c interactive explorer. Tracking ID is shown in-app at Step 0; SMS only after OTP success. Wallet limits follow EMI §14. Confirm interpretations with Compliance and Legal before go-live. Fictional personas — no real PII.</p>
+</section>
+<section class="toc">
+  <h2>Contents</h2>
+  <p class="lede">Click a journey ID in a PDF viewer that supports internal links. Interactive version: 05c-emi-interactive-journeys.html.</p>
+  <h3>Family A — Core wallet</h3><ul><li><a href="#UJ-E01"><span>UJ-E01</span> Verisys wallet 50k</a><em>Ayesha — first EMI wallet</em></li><li><a href="#UJ-E02"><span>UJ-E02</span> NADRA BV upgrade 400k</a><em>Ayesha — needs higher load</em></li><li><a href="#UJ-E03"><span>UJ-E03</span> Enhanced wallet 1M</a><em>Sana — SoF + PSP&amp;OD product</em></li></ul><h3>Family B — Identity exceptions</h3><ul><li><a href="#UJ-E04"><span>UJ-E04</span> One credit then unverified close + STR</a><em>Policy-enabled pre-verify credit</em></li><li><a href="#UJ-E05"><span>UJ-E05</span> Duplicate CNIC — one wallet</a><em>Yasmin — already has this EMI wallet</em></li><li><a href="#UJ-E06"><span>UJ-E06</span> OTP / 2FA fail</a><em>Ayesha — mistypes OTP</em></li><li><a href="#UJ-E07"><span>UJ-E07</span> BV fail → stay 50k / video KYC</a><em>Bilal — unclear fingerprints</em></li><li><a href="#UJ-E08"><span>UJ-E08</span> NADRA timeout / outage</a><em>Any — vendor down</em></li></ul><h3>Family C — AML and tracking</h3><ul><li><a href="#UJ-E09"><span>UJ-E09</span> Tracking ID + TAT 2 WD</a><em>Any in review</em></li><li><a href="#UJ-E10"><span>UJ-E10</span> Sanctions / fraud true match</a><em>System decline — written reason</em></li><li><a href="#UJ-E11"><span>UJ-E11</span> PEP / high-risk EDD + video</a><em>Sana — high CRP or PEP</em></li></ul><h3>Family D — Lifecycle</h3><ul><li><a href="#UJ-E12"><span>UJ-E12</span> Agent cash-in / cash-out</a><em>Ayesha at an agent</em></li><li><a href="#UJ-E13"><span>UJ-E13</span> Minor basic linked wallet</a><em>Guardian + minor</em></li><li><a href="#UJ-E14"><span>UJ-E14</span> Minor freelancer enhanced</a><em>Guardian + freelancer minor</em></li><li><a href="#UJ-E15"><span>UJ-E15</span> Inward remittance exclusion</a><em>Ayesha — home remittance</em></li><li><a href="#UJ-E16"><span>UJ-E16</span> Salary credit exclusion</a><em>Ayesha — employer IBFT</em></li><li><a href="#UJ-E17"><span>UJ-E17</span> Merchant / entity wallet</a><em>Phase 2 — business</em></li><li><a href="#UJ-E18"><span>UJ-E18</span> Decline mandatory consents</a><em>Ayesha — refuses NADRA processing</em></li><li><a href="#UJ-E19"><span>UJ-E19</span> Abandon and resume ≤ 30 days</a><em>Ayesha — exits at live photo</em></li><li><a href="#UJ-E20"><span>UJ-E20</span> Periodic / event KYC refresh</a><em>Ayesha — due by risk interval</em></li></ul>
+</section>
+
+<article class="journey" id="UJ-E01">
+  <header>
+    <p class="kicker">UJ-E01 · Family A Core wallet</p>
+    <h2>Verisys wallet 50k</h2>
+    <p class="persona">Ayesha — first EMI wallet · A EMI §12 / §14.II · A live photo / TAT</p>
+    <p class="why">Digital wallet opens on NADRA Verisys plus screening. Monthly load is PKR 50,000. This is e-money, not a bank deposit.</p>
+    <div class="facts">
+      <div><b>Trigger</b><span>Taps Open wallet. Eligible digital ID. Verisys and TFS clear.</span></div>
+      <div><b>Success</b><span>WALLET_ACTIVE · VERISYS. Load 50k/month. Cash-out 10k/day.</span></div>
+      <div><b>Alternate</b><span>Duplicate CNIC, OTP fail, sanctions, NADRA outage (UJ-E05–E11).</span></div>
+    </div>
+    <div class="related"><b>Related</b> <a href="#UJ-E02">UJ-E02</a> · <a href="#UJ-E05">UJ-E05</a> · <a href="#UJ-E06">UJ-E06</a> · <a href="#UJ-E09">UJ-E09</a></div>
+  </header>
+  <h3>Workflow</h3>
+  <div class="flow"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 188 604" width="49.7mm" height="159.8mm" preserveAspectRatio="xMidYMin meet" role="img" aria-label="UJ-E01 workflow"><defs><marker id="arr-uje01" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8b9bb0"/></marker></defs><path d="M94.0,54 C94.0,62.0 94.0,62.0 94.0,70" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje01)"/><path d="M94.0,114 C94.0,122.0 94.0,122.0 94.0,130" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje01)"/><path d="M94.0,174 C94.0,182.0 94.0,182.0 94.0,190" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje01)"/><path d="M94.0,234 C94.0,242.0 94.0,242.0 94.0,250" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje01)"/><path d="M94.0,294 C94.0,302.0 94.0,302.0 94.0,310" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje01)"/><path d="M94.0,354 C94.0,362.0 94.0,362.0 94.0,370" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje01)"/><path d="M94.0,414 C94.0,422.0 94.0,422.0 94.0,430" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje01)"/><path d="M94.0,474 C94.0,482.0 94.0,482.0 94.0,490" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje01)"/><path d="M94.0,534 C94.0,542.0 94.0,542.0 94.0,550" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje01)"/><g transform="translate(10,10)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Open wallet</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(10,70)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Tracking ID on screen</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(10,130)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Mobile OTP · 2FA</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(10,190)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">SMS Tracking ID</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(10,250)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Consents and fees</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(10,310)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Identity + Table-A</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(10,370)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Live photo</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(10,430)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#0f6b45"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Sanctions / PEP</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">SUCCESS · MAIN</text></g><g transform="translate(10,490)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#0f6b45"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">NADRA Verisys</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">SUCCESS · MAIN</text></g><g transform="translate(10,550)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#0f6b45"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Home + Increase limit</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">SUCCESS · MAIN</text></g></svg></div>
+  <h3>Steps</h3>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Step</th><th>State</th><th>Customer sees / does</th><th>System does</th><th>Next</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td><span class='dot action'></span>Open wallet<div class='sub'>Main · Action</div></td><td>INITIATED</td><td>Opens app or web and taps Open wallet.</td><td>Creates application. Channel, device hash, IP, geo if permitted. Not a bank CIF.</td><td>Tracking ID on screen</td></tr><tr><td>2</td><td><span class='dot action'></span>Tracking ID on screen<div class='sub'>Main · Action</div></td><td>INITIATED</td><td>Sees Tracking ID. Can copy it. No SMS yet.</td><td>Issues Tracking ID in-app only. No destination until OTP.</td><td>Mobile OTP · 2FA</td></tr><tr><td>3</td><td><span class='dot action'></span>Mobile OTP · 2FA<div class='sub'>Main · Action</div></td><td>CONTACT_VERIFIED</td><td>Enters PTA-registered mobile and OTP.</td><td>2FA required (EMI §12). Does not skip state on wrong OTP.</td><td>SMS Tracking ID</td></tr><tr><td>4</td><td><span class='dot action'></span>SMS Tracking ID<div class='sub'>Main · Action</div></td><td>CONTACT_VERIFIED</td><td>Receives SMS: wallet application started + Tracking ID.</td><td>First out-of-band notify only after OTP success.</td><td>Consents and fees</td></tr><tr><td>5</td><td><span class='dot action'></span>Consents and fees<div class='sub'>Main · Action</div></td><td>CONSENT_CAPTURED</td><td>Accepts T&amp;Cs, privacy, NADRA/BV, fee schedule. Marketing off by default.</td><td>Versioned consents. Blocks continue until mandatory accepted.</td><td>Identity + Table-A</td></tr><tr><td>6</td><td><span class='dot action'></span>Identity + Table-A<div class='sub'>Main · Action</div></td><td>IDENTITY_CAPTURED</td><td>CNIC/NICOP/POC/POR/ARC. Two extra non-CNIC fields. Live CNIC image.</td><td>EMI §12 minimum + Consolidated Table-A. CNIC uniqueness check.</td><td>Live photo</td></tr><tr><td>7</td><td><span class='dot action'></span>Live photo<div class='sub'>Main · Action</div></td><td>LIVE_PHOTO_CAPTURED</td><td>Centers face. Captures live photo. Good light, no mask.</td><td>Encrypted upload. Face match vs ID. Liveness is not NADRA BV.</td><td>Sanctions / PEP</td></tr><tr><td>8</td><td><span class='dot success'></span>Sanctions / PEP<div class='sub'>Main · Success</div></td><td>SCREENING_IN_PROGRESS → clear</td><td>Sees Under review. Does not see list names.</td><td>UNSC + ATA + PEP + watchlist before payment-service use. Fail closed if provider down.</td><td>NADRA Verisys</td></tr><tr><td>9</td><td><span class='dot success'></span>NADRA Verisys<div class='sub'>Main · Success</div></td><td>WALLET_ACTIVE · VERISYS</td><td>Wallet ready — 50,000 per month.</td><td>Activate after §12 verify + pre-screen. limit_tier=VERISYS.</td><td>Home + Increase limit</td></tr><tr><td>10</td><td><span class='dot success'></span>Home + Increase limit<div class='sub'>Main · Success</div></td><td>WALLET_ACTIVE</td><td>Balance, pay, IBFT in. Banner to complete biometric for 400k.</td><td>Ledger enforces 50k load and 10k/day cash-out. Trust posting at par when funded.</td><td>End of this branch</td></tr>
+    </tbody>
+  </table>
+</article>
+
+<article class="journey" id="UJ-E02">
+  <header>
+    <p class="kicker">UJ-E02 · Family A Core wallet</p>
+    <h2>NADRA BV upgrade 400k</h2>
+    <p class="persona">Ayesha — needs higher load · A EMI §14 · channel D</p>
+    <p class="why">Biometric verification raises commercial monthly load to PKR 400,000 (pilot: 200,000). Selfie is not BV.</p>
+    <div class="facts">
+      <div><b>Trigger</b><span>Taps Increase limit on a VERISYS wallet.</span></div>
+      <div><b>Success</b><span>limit_tier=BV. Banner shows new monthly load. Cash-out from CRP.</span></div>
+      <div><b>Alternate</b><span>BV fail → UJ-E07. NADRA down → UJ-E08.</span></div>
+    </div>
+    <div class="related"><b>Related</b> <a href="#UJ-E01">UJ-E01</a> · <a href="#UJ-E03">UJ-E03</a> · <a href="#UJ-E07">UJ-E07</a></div>
+  </header>
+  <h3>Workflow</h3>
+  <div class="flow"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 378 304" width="100.0mm" height="80.4mm" preserveAspectRatio="xMidYMin meet" role="img" aria-label="UJ-E02 workflow"><defs><marker id="arr-uje02" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8b9bb0"/></marker></defs><path d="M189.0,54 C189.0,62.0 189.0,62.0 189.0,70" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje02)"/><path d="M189.0,114 C189.0,122.0 94.0,122.0 94.0,130" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje02)"/><text x="141.5" y="116.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">in-app</text><path d="M189.0,114 C189.0,122.0 284.0,122.0 284.0,130" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje02)"/><text x="236.5" y="116.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">offline</text><path d="M94.0,174 C94.0,182.0 94.0,182.0 94.0,190" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje02)"/><text x="94.0" y="176.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">success</text><path d="M284.0,174 C284.0,182.0 94.0,182.0 94.0,190" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje02)"/><text x="189.0" y="176.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">success</text><path d="M94.0,174 C94.0,182.0 284.0,182.0 284.0,190" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje02)"/><text x="189.0" y="176.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">fail</text><path d="M284.0,174 C284.0,182.0 284.0,182.0 284.0,190" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje02)"/><text x="284.0" y="176.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">fail</text><path d="M94.0,234 C94.0,242.0 189.0,242.0 189.0,250" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje02)"/><g transform="translate(105.0,10)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Increase limit</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(105.0,70)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#8a5a00"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">How to do BV</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">DECISION · MAIN</text></g><g transform="translate(10,130)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">In-app BVS</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION</text></g><g transform="translate(200,130)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">e-Sahulat / ATM</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION</text></g><g transform="translate(10,190)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#0f6b45"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">NADRA BV success</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">SUCCESS · MAIN</text></g><g transform="translate(105.0,250)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#0f6b45"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">New limit banner</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">SUCCESS · MAIN</text></g><g transform="translate(200,190)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#b42318"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">BV fails</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">FAIL / STOP</text></g></svg></div>
+  <h3>Steps</h3>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Step</th><th>State</th><th>Customer sees / does</th><th>System does</th><th>Next</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td><span class='dot action'></span>Increase limit<div class='sub'>Main · Action</div></td><td>WALLET_ACTIVE · VERISYS</td><td>Taps Increase my limit. Told SBP 50k vs 400k.</td><td>Starts BV session. Reads licence_phase.</td><td>How to do BV</td></tr><tr><td>2</td><td><span class='dot decision'></span>How to do BV<div class='sub'>Main · Decision</div></td><td>IDENTITY_VERIFICATION_IN_PROGRESS</td><td>In-app fingerprint/face, NADRA e-Sahulat, or partner ATM.</td><td>Same application. Authenticated BV channel.</td><td>in-app → In-app BVS<br>offline → e-Sahulat / ATM</td></tr><tr><td>3</td><td><span class='dot success'></span>NADRA BV success<div class='sub'>Main · Success</div></td><td>WALLET_ACTIVE · BV</td><td>Limit increased.</td><td>400k commercial or 200k pilot. Cash-out from CRP.</td><td>New limit banner</td></tr><tr><td>4</td><td><span class='dot success'></span>New limit banner<div class='sub'>Main · Success</div></td><td>WALLET_ACTIVE · BV</td><td>Sees 400,000 per month (or 200k if pilot).</td><td>Ledger policy switch. Alerts continue.</td><td>End of this branch</td></tr><tr><td>5</td><td><span class='dot action'></span>In-app BVS<div class='sub'>Branch · Action</div></td><td>IN_PROGRESS</td><td>Scans fingerprint/face in Pakistan.</td><td>NADRA BV adapter. No raw template store.</td><td>success → NADRA BV success<br>fail → BV fails</td></tr><tr><td>6</td><td><span class='dot action'></span>e-Sahulat / ATM<div class='sub'>Branch · Action</div></td><td>IN_PROGRESS</td><td>Completes BV at NADRA agent or partner ATM (no card if offered).</td><td>Receipt/ATM adapter. Confirm BV not CNIC-only Verisys.</td><td>success → NADRA BV success<br>fail → BV fails</td></tr><tr><td>7</td><td><span class='dot fail'></span>BV fails<div class='sub'>Branch · Fail / stop</div></td><td>VERISYS</td><td>Retry, e-Sahulat, or video KYC. Wallet stays 50k.</td><td>Do not fake BV. Stay VERISYS.</td><td>End of this branch</td></tr>
+    </tbody>
+  </table>
+</article>
+
+<article class="journey" id="UJ-E03">
+  <header>
+    <p class="kicker">UJ-E03 · Family A Core wallet</p>
+    <h2>Enhanced wallet 1M</h2>
+    <p class="persona">Sana — SoF + PSP&amp;OD product · A EMI §14.III not outsourced</p>
+    <p class="why">After commercial licence, PSP&amp;OD may allow up to PKR 1,000,000 if SoF, CNIC-SIM pairing, TMS, and CRP are done in-house.</p>
+    <div class="facts">
+      <div><b>Trigger</b><span>BV wallet. EMI has enhanced product approval. Customer requests.</span></div>
+      <div><b>Success</b><span>limit_tier=ENHANCED up to 1M.</span></div>
+      <div><b>Alternate</b><span>Missing SoF or pairing → remain BV.</span></div>
+    </div>
+    <div class="related"><b>Related</b> <a href="#UJ-E02">UJ-E02</a> · <a href="#UJ-E11">UJ-E11</a></div>
+  </header>
+  <h3>Workflow</h3>
+  <div class="flow"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 378 364" width="100.0mm" height="96.3mm" preserveAspectRatio="xMidYMin meet" role="img" aria-label="UJ-E03 workflow"><defs><marker id="arr-uje03" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8b9bb0"/></marker></defs><path d="M189.0,54 C189.0,62.0 189.0,62.0 189.0,70" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje03)"/><path d="M189.0,114 C189.0,122.0 189.0,122.0 189.0,130" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje03)"/><path d="M189.0,174 C189.0,182.0 189.0,182.0 189.0,190" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje03)"/><path d="M189.0,234 C189.0,242.0 189.0,242.0 189.0,250" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje03)"/><path d="M189.0,294 C189.0,302.0 94.0,302.0 94.0,310" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje03)"/><text x="141.5" y="296.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">pass</text><path d="M189.0,294 C189.0,302.0 284.0,302.0 284.0,310" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje03)"/><text x="236.5" y="296.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">fail</text><g transform="translate(105.0,10)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Request enhanced</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(105.0,70)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Annexure-J SoF</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(105.0,130)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">CNIC–SIM pairing</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(105.0,190)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#5b4aa8"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">TMS + CRP</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">WAIT · MAIN</text></g><g transform="translate(105.0,250)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#8a5a00"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">PSP&amp;OD path already live</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">DECISION · MAIN</text></g><g transform="translate(10,310)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#0f6b45"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Enhanced live</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">SUCCESS · MAIN</text></g><g transform="translate(200,310)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#b42318"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Remain BV</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">FAIL / STOP</text></g></svg></div>
+  <h3>Steps</h3>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Step</th><th>State</th><th>Customer sees / does</th><th>System does</th><th>Next</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td><span class='dot action'></span>Request enhanced<div class='sub'>Main · Action</div></td><td>WALLET_ACTIVE · BV</td><td>Taps higher limit / enhanced wallet.</td><td>Checks commercial licence + PSP&amp;OD flag.</td><td>Annexure-J SoF</td></tr><tr><td>2</td><td><span class='dot action'></span>Annexure-J SoF<div class='sub'>Main · Action</div></td><td>ADDITIONAL_INFORMATION_REQUIRED</td><td>Uploads income / source of funds.</td><td>Stores artefacts. Verification not outsourced.</td><td>CNIC–SIM pairing</td></tr><tr><td>3</td><td><span class='dot action'></span>CNIC–SIM pairing<div class='sub'>Main · Action</div></td><td>verification</td><td>Confirms mobile ownership on this device.</td><td>Pairs CNIC to SIM/device of the instrument.</td><td>TMS + CRP</td></tr><tr><td>4</td><td><span class='dot wait'></span>TMS + CRP<div class='sub'>Main · Wait</div></td><td>EDD_REQUIRED / review</td><td>Waits. Tracking ID visible.</td><td>Robust TMS scenarios + detailed risk profile. In-house.</td><td>PSP&amp;OD path already live</td></tr><tr><td>5</td><td><span class='dot decision'></span>PSP&amp;OD path already live<div class='sub'>Main · Decision</div></td><td>review</td><td>Does not see regulator UI.</td><td>Product already approved; this is per-customer control check.</td><td>pass → Enhanced live<br>fail → Remain BV</td></tr><tr><td>6</td><td><span class='dot success'></span>Enhanced live<div class='sub'>Main · Success</div></td><td>WALLET_ACTIVE · ENHANCED</td><td>Sees higher limit banner.</td><td>limit_tier=ENHANCED. Ledger cap 1M.</td><td>End of this branch</td></tr><tr><td>7</td><td><span class='dot fail'></span>Remain BV<div class='sub'>Branch · Fail / stop</div></td><td>WALLET_ACTIVE · BV</td><td>Told what is still missing.</td><td>No silent 1M.</td><td>End of this branch</td></tr>
+    </tbody>
+  </table>
+</article>
+
+<article class="journey" id="UJ-E04">
+  <header>
+    <p class="kicker">UJ-E04 · Family B Identity exceptions</p>
+    <h2>One credit then unverified close + STR</h2>
+    <p class="persona">Policy-enabled pre-verify credit · A EMI §12.IV</p>
+    <p class="why">EMI may allow one credit before credentials are verified. If verification fails, close the instrument and file STR. Recommended default is off.</p>
+    <div class="facts">
+      <div><b>Trigger</b><span>Product flag allows one inbound before NADRA/screen complete.</span></div>
+      <div><b>Success</b><span>If later verified → continue UJ-E01. If not → closed + STR.</span></div>
+      <div><b>Alternate</b><span>Prefer disable this flag and verify first.</span></div>
+    </div>
+    <div class="related"><b>Related</b> <a href="#UJ-E01">UJ-E01</a> · <a href="#UJ-E10">UJ-E10</a></div>
+  </header>
+  <h3>Workflow</h3>
+  <div class="flow"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 378 244" width="100.0mm" height="64.6mm" preserveAspectRatio="xMidYMin meet" role="img" aria-label="UJ-E04 workflow"><defs><marker id="arr-uje04" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8b9bb0"/></marker></defs><path d="M189.0,54 C189.0,62.0 189.0,62.0 189.0,70" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje04)"/><text x="189.0" y="56.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">enabled</text><path d="M189.0,114 C189.0,122.0 189.0,122.0 189.0,130" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje04)"/><path d="M189.0,174 C189.0,182.0 94.0,182.0 94.0,190" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje04)"/><text x="141.5" y="176.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">verified</text><path d="M189.0,174 C189.0,182.0 284.0,182.0 284.0,190" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje04)"/><text x="236.5" y="176.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">not verified</text><g transform="translate(105.0,10)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#8a5a00"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Pre-verify credit on</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">DECISION · MAIN</text></g><g transform="translate(105.0,70)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">One inbound</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(105.0,130)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#5b4aa8"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Verify window</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">WAIT · MAIN</text></g><g transform="translate(10,190)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#0f6b45"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Credentials verified</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">SUCCESS</text></g><g transform="translate(200,190)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#b42318"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Close + STR</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">FAIL / STOP · MAIN</text></g></svg></div>
+  <h3>Steps</h3>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Step</th><th>State</th><th>Customer sees / does</th><th>System does</th><th>Next</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td><span class='dot decision'></span>Pre-verify credit on<div class='sub'>Main · Decision</div></td><td>INITIATED / pending</td><td>May see pending wallet.</td><td>unverified_one_credit flag. Hard timeout.</td><td>enabled → One inbound</td></tr><tr><td>2</td><td><span class='dot action'></span>One inbound<div class='sub'>Main · Action</div></td><td>pending verify</td><td>Receives one credit/IBFT.</td><td>Ledger allows exactly one. No spend if policy stricter.</td><td>Verify window</td></tr><tr><td>3</td><td><span class='dot wait'></span>Verify window<div class='sub'>Main · Wait</div></td><td>pending verify</td><td>Prompted to finish KYC.</td><td>NADRA + TFS still required.</td><td>verified → Credentials verified<br>not verified → Close + STR</td></tr><tr><td>4</td><td><span class='dot fail'></span>Close + STR<div class='sub'>Main · Fail / stop</div></td><td>CLOSED_UNVERIFIED</td><td>Wallet closed. Support copy without extra PII.</td><td>CLOSED_UNVERIFIED. File STR with FMU.</td><td>End of this branch</td></tr><tr><td>5</td><td><span class='dot success'></span>Credentials verified<div class='sub'>Branch · Success</div></td><td>WALLET_ACTIVE</td><td>Wallet becomes VERISYS/BV per path.</td><td>Clear flag. Continue UJ-E01.</td><td>End of this branch</td></tr>
+    </tbody>
+  </table>
+</article>
+
+<article class="journey" id="UJ-E05">
+  <header>
+    <p class="kicker">UJ-E05 · Family B Identity exceptions</p>
+    <h2>Duplicate CNIC — one wallet</h2>
+    <p class="persona">Yasmin — already has this EMI wallet · A EMI §12.VII</p>
+    <p class="why">A CNIC holder may open only one e-money instrument with this EMI. Copy must say You already have a wallet — not a vague reject.</p>
+    <div class="facts">
+      <div><b>Trigger</b><span>CNIC hash matches an open wallet at this EMI.</span></div>
+      <div><b>Success</b><span>Login / recovery to existing wallet.</span></div>
+      <div><b>Alternate</b><span>Closed wallet reopen policy — Legal.</span></div>
+    </div>
+    <div class="related"><b>Related</b> <a href="#UJ-E01">UJ-E01</a> · <a href="#UJ-E09">UJ-E09</a></div>
+  </header>
+  <h3>Workflow</h3>
+  <div class="flow"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 188 244" width="49.7mm" height="64.6mm" preserveAspectRatio="xMidYMin meet" role="img" aria-label="UJ-E05 workflow"><defs><marker id="arr-uje05" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8b9bb0"/></marker></defs><path d="M94.0,54 C94.0,62.0 94.0,62.0 94.0,70" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje05)"/><path d="M94.0,114 C94.0,122.0 94.0,122.0 94.0,130" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje05)"/><path d="M94.0,174 C94.0,182.0 94.0,182.0 94.0,190" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje05)"/><g transform="translate(10,10)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Enter CNIC</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(10,70)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#8a5a00"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Existing wallet</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">DECISION · MAIN</text></g><g transform="translate(10,130)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Clear message</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(10,190)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#0f6b45"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Login existing</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">SUCCESS · MAIN</text></g></svg></div>
+  <h3>Steps</h3>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Step</th><th>State</th><th>Customer sees / does</th><th>System does</th><th>Next</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td><span class='dot action'></span>Enter CNIC<div class='sub'>Main · Action</div></td><td>IDENTITY_CAPTURED</td><td>Enters identity.</td><td>Hash vs uniqueness key.</td><td>Existing wallet</td></tr><tr><td>2</td><td><span class='dot decision'></span>Existing wallet<div class='sub'>Main · Decision</div></td><td>blocked</td><td>Stopped from a second instrument.</td><td>Block issue-wallet.</td><td>Clear message</td></tr><tr><td>3</td><td><span class='dot action'></span>Clear message<div class='sub'>Main · Action</div></td><td>existing</td><td>You already have a wallet — log in.</td><td>Redirect intent. Not Rejected by policy only.</td><td>Login existing</td></tr><tr><td>4</td><td><span class='dot success'></span>Login existing<div class='sub'>Main · Success</div></td><td>WALLET_ACTIVE existing</td><td>Goes to login/recovery.</td><td>No second instrument.</td><td>End of this branch</td></tr>
+    </tbody>
+  </table>
+</article>
+
+<article class="journey" id="UJ-E06">
+  <header>
+    <p class="kicker">UJ-E06 · Family B Identity exceptions</p>
+    <h2>OTP / 2FA fail</h2>
+    <p class="persona">Ayesha — mistypes OTP · A 2FA · B/C OTP security</p>
+    <p class="why">Wrong OTP never skips CONTACT_VERIFIED. After N fails, cool-down. Change number is a new attempt.</p>
+    <div class="facts">
+      <div><b>Trigger</b><span>Wrong OTP, expiry, or different mobile.</span></div>
+      <div><b>Success</b><span>Mobile verified → CONTACT_VERIFIED. Then SMS Tracking ID.</span></div>
+      <div><b>Alternate</b><span>Cool-down. Support via in-app Tracking ID.</span></div>
+    </div>
+    <div class="related"><b>Related</b> <a href="#UJ-E01">UJ-E01</a> · <a href="#UJ-E09">UJ-E09</a></div>
+  </header>
+  <h3>Workflow</h3>
+  <div class="flow"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 378 364" width="100.0mm" height="96.3mm" preserveAspectRatio="xMidYMin meet" role="img" aria-label="UJ-E06 workflow"><defs><marker id="arr-uje06" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8b9bb0"/></marker></defs><path d="M189.0,54 C189.0,62.0 189.0,62.0 189.0,70" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje06)"/><path d="M189.0,114 C189.0,182.0 284.0,182.0 284.0,250" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje06)"/><text x="236.5" y="176.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">correct</text><path d="M189.0,114 C189.0,122.0 189.0,122.0 189.0,130" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje06)"/><text x="189.0" y="116.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">fail</text><path d="M189.0,174 C189.0,182.0 189.0,182.0 189.0,190" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje06)"/><path d="M189.0,234 C189.0,152.0 189.0,152.0 189.0,70" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje06)"/><path d="M189.0,174 C189.0,212.0 94.0,212.0 94.0,250" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje06)"/><text x="141.5" y="206.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">N fails</text><path d="M94.0,294 C94.0,302.0 189.0,302.0 189.0,310" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje06)"/><path d="M189.0,354 C189.0,182.0 189.0,182.0 189.0,10" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje06)"/><g transform="translate(105.0,10)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Enter mobile</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(105.0,70)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#8a5a00"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Enter OTP</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">DECISION · MAIN</text></g><g transform="translate(105.0,130)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#b42318"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Wrong / expired</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">FAIL / STOP · MAIN</text></g><g transform="translate(105.0,190)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Retry</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(10,250)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#5b4aa8"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Lockout cool-down</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">WAIT</text></g><g transform="translate(105.0,310)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Change number</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION</text></g><g transform="translate(200,250)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#0f6b45"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Verified</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">SUCCESS · MAIN</text></g></svg></div>
+  <h3>Steps</h3>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Step</th><th>State</th><th>Customer sees / does</th><th>System does</th><th>Next</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td><span class='dot action'></span>Enter mobile<div class='sub'>Main · Action</div></td><td>INITIATED</td><td>Types mobile. Helper: PTA-registered in own name.</td><td>Start OTP. Attempt counters.</td><td>Enter OTP</td></tr><tr><td>2</td><td><span class='dot decision'></span>Enter OTP<div class='sub'>Main · Decision</div></td><td>INITIATED</td><td>Enters code from SMS.</td><td>No OTP in logs. 2FA confirm or fail.</td><td>correct → Verified<br>fail → Wrong / expired</td></tr><tr><td>3</td><td><span class='dot fail'></span>Wrong / expired<div class='sub'>Main · Fail / stop</div></td><td>INITIATED</td><td>Retry. Remaining attempts shown.</td><td>Does not advance state.</td><td>Retry<br>N fails → Lockout cool-down</td></tr><tr><td>4</td><td><span class='dot action'></span>Retry<div class='sub'>Main · Action</div></td><td>INITIATED</td><td>Requests new OTP.</td><td>Resend with limits.</td><td>Enter OTP</td></tr><tr><td>5</td><td><span class='dot success'></span>Verified<div class='sub'>Main · Success</div></td><td>CONTACT_VERIFIED</td><td>Mobile verified badge.</td><td>Bind MSISDN. SMS Tracking ID.</td><td>End of this branch</td></tr><tr><td>6</td><td><span class='dot wait'></span>Lockout cool-down<div class='sub'>Branch · Wait</div></td><td>INITIATED</td><td>Sees timer.</td><td>Cool-down. Still INITIATED.</td><td>Change number</td></tr><tr><td>7</td><td><span class='dot action'></span>Change number<div class='sub'>Branch · Action</div></td><td>INITIATED</td><td>Optional new number. New attempt rules.</td><td>New OTP cycle. Fraud rules.</td><td>Enter mobile</td></tr>
+    </tbody>
+  </table>
+</article>
+
+<article class="journey" id="UJ-E07">
+  <header>
+    <p class="kicker">UJ-E07 · Family B Identity exceptions</p>
+    <h2>BV fail → stay 50k / video KYC</h2>
+    <p class="persona">Bilal — unclear fingerprints · A Consolidated no-branch EMI</p>
+    <p class="why">Greenfield EMI has no branches. Do not pretend BV succeeded. Keep Verisys 50k or use Verisys+MSISDN or recorded video KYC + Verisys.</p>
+    <div class="facts">
+      <div><b>Trigger</b><span>Live photo OK. BV fails for an eligible reason.</span></div>
+      <div><b>Success</b><span>Stay VERISYS 50k, or video+Verisys then BV upgrade later.</span></div>
+      <div><b>Alternate</b><span>No-show → reschedule. No debit-block bank product.</span></div>
+    </div>
+    <div class="related"><b>Related</b> <a href="#UJ-E02">UJ-E02</a> · <a href="#UJ-E08">UJ-E08</a></div>
+  </header>
+  <h3>Workflow</h3>
+  <div class="flow"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 378 304" width="100.0mm" height="80.4mm" preserveAspectRatio="xMidYMin meet" role="img" aria-label="UJ-E07 workflow"><defs><marker id="arr-uje07" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8b9bb0"/></marker></defs><path d="M189.0,54 C189.0,62.0 189.0,62.0 189.0,70" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje07)"/><path d="M189.0,114 C189.0,122.0 189.0,122.0 189.0,130" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje07)"/><path d="M189.0,174 C189.0,182.0 94.0,182.0 94.0,190" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje07)"/><text x="141.5" y="176.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">keep 50k</text><path d="M189.0,174 C189.0,182.0 284.0,182.0 284.0,190" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje07)"/><text x="236.5" y="176.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">video</text><path d="M284.0,234 C284.0,242.0 189.0,242.0 189.0,250" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje07)"/><text x="236.5" y="236.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">pass</text><g transform="translate(105.0,10)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#b42318"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">BV eligible fail</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">FAIL / STOP · MAIN</text></g><g transform="translate(105.0,70)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">We’ll verify another way</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(105.0,130)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#8a5a00"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Path</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">DECISION · MAIN</text></g><g transform="translate(10,190)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#0f6b45"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Stay VERISYS 50k</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">SUCCESS · MAIN</text></g><g transform="translate(200,190)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#5b4aa8"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Video KYC + Verisys</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">WAIT</text></g><g transform="translate(105.0,250)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#0f6b45"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Assured</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">SUCCESS</text></g></svg></div>
+  <h3>Steps</h3>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Step</th><th>State</th><th>Customer sees / does</th><th>System does</th><th>Next</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td><span class='dot fail'></span>BV eligible fail<div class='sub'>Main · Fail / stop</div></td><td>IDENTITY_VERIFICATION_IN_PROGRESS</td><td>Fingerprint/face BV does not complete.</td><td>Eligible-reason check. Do not mark BV.</td><td>We’ll verify another way</td></tr><tr><td>2</td><td><span class='dot action'></span>We’ll verify another way<div class='sub'>Main · Action</div></td><td>IN_PROGRESS</td><td>Plain EN/UR. Wallet can stay at 50k.</td><td>Record why BV not met.</td><td>Path</td></tr><tr><td>3</td><td><span class='dot decision'></span>Path<div class='sub'>Main · Decision</div></td><td>IN_PROGRESS</td><td>Keep 50k, try e-Sahulat, or book video KYC.</td><td>No silent 400k.</td><td>keep 50k → Stay VERISYS 50k<br>video → Video KYC + Verisys</td></tr><tr><td>4</td><td><span class='dot success'></span>Stay VERISYS 50k<div class='sub'>Main · Success</div></td><td>WALLET_ACTIVE · VERISYS</td><td>Explicit 50k banner. Increase limit still available.</td><td>limit_tier=VERISYS. Not a bank debit-block.</td><td>End of this branch</td></tr><tr><td>5</td><td><span class='dot wait'></span>Video KYC + Verisys<div class='sub'>Branch · Wait</div></td><td>VIDEO_KYC_PENDING</td><td>Books recorded session. Shows ID.</td><td>Retain recording. Verisys. EMI without presence path.</td><td>pass → Assured</td></tr><tr><td>6</td><td><span class='dot success'></span>Assured<div class='sub'>Branch · Success</div></td><td>VERISYS or BV</td><td>May then retry BV for 400k.</td><td>Still not BV unless NADRA BV succeeds.</td><td>End of this branch</td></tr>
+    </tbody>
+  </table>
+</article>
+
+<article class="journey" id="UJ-E08">
+  <header>
+    <p class="kicker">UJ-E08 · Family B Identity exceptions</p>
+    <h2>NADRA timeout / outage</h2>
+    <p class="persona">Any — vendor down · A fail-controlled</p>
+    <p class="why">NADRA 503 never becomes silent 400k or silent activate. Hold IN_PROGRESS. Resume ≤ 30 days.</p>
+    <div class="facts">
+      <div><b>Trigger</b><span>NADRA timeout or 503.</span></div>
+      <div><b>Success</b><span>Vendor recovers → UJ-E01 or UJ-E02.</span></div>
+      <div><b>Alternate</b><span>Max retries → video/case. Still no silent upgrade.</span></div>
+    </div>
+    <div class="related"><b>Related</b> <a href="#UJ-E01">UJ-E01</a> · <a href="#UJ-E02">UJ-E02</a> · <a href="#UJ-E19">UJ-E19</a></div>
+  </header>
+  <h3>Workflow</h3>
+  <div class="flow"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 378 244" width="100.0mm" height="64.6mm" preserveAspectRatio="xMidYMin meet" role="img" aria-label="UJ-E08 workflow"><defs><marker id="arr-uje08" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8b9bb0"/></marker></defs><path d="M189.0,54 C189.0,62.0 189.0,62.0 189.0,70" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje08)"/><path d="M189.0,114 C189.0,122.0 189.0,122.0 189.0,130" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje08)"/><path d="M189.0,174 C189.0,182.0 94.0,182.0 94.0,190" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje08)"/><text x="141.5" y="176.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">up</text><path d="M189.0,174 C189.0,182.0 284.0,182.0 284.0,190" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje08)"/><text x="236.5" y="176.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">still down</text><g transform="translate(105.0,10)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#b42318"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">NADRA call fails</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">FAIL / STOP · MAIN</text></g><g transform="translate(105.0,70)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#5b4aa8"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Hold — no STP</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">WAIT · MAIN</text></g><g transform="translate(105.0,130)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Customer retry</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(10,190)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#0f6b45"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Vendor up</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">SUCCESS · MAIN</text></g><g transform="translate(200,190)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#b42318"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Max retries</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">FAIL / STOP</text></g></svg></div>
+  <h3>Steps</h3>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Step</th><th>State</th><th>Customer sees / does</th><th>System does</th><th>Next</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td><span class='dot fail'></span>NADRA call fails<div class='sub'>Main · Fail / stop</div></td><td>IDENTITY_VERIFICATION_IN_PROGRESS</td><td>Verification taking longer + Tracking ID. No fake Wallet ready.</td><td>503/timeout. Stay IN_PROGRESS.</td><td>Hold — no STP</td></tr><tr><td>2</td><td><span class='dot wait'></span>Hold — no STP<div class='sub'>Main · Wait</div></td><td>IN_PROGRESS</td><td>Retry CTA. Can leave and come back.</td><td>Backoff. Never activate on outage.</td><td>Customer retry</td></tr><tr><td>3</td><td><span class='dot action'></span>Customer retry<div class='sub'>Main · Action</div></td><td>IN_PROGRESS</td><td>Taps retry.</td><td>Idempotent restart.</td><td>up → Vendor up<br>still down → Max retries</td></tr><tr><td>4</td><td><span class='dot success'></span>Vendor up<div class='sub'>Main · Success</div></td><td>WALLET_ACTIVE or still in progress</td><td>Verisys or BV continues.</td><td>Resume UJ-E01 / UJ-E02.</td><td>End of this branch</td></tr><tr><td>5</td><td><span class='dot fail'></span>Max retries<div class='sub'>Branch · Fail / stop</div></td><td>alternate or case</td><td>Video or wait for case.</td><td>Still no silent 400k.</td><td>End of this branch</td></tr>
+    </tbody>
+  </table>
+</article>
+
+<article class="journey" id="UJ-E09">
+  <header>
+    <p class="kicker">UJ-E09 · Family C AML and tracking</p>
+    <h2>Tracking ID + TAT 2 WD</h2>
+    <p class="persona">Any in review · A tracking · A TAT 2 WD</p>
+    <p class="why">Tracking ID on screen from Step 0. SMS after OTP. Individual decision TAT 2 working days. No silent stall.</p>
+    <div class="facts">
+      <div><b>Trigger</b><span>Any in-flight or delayed wallet application.</span></div>
+      <div><b>Success</b><span>Customer knows next action.</span></div>
+      <div><b>Alternate</b><span>Unknown ID → generic error. Entity TAT 5 WD is UJ-E17.</span></div>
+    </div>
+    <div class="related"><b>Related</b> <a href="#UJ-E01">UJ-E01</a> · <a href="#UJ-E06">UJ-E06</a> · <a href="#UJ-E11">UJ-E11</a></div>
+  </header>
+  <h3>Workflow</h3>
+  <div class="flow"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 378 244" width="100.0mm" height="64.6mm" preserveAspectRatio="xMidYMin meet" role="img" aria-label="UJ-E09 workflow"><defs><marker id="arr-uje09" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8b9bb0"/></marker></defs><path d="M189.0,54 C189.0,62.0 189.0,62.0 189.0,70" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje09)"/><path d="M189.0,114 C189.0,122.0 94.0,122.0 94.0,130" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje09)"/><text x="141.5" y="116.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">found</text><path d="M189.0,114 C189.0,122.0 284.0,122.0 284.0,130" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje09)"/><text x="236.5" y="116.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">not found</text><path d="M94.0,174 C94.0,182.0 189.0,182.0 189.0,190" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje09)"/><text x="141.5" y="176.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">SLA breach</text><g transform="translate(105.0,10)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Where the ID is</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(105.0,70)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Enter Tracking ID</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(10,130)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#0f6b45"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Next step shown</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">SUCCESS · MAIN</text></g><g transform="translate(200,130)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#b42318"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Unknown ID</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">FAIL / STOP</text></g><g transform="translate(105.0,190)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#b42318"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Day 3 no decision</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">FAIL / STOP · MAIN</text></g></svg></div>
+  <h3>Steps</h3>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Step</th><th>State</th><th>Customer sees / does</th><th>System does</th><th>Next</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td><span class='dot action'></span>Where the ID is<div class='sub'>Main · Action</div></td><td>any</td><td>On-screen from Step 0. SMS after OTP. Email if captured.</td><td>Never SMS at Step 0.</td><td>Enter Tracking ID</td></tr><tr><td>2</td><td><span class='dot action'></span>Enter Tracking ID<div class='sub'>Main · Action</div></td><td>current</td><td>App/web status field.</td><td>GET tracking. Rate-limited. Minimal fields.</td><td>found → Next step shown<br>not found → Unknown ID</td></tr><tr><td>3</td><td><span class='dot success'></span>Next step shown<div class='sub'>Main · Success</div></td><td>current</td><td>Progress, limit tier, next action. No extra PII.</td><td>Non-sensitive status.</td><td>SLA breach → Day 3 no decision</td></tr><tr><td>4</td><td><span class='dot fail'></span>Day 3 no decision<div class='sub'>Main · Fail / stop</div></td><td>unchanged</td><td>Notified still in review + support.</td><td>TAT comms. State unchanged.</td><td>End of this branch</td></tr><tr><td>5</td><td><span class='dot fail'></span>Unknown ID<div class='sub'>Branch · Fail / stop</div></td><td>n/a</td><td>Generic error.</td><td>No enumeration.</td><td>End of this branch</td></tr>
+    </tbody>
+  </table>
+</article>
+
+<article class="journey" id="UJ-E10">
+  <header>
+    <p class="kicker">UJ-E10 · Family C AML and tracking</p>
+    <h2>Sanctions / fraud true match</h2>
+    <p class="persona">System decline — written reason · A TFS · A written decline</p>
+    <p class="why">Confirmed UNSC/ATA hit or fraud lock is fail-closed. No e-money instrument. No STP retry.</p>
+    <div class="facts">
+      <div><b>Trigger</b><span>Confirmed sanctions/proscribed hit after adjudication, or fraud lock.</span></div>
+      <div><b>Success</b><span>Customer understands outcome. Support available.</span></div>
+      <div><b>Alternate</b><span>Potential hit first → Under review until adjudication.</span></div>
+    </div>
+    <div class="related"><b>Related</b> <a href="#UJ-E01">UJ-E01</a> · <a href="#UJ-E11">UJ-E11</a></div>
+  </header>
+  <h3>Workflow</h3>
+  <div class="flow"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 378 244" width="100.0mm" height="64.6mm" preserveAspectRatio="xMidYMin meet" role="img" aria-label="UJ-E10 workflow"><defs><marker id="arr-uje10" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8b9bb0"/></marker></defs><path d="M189.0,54 C189.0,62.0 189.0,62.0 189.0,70" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje10)"/><path d="M189.0,114 C189.0,122.0 94.0,122.0 94.0,130" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje10)"/><text x="141.5" y="116.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">true match</text><path d="M189.0,114 C189.0,122.0 284.0,122.0 284.0,130" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje10)"/><text x="236.5" y="116.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">false positive</text><path d="M94.0,174 C94.0,182.0 189.0,182.0 189.0,190" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje10)"/><g transform="translate(105.0,10)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Sanctions screen</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(105.0,70)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#5b4aa8"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Potential hit</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">WAIT · MAIN</text></g><g transform="translate(10,130)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#b42318"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">True match / fraud</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">FAIL / STOP · MAIN</text></g><g transform="translate(105.0,190)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#b42318"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Written reason</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">FAIL / STOP · MAIN</text></g><g transform="translate(200,130)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#0f6b45"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">False positive</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">SUCCESS</text></g></svg></div>
+  <h3>Steps</h3>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Step</th><th>State</th><th>Customer sees / does</th><th>System does</th><th>Next</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td><span class='dot action'></span>Sanctions screen<div class='sub'>Main · Action</div></td><td>SCREENING_IN_PROGRESS</td><td>Sees Under review. Not lists.</td><td>UNSC + ATA + watchlist. Fail closed if provider down.</td><td>Potential hit</td></tr><tr><td>2</td><td><span class='dot wait'></span>Potential hit<div class='sub'>Main · Wait</div></td><td>SCREENING_HIT_REVIEW</td><td>Status Under review. Tracking ID.</td><td>SCREENING_HIT_REVIEW. Ops adjudicates.</td><td>true match → True match / fraud<br>false positive → False positive</td></tr><tr><td>3</td><td><span class='dot fail'></span>True match / fraud<div class='sub'>Main · Fail / stop</div></td><td>REJECTED</td><td>Application rejected. No wallet.</td><td>No instrument. Audit. No STP retry.</td><td>Written reason</td></tr><tr><td>4</td><td><span class='dot fail'></span>Written reason<div class='sub'>Main · Fail / stop</div></td><td>REJECTED</td><td>Specific legal-approved wording + support.</td><td>Decline notice A.</td><td>End of this branch</td></tr><tr><td>5</td><td><span class='dot success'></span>False positive<div class='sub'>Branch · Success</div></td><td>IDENTITY_VERIFICATION_IN_PROGRESS</td><td>Continues Verisys path.</td><td>Adjudicated clear.</td><td>End of this branch</td></tr>
+    </tbody>
+  </table>
+</article>
+
+<article class="journey" id="UJ-E11">
+  <header>
+    <p class="kicker">UJ-E11 · Family C AML and tracking</p>
+    <h2>PEP / high-risk EDD + video</h2>
+    <p class="persona">Sana — high CRP or PEP · A EDD · A recorded video NFTF</p>
+    <p class="why">High CRP or PEP needs extra SoW/SoF and recorded video. Customer waits. Senior approval is ops-side.</p>
+    <div class="facts">
+      <div><b>Trigger</b><span>PEP yes / list hit, or CRP HIGH.</span></div>
+      <div><b>Success</b><span>Wallet with enhanced monitoring, or written decline.</span></div>
+      <div><b>Alternate</b><span>Missed interview → reschedule. Delay → UJ-E09.</span></div>
+    </div>
+    <div class="related"><b>Related</b> <a href="#UJ-E03">UJ-E03</a> · <a href="#UJ-E10">UJ-E10</a></div>
+  </header>
+  <h3>Workflow</h3>
+  <div class="flow"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 378 364" width="100.0mm" height="96.3mm" preserveAspectRatio="xMidYMin meet" role="img" aria-label="UJ-E11 workflow"><defs><marker id="arr-uje11" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8b9bb0"/></marker></defs><path d="M189.0,54 C189.0,62.0 189.0,62.0 189.0,70" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje11)"/><path d="M189.0,114 C189.0,122.0 189.0,122.0 189.0,130" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje11)"/><path d="M189.0,174 C189.0,182.0 189.0,182.0 189.0,190" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje11)"/><path d="M189.0,234 C189.0,242.0 189.0,242.0 189.0,250" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje11)"/><path d="M189.0,294 C189.0,302.0 94.0,302.0 94.0,310" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje11)"/><text x="141.5" y="296.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">approve</text><path d="M189.0,294 C189.0,302.0 284.0,302.0 284.0,310" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje11)"/><text x="236.5" y="296.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">reject</text><g transform="translate(105.0,10)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Extra verification needed</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(105.0,70)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Upload SoI / SoW</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(105.0,130)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Book video interview</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(105.0,190)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Recorded interview</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(105.0,250)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#8a5a00"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Decision</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">DECISION · MAIN</text></g><g transform="translate(10,310)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#0f6b45"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Wallet + monitoring</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">SUCCESS</text></g><g transform="translate(200,310)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#b42318"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Rejected in writing</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">FAIL / STOP</text></g></svg></div>
+  <h3>Steps</h3>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Step</th><th>State</th><th>Customer sees / does</th><th>System does</th><th>Next</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td><span class='dot action'></span>Extra verification needed<div class='sub'>Main · Action</div></td><td>EDD_REQUIRED</td><td>Told additional verification is required. Not 50k STP if policy EDD.</td><td>EDD_REQUIRED.</td><td>Upload SoI / SoW</td></tr><tr><td>2</td><td><span class='dot action'></span>Upload SoI / SoW<div class='sub'>Main · Action</div></td><td>EDD_REQUIRED</td><td>Uploads source of income/wealth.</td><td>Stores on EDD case.</td><td>Book video interview</td></tr><tr><td>3</td><td><span class='dot action'></span>Book video interview<div class='sub'>Main · Action</div></td><td>VIDEO_KYC_PENDING</td><td>Schedules recorded video KYC.</td><td>Session + retention.</td><td>Recorded interview</td></tr><tr><td>4</td><td><span class='dot action'></span>Recorded interview<div class='sub'>Main · Action</div></td><td>VIDEO_KYC_PENDING</td><td>Joins. Purpose, occupation, funds.</td><td>Recording retained. Senior path if PEP.</td><td>Decision</td></tr><tr><td>5</td><td><span class='dot decision'></span>Decision<div class='sub'>Main · Decision</div></td><td>WALLET_ACTIVE or REJECTED</td><td>Approve with monitoring or written reject.</td><td>Maker-checker invisible to customer.</td><td>approve → Wallet + monitoring<br>reject → Rejected in writing</td></tr><tr><td>6</td><td><span class='dot success'></span>Wallet + monitoring<div class='sub'>Branch · Success</div></td><td>WALLET_ACTIVE</td><td>Can use wallet. Limit tier per BV/Verisys.</td><td>edd monitoring flag. TMS on.</td><td>End of this branch</td></tr><tr><td>7</td><td><span class='dot fail'></span>Rejected in writing<div class='sub'>Branch · Fail / stop</div></td><td>REJECTED</td><td>Specific reason + support.</td><td>No instrument.</td><td>End of this branch</td></tr>
+    </tbody>
+  </table>
+</article>
+
+<article class="journey" id="UJ-E12">
+  <header>
+    <p class="kicker">UJ-E12 · Family D Lifecycle</p>
+    <h2>Agent cash-in / cash-out</h2>
+    <p class="persona">Ayesha at an agent · A EMI §15 / §17 no issuance</p>
+    <p class="why">Agents cash-in/out and redeem. They must not open wallets. Cash-in and cash redemption need BV. ATM cash-out needs 2FA.</p>
+    <div class="facts">
+      <div><b>Trigger</b><span>Existing wallet holder visits SBP-approved agent or ATM.</span></div>
+      <div><b>Success</b><span>Cash moved at par. Alerts fire.</span></div>
+      <div><b>Alternate</b><span>Agent tries to issue → blocked.</span></div>
+    </div>
+    <div class="related"><b>Related</b> <a href="#UJ-E01">UJ-E01</a> · <a href="#UJ-E02">UJ-E02</a></div>
+  </header>
+  <h3>Workflow</h3>
+  <div class="flow"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 948 124" width="186.0mm" height="24.3mm" preserveAspectRatio="xMidYMin meet" role="img" aria-label="UJ-E12 workflow"><defs><marker id="arr-uje12" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8b9bb0"/></marker></defs><path d="M474.0,54 C474.0,62.0 94.0,62.0 94.0,70" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje12)"/><path d="M474.0,54 C474.0,62.0 284.0,62.0 284.0,70" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje12)"/><path d="M474.0,54 C474.0,62.0 474.0,62.0 474.0,70" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje12)"/><path d="M474.0,54 C474.0,62.0 664.0,62.0 664.0,70" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje12)"/><path d="M474.0,54 C474.0,62.0 854.0,62.0 854.0,70" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje12)"/><text x="664.0" y="56.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">try open</text><g transform="translate(390.0,10)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Existing wallet only</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(10,70)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Cash-in</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(200,70)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Agent cash-out</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(390,70)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">ATM cash-out</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION</text></g><g transform="translate(580,70)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#0f6b45"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Full cash redemption</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">SUCCESS · MAIN</text></g><g transform="translate(770,70)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#b42318"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Agent cannot issue</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">FAIL / STOP</text></g></svg></div>
+  <h3>Steps</h3>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Step</th><th>State</th><th>Customer sees / does</th><th>System does</th><th>Next</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td><span class='dot action'></span>Existing wallet only<div class='sub'>Main · Action</div></td><td>WALLET_ACTIVE</td><td>Already has this EMI wallet.</td><td>Agent channel cannot POST issue-wallet.</td><td>Cash-in<br>Agent cash-out<br>ATM cash-out<br>Full cash redemption<br>try open → Agent cannot issue</td></tr><tr><td>2</td><td><span class='dot action'></span>Cash-in<div class='sub'>Main · Action</div></td><td>WALLET_ACTIVE</td><td>Hands cash. Completes BV.</td><td>BV required. Credit e-money at par. Trust posting.</td><td>End of this branch</td></tr><tr><td>3</td><td><span class='dot action'></span>Agent cash-out<div class='sub'>Main · Action</div></td><td>WALLET_ACTIVE</td><td>Withdraws cash.</td><td>BV or 2FA if BVS is a major challenge. Limit engine.</td><td>End of this branch</td></tr><tr><td>4</td><td><span class='dot success'></span>Full cash redemption<div class='sub'>Main · Success</div></td><td>WALLET_ACTIVE or closed after full redeem</td><td>Redeems at par, no charges.</td><td>BV required for cash redemption (§15).</td><td>End of this branch</td></tr><tr><td>5</td><td><span class='dot action'></span>ATM cash-out<div class='sub'>Branch · Action</div></td><td>WALLET_ACTIVE</td><td>ATM withdrawal.</td><td>2FA mandatory.</td><td>End of this branch</td></tr><tr><td>6</td><td><span class='dot fail'></span>Agent cannot issue<div class='sub'>Branch · Fail / stop</div></td><td>n/a</td><td>Told to open in the app.</td><td>AGENT_CANNOT_ISSUE.</td><td>End of this branch</td></tr>
+    </tbody>
+  </table>
+</article>
+
+<article class="journey" id="UJ-E13">
+  <header>
+    <p class="kicker">UJ-E13 · Family D Lifecycle</p>
+    <h2>Minor basic linked wallet</h2>
+    <p class="persona">Guardian + minor · A EMI §14.IV</p>
+    <p class="why">Minor wallet opens only from the parent/guardian app, linked, funded only from parent wallet. 50k Verisys. Guardian undertaking. TMS.</p>
+    <div class="facts">
+      <div><b>Trigger</b><span>Guardian with active wallet starts Add child wallet.</span></div>
+      <div><b>Success</b><span>MINOR_BASIC. 50k load. 10k/day cash-out.</span></div>
+      <div><b>Alternate</b><span>Digital Form-B may be out of allow-list — confirm Legal.</span></div>
+    </div>
+    <div class="related"><b>Related</b> <a href="#UJ-E01">UJ-E01</a> · <a href="#UJ-E14">UJ-E14</a></div>
+  </header>
+  <h3>Workflow</h3>
+  <div class="flow"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 378 304" width="100.0mm" height="80.4mm" preserveAspectRatio="xMidYMin meet" role="img" aria-label="UJ-E13 workflow"><defs><marker id="arr-uje13" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8b9bb0"/></marker></defs><path d="M189.0,54 C189.0,62.0 189.0,62.0 189.0,70" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje13)"/><path d="M189.0,114 C189.0,122.0 94.0,122.0 94.0,130" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje13)"/><path d="M94.0,174 C94.0,182.0 189.0,182.0 189.0,190" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje13)"/><path d="M189.0,234 C189.0,242.0 189.0,242.0 189.0,250" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje13)"/><path d="M189.0,114 C189.0,122.0 284.0,122.0 284.0,130" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje13)"/><text x="236.5" y="116.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">no parent</text><g transform="translate(105.0,10)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Guardian wallet live</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(105.0,70)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Open from parent app</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(10,130)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Minor identity</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(105.0,190)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Guardian undertaking</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(105.0,250)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#0f6b45"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Minor 50k Verisys</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">SUCCESS · MAIN</text></g><g transform="translate(200,130)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#b42318"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Standalone blocked</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">FAIL / STOP</text></g></svg></div>
+  <h3>Steps</h3>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Step</th><th>State</th><th>Customer sees / does</th><th>System does</th><th>Next</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td><span class='dot action'></span>Guardian wallet live<div class='sub'>Main · Action</div></td><td>parent ACTIVE</td><td>Adult already KYC’d.</td><td>Must be WALLET_ACTIVE parent.</td><td>Open from parent app</td></tr><tr><td>2</td><td><span class='dot action'></span>Open from parent app<div class='sub'>Main · Action</div></td><td>minor application</td><td>Cannot start minor signup standalone.</td><td>Linked instrument. Same app only.</td><td>Minor identity<br>no parent → Standalone blocked</td></tr><tr><td>3</td><td><span class='dot action'></span>Minor identity<div class='sub'>Main · Action</div></td><td>IDENTITY_CAPTURED</td><td>Minor details. Confirm Legal on Form-B vs CNIC family.</td><td>AML CDD. Screen minor + guardian.</td><td>Guardian undertaking</td></tr><tr><td>4</td><td><span class='dot action'></span>Guardian undertaking<div class='sub'>Main · Action</div></td><td>CONSENT</td><td>Accepts liability for minor actions (written/digital).</td><td>Stores undertaking.</td><td>Minor 50k Verisys</td></tr><tr><td>5</td><td><span class='dot success'></span>Minor 50k Verisys<div class='sub'>Main · Success</div></td><td>WALLET_ACTIVE · MINOR_BASIC</td><td>Child wallet visible in parent app.</td><td>limit_tier=MINOR_BASIC. Fund only from parent. TMS on.</td><td>End of this branch</td></tr><tr><td>6</td><td><span class='dot fail'></span>Standalone blocked<div class='sub'>Branch · Fail / stop</div></td><td>blocked</td><td>Told to use parent app.</td><td>No orphan minor wallet.</td><td>End of this branch</td></tr>
+    </tbody>
+  </table>
+</article>
+
+<article class="journey" id="UJ-E14">
+  <header>
+    <p class="kicker">UJ-E14 · Family D Lifecycle</p>
+    <h2>Minor freelancer enhanced</h2>
+    <p class="persona">Guardian + freelancer minor · A EMI §14.V</p>
+    <p class="why">Freelancer minor may get 400k BV, still linked to parent app. Funding parent or verified income. Not adult 1M enhanced.</p>
+    <div class="facts">
+      <div><b>Trigger</b><span>Guardian requests freelancer limits. Minor NADRA BV.</span></div>
+      <div><b>Success</b><span>MINOR_FREELANCER. 400k. 10k/day cash-out.</span></div>
+      <div><b>Alternate</b><span>No BV → stay basic 50k.</span></div>
+    </div>
+    <div class="related"><b>Related</b> <a href="#UJ-E13">UJ-E13</a> · <a href="#UJ-E03">UJ-E03</a></div>
+  </header>
+  <h3>Workflow</h3>
+  <div class="flow"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 378 244" width="100.0mm" height="64.6mm" preserveAspectRatio="xMidYMin meet" role="img" aria-label="UJ-E14 workflow"><defs><marker id="arr-uje14" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8b9bb0"/></marker></defs><path d="M189.0,54 C189.0,62.0 189.0,62.0 189.0,70" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje14)"/><path d="M189.0,114 C189.0,122.0 94.0,122.0 94.0,130" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje14)"/><text x="141.5" y="116.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">pass</text><path d="M189.0,114 C189.0,122.0 284.0,122.0 284.0,130" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje14)"/><text x="236.5" y="116.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">fail</text><path d="M94.0,174 C94.0,182.0 189.0,182.0 189.0,190" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje14)"/><g transform="translate(105.0,10)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Linked minor exists</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(105.0,70)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Minor NADRA BV</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(10,130)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Verify income source</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(105.0,190)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#0f6b45"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Freelancer 400k</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">SUCCESS · MAIN</text></g><g transform="translate(200,130)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#b42318"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Stay 50k</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">FAIL / STOP</text></g></svg></div>
+  <h3>Steps</h3>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Step</th><th>State</th><th>Customer sees / does</th><th>System does</th><th>Next</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td><span class='dot action'></span>Linked minor exists<div class='sub'>Main · Action</div></td><td>MINOR_BASIC</td><td>Still only via parent app.</td><td>Same linkage rules.</td><td>Minor NADRA BV</td></tr><tr><td>2</td><td><span class='dot action'></span>Minor NADRA BV<div class='sub'>Main · Action</div></td><td>verification</td><td>Completes BV.</td><td>400k only on BV success.</td><td>pass → Verify income source<br>fail → Stay 50k</td></tr><tr><td>3</td><td><span class='dot action'></span>Verify income source<div class='sub'>Main · Action</div></td><td>profile</td><td>Parent wallet and/or EMI-accepted freelance income evidence.</td><td>Source of income verified. TMS.</td><td>Freelancer 400k</td></tr><tr><td>4</td><td><span class='dot success'></span>Freelancer 400k<div class='sub'>Main · Success</div></td><td>WALLET_ACTIVE · MINOR_FREELANCER</td><td>Higher minor load. Still not 1M adult enhanced.</td><td>limit_tier=MINOR_FREELANCER. §14.I–III adult enhanced N/A.</td><td>End of this branch</td></tr><tr><td>5</td><td><span class='dot fail'></span>Stay 50k<div class='sub'>Branch · Fail / stop</div></td><td>MINOR_BASIC</td><td>Told BV/income still required.</td><td>No silent 400k.</td><td>End of this branch</td></tr>
+    </tbody>
+  </table>
+</article>
+
+<article class="journey" id="UJ-E15">
+  <header>
+    <p class="kicker">UJ-E15 · Family D Lifecycle</p>
+    <h2>Inward remittance exclusion</h2>
+    <p class="persona">Ayesha — home remittance · A EMI §13 / §14.VI</p>
+    <p class="why">After EPD approval via an Authorized Dealer, inward remittance up to PKR 1.5m may be excluded from load caps for BV holders if SBP granted the exclusion. Still CDD/TMS.</p>
+    <div class="facts">
+      <div><b>Trigger</b><span>BV wallet. EMI has AD arrangement. Inward PRI/home remittance.</span></div>
+      <div><b>Success</b><span>Credit posts; may not consume 400k load if exclusion granted.</span></div>
+      <div><b>Alternate</b><span>No SBP exclusion → counts toward monthly load.</span></div>
+    </div>
+    <div class="related"><b>Related</b> <a href="#UJ-E02">UJ-E02</a> · <a href="#UJ-E16">UJ-E16</a></div>
+  </header>
+  <h3>Workflow</h3>
+  <div class="flow"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 378 244" width="100.0mm" height="64.6mm" preserveAspectRatio="xMidYMin meet" role="img" aria-label="UJ-E15 workflow"><defs><marker id="arr-uje15" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8b9bb0"/></marker></defs><path d="M189.0,54 C189.0,62.0 189.0,62.0 189.0,70" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje15)"/><path d="M189.0,114 C189.0,122.0 94.0,122.0 94.0,130" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje15)"/><text x="141.5" y="116.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">BV + grant</text><path d="M189.0,114 C189.0,122.0 284.0,122.0 284.0,130" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje15)"/><text x="236.5" y="116.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">no grant</text><path d="M94.0,174 C94.0,182.0 189.0,182.0 189.0,190" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje15)"/><g transform="translate(105.0,10)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#5b4aa8"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">AD + EPD approval</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">WAIT · MAIN</text></g><g transform="translate(105.0,70)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#8a5a00"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">BV holder</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">DECISION · MAIN</text></g><g transform="translate(10,130)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Remittance in PKR</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(105.0,190)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#0f6b45"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">TMS still on</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">SUCCESS · MAIN</text></g><g transform="translate(200,130)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#b42318"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Counts to 400k</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">FAIL / STOP</text></g></svg></div>
+  <h3>Steps</h3>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Step</th><th>State</th><th>Customer sees / does</th><th>System does</th><th>Next</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td><span class='dot wait'></span>AD + EPD approval<div class='sub'>Main · Wait</div></td><td>product live</td><td>Does not see FX paperwork.</td><td>EMI licensed path via Authorized Dealer.</td><td>BV holder</td></tr><tr><td>2</td><td><span class='dot decision'></span>BV holder<div class='sub'>Main · Decision</div></td><td>WALLET_ACTIVE · BV</td><td>Must already be biometrically verified for exclusion.</td><td>Exclusion is for BV wallets except minors.</td><td>BV + grant → Remittance in PKR<br>no grant → Counts to 400k</td></tr><tr><td>3</td><td><span class='dot action'></span>Remittance in PKR<div class='sub'>Main · Action</div></td><td>WALLET_ACTIVE</td><td>Sees credit + alert.</td><td>IBFT/Raast via trust/settlement bank. Cap 1.5m if exclusion.</td><td>TMS still on</td></tr><tr><td>4</td><td><span class='dot success'></span>TMS still on<div class='sub'>Main · Success</div></td><td>WALLET_ACTIVE</td><td>Normal use.</td><td>Exclusion is from load math, not from AML.</td><td>End of this branch</td></tr><tr><td>5</td><td><span class='dot fail'></span>Counts to 400k<div class='sub'>Branch · Fail / stop</div></td><td>VERISYS or BV without exclusion</td><td>May hit monthly load.</td><td>No exclusion grant.</td><td>End of this branch</td></tr>
+    </tbody>
+  </table>
+</article>
+
+<article class="journey" id="UJ-E16">
+  <header>
+    <p class="kicker">UJ-E16 · Family D Lifecycle</p>
+    <h2>Salary credit exclusion</h2>
+    <p class="persona">Ayesha — employer IBFT · A EMI §14.VI.i</p>
+    <p class="why">Salary from employer’s nominated bank may be excluded from load limits for BV holders if SBP granted exclusion. EMI must verify the employer.</p>
+    <div class="facts">
+      <div><b>Trigger</b><span>Employer pays to EMI wallet via authorised FI.</span></div>
+      <div><b>Success</b><span>Salary posts; may sit outside monthly load.</span></div>
+      <div><b>Alternate</b><span>Unverified employer → counts as normal credit.</span></div>
+    </div>
+    <div class="related"><b>Related</b> <a href="#UJ-E15">UJ-E15</a> · <a href="#UJ-E02">UJ-E02</a></div>
+  </header>
+  <h3>Workflow</h3>
+  <div class="flow"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 378 244" width="100.0mm" height="64.6mm" preserveAspectRatio="xMidYMin meet" role="img" aria-label="UJ-E16 workflow"><defs><marker id="arr-uje16" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8b9bb0"/></marker></defs><path d="M189.0,54 C189.0,62.0 189.0,62.0 189.0,70" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje16)"/><path d="M189.0,114 C189.0,122.0 94.0,122.0 94.0,130" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje16)"/><text x="141.5" y="116.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">verified + grant</text><path d="M189.0,114 C189.0,122.0 284.0,122.0 284.0,130" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje16)"/><text x="236.5" y="116.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">fail</text><path d="M94.0,174 C94.0,182.0 189.0,182.0 189.0,190" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje16)"/><g transform="translate(105.0,10)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">BV wallet</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(105.0,70)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Verify employer</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(10,130)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#0f6b45"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Salary IBFT</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">SUCCESS · MAIN</text></g><g transform="translate(105.0,190)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#5b4aa8"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Recon</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">WAIT · MAIN</text></g><g transform="translate(200,130)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#b42318"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Not excluded</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">FAIL / STOP</text></g></svg></div>
+  <h3>Steps</h3>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Step</th><th>State</th><th>Customer sees / does</th><th>System does</th><th>Next</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td><span class='dot action'></span>BV wallet<div class='sub'>Main · Action</div></td><td>WALLET_ACTIVE · BV</td><td>Already upgraded.</td><td>Exclusion not for Verisys-only or minors.</td><td>Verify employer</td></tr><tr><td>2</td><td><span class='dot action'></span>Verify employer<div class='sub'>Main · Action</div></td><td>profile</td><td>May confirm employer name.</td><td>EMI verifies employer via nominated bank path.</td><td>verified + grant → Salary IBFT<br>fail → Not excluded</td></tr><tr><td>3</td><td><span class='dot success'></span>Salary IBFT<div class='sub'>Main · Success</div></td><td>WALLET_ACTIVE</td><td>Credit + real-time alert.</td><td>If exclusion granted, omit from load cap.</td><td>Recon</td></tr><tr><td>4</td><td><span class='dot wait'></span>Recon<div class='sub'>Main · Wait</div></td><td>WALLET_ACTIVE</td><td>Pays bills as usual.</td><td>TMS + trust recon.</td><td>End of this branch</td></tr><tr><td>5</td><td><span class='dot fail'></span>Not excluded<div class='sub'>Branch · Fail / stop</div></td><td>BV</td><td>May hit 400k load.</td><td>Employer not verified or no SBP grant.</td><td>End of this branch</td></tr>
+    </tbody>
+  </table>
+</article>
+
+<article class="journey" id="UJ-E17">
+  <header>
+    <p class="kicker">UJ-E17 · Family D Lifecycle</p>
+    <h2>Merchant / entity wallet</h2>
+    <p class="persona">Phase 2 — business · A TAT 5 WD · A one wallet per entity</p>
+    <p class="why">Entity wallets are Phase 2. Table-B / UBO. TAT 5 working days. One wallet per entity with this EMI. Not the individual state machine.</p>
+    <div class="facts">
+      <div><b>Trigger</b><span>Business / merchant onboarding.</span></div>
+      <div><b>Success</b><span>Merchant wallet. UBOs stored if legal person.</span></div>
+      <div><b>Alternate</b><span>Sanctions on BO → reject. Gaps → more info.</span></div>
+    </div>
+    <div class="related"><b>Related</b> <a href="#UJ-E01">UJ-E01</a> · <a href="#UJ-E09">UJ-E09</a></div>
+  </header>
+  <h3>Workflow</h3>
+  <div class="flow"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 378 304" width="100.0mm" height="80.4mm" preserveAspectRatio="xMidYMin meet" role="img" aria-label="UJ-E17 workflow"><defs><marker id="arr-uje17" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8b9bb0"/></marker></defs><path d="M189.0,54 C189.0,62.0 189.0,62.0 189.0,70" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje17)"/><path d="M189.0,114 C189.0,122.0 189.0,122.0 189.0,130" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje17)"/><path d="M189.0,174 C189.0,182.0 189.0,182.0 189.0,190" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje17)"/><path d="M189.0,234 C189.0,242.0 94.0,242.0 94.0,250" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje17)"/><text x="141.5" y="236.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">approve</text><path d="M189.0,234 C189.0,242.0 284.0,242.0 284.0,250" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje17)"/><text x="236.5" y="236.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">sanctions</text><g transform="translate(105.0,10)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Entity intake</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(105.0,70)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Identify UBOs</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(105.0,130)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Screen entity + BOs</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(105.0,190)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#5b4aa8"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">TAT ≤ 5 WD</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">WAIT · MAIN</text></g><g transform="translate(10,250)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#0f6b45"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Merchant wallet</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">SUCCESS · MAIN</text></g><g transform="translate(200,250)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#b42318"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">BO sanctions reject</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">FAIL / STOP</text></g></svg></div>
+  <h3>Steps</h3>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Step</th><th>State</th><th>Customer sees / does</th><th>System does</th><th>Next</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td><span class='dot action'></span>Entity intake<div class='sub'>Main · Action</div></td><td>entity application</td><td>Incorporation docs, addresses, consents.</td><td>entities table. Not v1 individual SM.</td><td>Identify UBOs</td></tr><tr><td>2</td><td><span class='dot action'></span>Identify UBOs<div class='sub'>Main · Action</div></td><td>UBO capture</td><td>Each UBO/controller identified.</td><td>20% / 10% EDD — confirm Legal.</td><td>Screen entity + BOs</td></tr><tr><td>3</td><td><span class='dot action'></span>Screen entity + BOs<div class='sub'>Main · Action</div></td><td>screening</td><td>Waits.</td><td>TFS each associated person.</td><td>TAT ≤ 5 WD</td></tr><tr><td>4</td><td><span class='dot wait'></span>TAT ≤ 5 WD<div class='sub'>Main · Wait</div></td><td>review</td><td>Tracking ID. Longer than individual 2 WD.</td><td>Entity TAT A.</td><td>approve → Merchant wallet<br>sanctions → BO sanctions reject</td></tr><tr><td>5</td><td><span class='dot success'></span>Merchant wallet<div class='sub'>Main · Success</div></td><td>WALLET_ACTIVE entity</td><td>Business instrument live.</td><td>One wallet per entity. UBOs stored.</td><td>End of this branch</td></tr><tr><td>6</td><td><span class='dot fail'></span>BO sanctions reject<div class='sub'>Branch · Fail / stop</div></td><td>REJECTED</td><td>Written reason.</td><td>Fail closed.</td><td>End of this branch</td></tr>
+    </tbody>
+  </table>
+</article>
+
+<article class="journey" id="UJ-E18">
+  <header>
+    <p class="kicker">UJ-E18 · Family D Lifecycle</p>
+    <h2>Decline mandatory consents</h2>
+    <p class="persona">Ayesha — refuses NADRA processing · A consents</p>
+    <p class="why">T&amp;Cs, privacy, NADRA/BV, and fees gate issuance. Marketing is optional and off by default.</p>
+    <div class="facts">
+      <div><b>Trigger</b><span>Leaves a mandatory box unchecked.</span></div>
+      <div><b>Success</b><span>If later accepted → CONSENT_CAPTURED.</span></div>
+      <div><b>Alternate</b><span>Save draft (UJ-E19).</span></div>
+    </div>
+    <div class="related"><b>Related</b> <a href="#UJ-E01">UJ-E01</a> · <a href="#UJ-E19">UJ-E19</a></div>
+  </header>
+  <h3>Workflow</h3>
+  <div class="flow"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 378 244" width="100.0mm" height="64.6mm" preserveAspectRatio="xMidYMin meet" role="img" aria-label="UJ-E18 workflow"><defs><marker id="arr-uje18" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8b9bb0"/></marker></defs><path d="M189.0,54 C189.0,62.0 94.0,62.0 94.0,70" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje18)"/><text x="141.5" y="56.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">refuse</text><path d="M189.0,54 C189.0,62.0 284.0,62.0 284.0,70" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje18)"/><text x="236.5" y="56.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">accept</text><path d="M94.0,114 C94.0,122.0 189.0,122.0 189.0,130" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje18)"/><path d="M189.0,174 C189.0,182.0 189.0,182.0 189.0,190" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje18)"/><g transform="translate(105.0,10)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Consent screen</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(10,70)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#8a5a00"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Decline mandatory</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">DECISION · MAIN</text></g><g transform="translate(105.0,130)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#b42318"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Cannot issue</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">FAIL / STOP · MAIN</text></g><g transform="translate(105.0,190)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#5b4aa8"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Save draft</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">WAIT · MAIN</text></g><g transform="translate(200,70)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#0f6b45"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Accept mandatory</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">SUCCESS</text></g></svg></div>
+  <h3>Steps</h3>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Step</th><th>State</th><th>Customer sees / does</th><th>System does</th><th>Next</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td><span class='dot action'></span>Consent screen<div class='sub'>Main · Action</div></td><td>CONTACT_VERIFIED</td><td>Reads T&amp;Cs, privacy, NADRA/BV, charges (EN/UR).</td><td>Mandatory vs optional visually.</td><td>refuse → Decline mandatory<br>accept → Accept mandatory</td></tr><tr><td>2</td><td><span class='dot decision'></span>Decline mandatory<div class='sub'>Main · Decision</div></td><td>CONTACT_VERIFIED</td><td>Required box unchecked.</td><td>Continue disabled.</td><td>Cannot issue</td></tr><tr><td>3</td><td><span class='dot fail'></span>Cannot issue<div class='sub'>Main · Fail / stop</div></td><td>CONTACT_VERIFIED</td><td>Explains which consent is required.</td><td>No CONSENT_CAPTURED. No wallet.</td><td>Save draft</td></tr><tr><td>4</td><td><span class='dot wait'></span>Save draft<div class='sub'>Main · Wait</div></td><td>CONTACT_VERIFIED</td><td>Optional Save draft and exit.</td><td>30-day resume.</td><td>End of this branch</td></tr><tr><td>5</td><td><span class='dot success'></span>Accept mandatory<div class='sub'>Branch · Success</div></td><td>CONSENT_CAPTURED</td><td>Accepts required. Marketing still optional.</td><td>Timestamped consents.</td><td>End of this branch</td></tr>
+    </tbody>
+  </table>
+</article>
+
+<article class="journey" id="UJ-E19">
+  <header>
+    <p class="kicker">UJ-E19 · Family D Lifecycle</p>
+    <h2>Abandon and resume ≤ 30 days</h2>
+    <p class="persona">Ayesha — exits at live photo · A 30-day resume</p>
+    <p class="why">Draft saved up to 30 days. Return to last incomplete step. Day 31+ expired; new application.</p>
+    <div class="facts">
+      <div><b>Trigger</b><span>Exits mid-flow.</span></div>
+      <div><b>Success</b><span>Resumes without re-collecting completed steps.</span></div>
+      <div><b>Alternate</b><span>Day 31 → EXPIRED. New Tracking ID.</span></div>
+    </div>
+    <div class="related"><b>Related</b> <a href="#UJ-E01">UJ-E01</a> · <a href="#UJ-E09">UJ-E09</a></div>
+  </header>
+  <h3>Workflow</h3>
+  <div class="flow"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 378 244" width="100.0mm" height="64.6mm" preserveAspectRatio="xMidYMin meet" role="img" aria-label="UJ-E19 workflow"><defs><marker id="arr-uje19" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8b9bb0"/></marker></defs><path d="M189.0,54 C189.0,62.0 189.0,62.0 189.0,70" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje19)"/><path d="M189.0,114 C189.0,122.0 94.0,122.0 94.0,130" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje19)"/><text x="141.5" y="116.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">≤30</text><path d="M189.0,114 C189.0,122.0 284.0,122.0 284.0,130" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje19)"/><text x="236.5" y="116.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">day 31+</text><path d="M94.0,174 C94.0,182.0 189.0,182.0 189.0,190" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje19)"/><g transform="translate(105.0,10)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Leaves mid-flow</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(105.0,70)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#5b4aa8"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Draft ≤ 30 days</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">WAIT · MAIN</text></g><g transform="translate(10,130)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Return day ≤ 30</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(105.0,190)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#0f6b45"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Last incomplete step</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">SUCCESS · MAIN</text></g><g transform="translate(200,130)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#b42318"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Day 31+ expired</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">FAIL / STOP</text></g></svg></div>
+  <h3>Steps</h3>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Step</th><th>State</th><th>Customer sees / does</th><th>System does</th><th>Next</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td><span class='dot action'></span>Leaves mid-flow<div class='sub'>Main · Action</div></td><td>last successful state</td><td>Closes app at live photo (example).</td><td>Persists last successful state.</td><td>Draft ≤ 30 days</td></tr><tr><td>2</td><td><span class='dot wait'></span>Draft ≤ 30 days<div class='sub'>Main · Wait</div></td><td>unchanged</td><td>Tracking ID already on screen from Step 0.</td><td>Resume window A.</td><td>≤30 → Return day ≤ 30<br>day 31+ → Day 31+ expired</td></tr><tr><td>3</td><td><span class='dot action'></span>Return day ≤ 30<div class='sub'>Main · Action</div></td><td>unchanged</td><td>Deep link or Tracking ID.</td><td>Load application. Optional step-up OTP.</td><td>Last incomplete step</td></tr><tr><td>4</td><td><span class='dot success'></span>Last incomplete step<div class='sub'>Main · Success</div></td><td>continues spine</td><td>Lands on live photo, not the start.</td><td>No skip forward.</td><td>End of this branch</td></tr><tr><td>5</td><td><span class='dot fail'></span>Day 31+ expired<div class='sub'>Branch · Fail / stop</div></td><td>EXPIRED</td><td>Application expired — start a new one.</td><td>EXPIRED. New POST application.</td><td>End of this branch</td></tr>
+    </tbody>
+  </table>
+</article>
+
+<article class="journey" id="UJ-E20">
+  <header>
+    <p class="kicker">UJ-E20 · Family D Lifecycle</p>
+    <h2>Periodic / event KYC refresh</h2>
+    <p class="persona">Ayesha — due by risk interval · A ongoing CDD</p>
+    <p class="why">Scheduler marks REFRESH_DUE. Overdue restriction is explicit. Re-screen. BV may be re-required for high assurance.</p>
+    <div class="facts">
+      <div><b>Trigger</b><span>Calendar interval or ID expiry / adverse event.</span></div>
+      <div><b>Success</b><span>Next due set. Wallet operable.</span></div>
+      <div><b>Alternate</b><span>Ignore → explicit restrict. CTA back to refresh.</span></div>
+    </div>
+    <div class="related"><b>Related</b> <a href="#UJ-E02">UJ-E02</a> · <a href="#UJ-E11">UJ-E11</a></div>
+  </header>
+  <h3>Workflow</h3>
+  <div class="flow"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 378 304" width="100.0mm" height="80.4mm" preserveAspectRatio="xMidYMin meet" role="img" aria-label="UJ-E20 workflow"><defs><marker id="arr-uje20" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8b9bb0"/></marker></defs><path d="M189.0,54 C189.0,62.0 189.0,62.0 189.0,70" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje20)"/><path d="M189.0,114 C189.0,122.0 94.0,122.0 94.0,130" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje20)"/><path d="M189.0,114 C189.0,122.0 284.0,122.0 284.0,130" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje20)"/><text x="236.5" y="116.0" text-anchor="middle" font-size="10" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ignored</text><path d="M94.0,174 C94.0,182.0 189.0,182.0 189.0,190" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje20)"/><path d="M189.0,234 C189.0,242.0 189.0,242.0 189.0,250" fill="none" stroke="#8b9bb0" stroke-width="1.4" marker-end="url(#arr-uje20)"/><g transform="translate(105.0,10)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#5b4aa8"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">REFRESH_DUE</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">WAIT · MAIN</text></g><g transform="translate(105.0,70)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Reminder</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(10,130)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#1e4e8c"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Review profile / ID</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">ACTION · MAIN</text></g><g transform="translate(105.0,190)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#5b4aa8"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Re-screen + CRP</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">WAIT · MAIN</text></g><g transform="translate(105.0,250)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#0f6b45"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Complete</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">SUCCESS · MAIN</text></g><g transform="translate(200,130)"><rect x="0" y="0" width="168" height="44" rx="6" fill="#fff" stroke="#c3ccd8"/><rect x="0" y="0" width="4" height="44" rx="2" fill="#b42318"/><text x="12" y="17" font-size="11" font-weight="650" fill="#1a2332" font-family="Segoe UI, system-ui, sans-serif">Overdue restriction</text><text x="12" y="31" font-size="8" fill="#5c6b80" font-family="Segoe UI, system-ui, sans-serif">FAIL / STOP</text></g></svg></div>
+  <h3>Steps</h3>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Step</th><th>State</th><th>Customer sees / does</th><th>System does</th><th>Next</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td><span class='dot wait'></span>REFRESH_DUE<div class='sub'>Main · Wait</div></td><td>WALLET_ACTIVE → REFRESH_DUE</td><td>Not yet restricted if inside grace.</td><td>Scheduler by CRP.</td><td>Reminder</td></tr><tr><td>2</td><td><span class='dot action'></span>Reminder<div class='sub'>Main · Action</div></td><td>REFRESH_DUE</td><td>Update your KYC. Deep link.</td><td>Notification. Reason code if event-driven.</td><td>Review profile / ID<br>ignored → Overdue restriction</td></tr><tr><td>3</td><td><span class='dot action'></span>Review profile / ID<div class='sub'>Main · Action</div></td><td>REFRESH_DUE</td><td>Confirms fields. Uploads if asked. May re-BV.</td><td>Refresh application.</td><td>Re-screen + CRP</td></tr><tr><td>4</td><td><span class='dot wait'></span>Re-screen + CRP<div class='sub'>Main · Wait</div></td><td>screening</td><td>Under review.</td><td>Fresh TFS/PEP + risk. Material change → EDD.</td><td>Complete</td></tr><tr><td>5</td><td><span class='dot success'></span>Complete<div class='sub'>Main · Success</div></td><td>WALLET_ACTIVE</td><td>Limits unchanged unless upgrade path.</td><td>Schedule updated.</td><td>End of this branch</td></tr><tr><td>6</td><td><span class='dot fail'></span>Overdue restriction<div class='sub'>Branch · Fail / stop</div></td><td>REFRESH_DUE / restricted</td><td>Explicit restrict copy — not a silent clamp.</td><td>Flags. CTA to complete refresh.</td><td>End of this branch</td></tr>
+    </tbody>
+  </table>
+</article>
+
+</body>
+</html>

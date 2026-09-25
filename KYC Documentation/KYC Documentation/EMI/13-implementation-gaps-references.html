@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>27–29. Implementation, gaps, references (EMI)</title>
+<link rel="stylesheet" href="assets/doc.css">
+</head>
+<body>
+<nav class="top">
+  <div class="top-inner">
+    <a href="index.html">EMI pack home</a>
+    <span class="meta"><a href="05c-emi-interactive-journeys.html">Journeys</a> · <a href="13-implementation-gaps-references.md">Source .md</a></span>
+  </div>
+</nav>
+<article class="page markdown-body">
+<h1 id="2729-implementation-gaps-references-emi">27–29. Implementation, gaps, references (EMI)</h1>
+<blockquote>
+<p>Not legal advice. Confirm with Compliance, Legal, PSP&amp;OD, NADRA vendors, trustee bank.</p>
+</blockquote>
+<h2 id="27-implementation-recommendations">27. Implementation recommendations</h2>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0</td>
+<td>State machine, uniqueness, consents, OTP, tracking ID, audit</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>Verisys 50k wallet + screening + live photo</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>NADRA BV + 400k/200k by licence phase</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>Video KYC, EDD, PEP cases</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>TMS, agents, trust recon, refresh</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>Enhanced 1M after commercial + PSP&amp;OD</td>
+</tr>
+<tr>
+<td>P6</td>
+<td>Minors, merchants, remittance/salary exclusions</td>
+</tr>
+</tbody>
+</table>
+<p>Priorities: KYC as sole state authority; ledger enforces limits; fail closed TFS; fail controlled NADRA; never let agents issue.</p>
+<h2 id="28-gaps-risks">28. Gaps / risks</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Gap</th>
+<th>Impact</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G1</td>
+<td>Shared e-KYC EMI participation unclear</td>
+<td>Delay</td>
+<td>Local-first</td>
+</tr>
+<tr>
+<td>G2</td>
+<td>Annexure-J exact document list</td>
+<td>Enhanced blocked</td>
+<td>Legal extract of EMI PDF annex</td>
+</tr>
+<tr>
+<td>G3</td>
+<td>Live EMI register not a stable HTML table</td>
+<td>Cohort drift</td>
+<td>Re-check SBP press/DFS</td>
+</tr>
+<tr>
+<td>G4</td>
+<td>10-year vs AML 5-year retention</td>
+<td>Over/under retain</td>
+<td>Stricter of the two</td>
+</tr>
+<tr>
+<td>G5</td>
+<td>One-credit product vs Consolidated “verify before relationship”</td>
+<td>Tension</td>
+<td>Default disable one-credit</td>
+</tr>
+<tr>
+<td>G6</td>
+<td>Minor remote opening vs digital ID allow-list</td>
+<td>Scope</td>
+<td>Legal</td>
+</tr>
+<tr>
+<td>G7</td>
+<td>Trustee concentration + rating downgrade</td>
+<td>Ops</td>
+<td>Dual trustees before 300m</td>
+</tr>
+<tr>
+<td>G8</td>
+<td>Treating selfie as BV</td>
+<td>Licence risk</td>
+<td>Policy + ledger</td>
+</tr>
+<tr>
+<td>G9</td>
+<td>DRB copy-paste (profit, CIF, debit-block account)</td>
+<td>Non-compliance</td>
+<td>This pack vs parent folder</td>
+</tr>
+<tr>
+<td>G10</td>
+<td>Interchange / unit economics</td>
+<td>Commercial death (industry)</td>
+<td>Not a KYC issue — board</td>
+</tr>
+</tbody>
+</table>
+<h2 id="29-references">29. References</h2>
+<h3 id="sbp-primary">SBP primary</h3>
+<table>
+<thead>
+<tr>
+<th>Document</th>
+<th>Date</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regulations for EMIs (revised)</td>
+<td>21 Jun 2023</td>
+<td>https://www.sbp.org.pk/assets/documents/circulars/psd/2023/C3-Enclosure-Regulations-EMIs.pdf</td>
+</tr>
+<tr>
+<td>PSP&amp;OD Circular No. 03 of 2023</td>
+<td>21 Jun 2023</td>
+<td>https://www.sbp.org.pk/psd/2023/C3.htm</td>
+</tr>
+<tr>
+<td>Consolidated Customer Onboarding Framework</td>
+<td>25 Jul 2025</td>
+<td>https://www.sbp.org.pk/bprd/2025/C1.htm</td>
+</tr>
+<tr>
+<td>Consolidated Framework PDF</td>
+<td>2025</td>
+<td>https://bafblob.blob.core.windows.net/data/circulars/sbp/C1-Consolidated-Customer-Onboarding-Framework.pdf</td>
+</tr>
+<tr>
+<td>Shared e-KYC (banks)</td>
+<td>18 Dec 2023</td>
+<td>https://www.sbp.org.pk/bprd/2023/CL22.htm</td>
+</tr>
+<tr>
+<td>Annual Payment Systems Review FY25</td>
+<td>FY25</td>
+<td>https://www.sbp.org.pk/assets/document/publications/Annual-Payment-Systems-Review-FY25.pdf</td>
+</tr>
+<tr>
+<td>FSR 2024 Appendix (EMI licensing notes)</td>
+<td>2024</td>
+<td>https://www.sbp.org.pk/assets/document/Appendix_A_and_B_FSR_2024.pdf</td>
+</tr>
+<tr>
+<td>DFS / EMI pages</td>
+<td>ongoing</td>
+<td>https://www.sbp.org.pk/PS/EMI.htm</td>
+</tr>
+</tbody>
+</table>
+<h3 id="statute">Statute</h3>
+<ul>
+<li>Payment Systems and Electronic Fund Transfers Act, 2007  </li>
+<li>AML Act, 2010  </li>
+</ul>
+<h3 id="public-emi-supplementary">Public EMI (supplementary)</h3>
+<ul>
+<li>SadaPay help (limits, BVS, e-Sahulat)  </li>
+<li>NayaPay help (limits, Meezan ATM BVS; updated Jun 2025)  </li>
+<li>SBP commercial licence to Wemsol — press 24 Feb 2025 (six live EMIs named)  </li>
+<li>Profit (10 Dec 2025) industry mapping — <strong>not</strong> a regulator source</li>
+</ul>
+<hr />
+<h2 id="next-build">Next (build)</h2>
+<p>Requirements extracted from this pack: <a href="14-srs.html">14-srs</a> (FR-E01–E40, NFR-E01–E10) and <a href="15-use-cases.html">15-use-cases</a> (UC-E01–E20, UC-S01–S04).</p>
+</article>
+<div class="pager"><a href="12-sbp-compliance-mapping.html">← 12-sbp-compliance-mapping</a><span></span><a href="14-srs.html">14-srs →</a></div>
+<footer class="note">Rendered preview of 13-implementation-gaps-references.md. Markdown remains the source of truth. Not legal advice.</footer>
+
+</body>
+</html>

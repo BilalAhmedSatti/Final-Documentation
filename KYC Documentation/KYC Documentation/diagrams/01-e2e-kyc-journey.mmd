@@ -1,0 +1,31 @@
+flowchart TD
+  Customer[Customer]
+  Start[StartOnboarding_TrackingID]
+  OTP[MobileEmailOTP]
+  Consent[CaptureConsents]
+  EKYC{Shared_eKYC_enabled_and_consented}
+  Prefill[PrefillFrom_eKYC]
+  Identity[CaptureIdentity_TableA]
+  Photo[LivePhoto_Upload]
+  Verify[NADRA_BV_or_TieredVerify]
+  Profile[CDD_Profile_FATCA_SoI]
+  Screen[PEP_Sanctions_Watchlist]
+  Risk[RiskScoring_CRP]
+  Low[LowRisk_STP]
+  Med[Medium_AdditionalOrReview]
+  High[High_EDD_Manual]
+  Decision[KYC_Decision]
+  CIF[CreateCustomer_CIF]
+  Acct[CreateAccount_IBAN]
+  Active[Activate_or_RestrictedActive]
+  Monitor[OngoingMonitoring]
+  Refresh[PeriodicKYCRefresh]
+
+  Customer --> Start --> OTP --> Consent --> EKYC
+  EKYC -->|yes| Prefill --> Identity
+  EKYC -->|no_or_miss| Identity
+  Identity --> Photo --> Verify --> Profile --> Screen --> Risk
+  Risk --> Low --> Decision
+  Risk --> Med --> Decision
+  Risk --> High --> Decision
+  Decision --> CIF --> Acct --> Active --> Monitor --> Refresh

@@ -1,0 +1,11 @@
+flowchart TD
+  In[Inputs_Customer_Product_Channel_Verification_Fraud] --> Model[CRP_Model_Versioned]
+  Model --> Score[Compute_Score]
+  Score --> Rate{RiskRating}
+  Rate -->|LOW| STP[StraightThrough_Eligible]
+  Rate -->|MEDIUM| Med[AdditionalVerification_or_LightReview]
+  Rate -->|HIGH| High[EDD_Required]
+  STP --> Dec[Decision_Service]
+  Med --> Dec
+  High --> EDD[EDD_Flow]
+  EDD --> Dec

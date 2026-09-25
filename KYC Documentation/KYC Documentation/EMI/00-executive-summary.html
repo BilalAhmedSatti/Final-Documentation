@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1. Executive Summary — Electronic Money Institution</title>
+<link rel="stylesheet" href="assets/doc.css">
+</head>
+<body>
+<nav class="top">
+  <div class="top-inner">
+    <a href="index.html">EMI pack home</a>
+    <span class="meta"><a href="05c-emi-interactive-journeys.html">Journeys</a> · <a href="00-executive-summary.md">Source .md</a></span>
+  </div>
+</nav>
+<article class="page markdown-body">
+<h1 id="1-executive-summary-electronic-money-institution">1. Executive Summary — Electronic Money Institution</h1>
+<blockquote>
+<p><strong>Disclaimer:</strong> Technical and regulatory research for building an SBP-licensed <strong>EMI</strong> KYC/onboarding system in Pakistan. <strong>Not legal advice.</strong> Validate with Compliance, Legal, and SBP (PSP&amp;OD / BPRD) before implementation.<br />
+This pack does <strong>not</strong> replace the Digital Retail Bank pack. EMIs are not banks.</p>
+</blockquote>
+<h2 id="verdict">Verdict</h2>
+<p>If we build a new <strong>Electronic Money Institution</strong> in Pakistan today, the KYC/onboarding system must:</p>
+<ol>
+<li><strong>Satisfy SBP AML/CFT/CPF Regulations</strong> as an SBP-regulated entity (risk-based CDD, EDD, PEPs, TFS, STR/CTR, TMS, record-keeping).  </li>
+<li><strong>Implement the Regulations for Electronic Money Institutions</strong> (issued 1 April 2019; <strong>revised 21 June 2023</strong> via PSP&amp;OD Circular No. 03 of 2023) — digital onboarding, NADRA Verisys vs biometric limit ladder, one wallet per CNIC, 2FA, real-time alerts, trust-account safeguarding, no interest on e-money.  </li>
+<li><strong>Implement the Consolidated Customer Onboarding Framework</strong> (BPRD Circular No. 01 of 2025) where it applies to <strong>EMIs</strong> — live photo, BV hierarchy for digital wallet opening, geo/IP, sanctions pre-screening, TAT (2 working days individuals), tracking ID, 30-day resume, video KYC fallback for EMIs <strong>without physical presence</strong>. Wallet <strong>limits</strong> stay in the EMI Regulations, not bank product tables.  </li>
+<li><strong>Operate under the four-stage EMI licence path:</strong> Initiation → In-Principle Approval → Pilot (limited live) → Commercial / Go-Live — with <strong>pilot vs commercial load limits</strong>.</li>
+</ol>
+<h2 id="what-good-looks-like-for-our-emi">What “good” looks like for our EMI</h2>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Required outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Customer journey</td>
+<td>Mobile-first wallet; TAT ≤ <strong>2 working days</strong> for an individual decision; tracking ID; resume ≤ 30 days; written decline reason</td>
+</tr>
+<tr>
+<td>Identity</td>
+<td>Collect EMI §12 minimum fields + Consolidated Table-A as applicable; 2FA; live photo for digital opening; NADRA Verisys and/or BV</td>
+</tr>
+<tr>
+<td>Limit ladder</td>
+<td>Verisys: <strong>PKR 50,000</strong>/month load (commercial). BV: <strong>PKR 400,000</strong>/month. Enhanced (SBP approval): up to <strong>PKR 1,000,000</strong> with SoF, CNIC–SIM pairing, TMS, CRP — <strong>not outsourced</strong></td>
+</tr>
+<tr>
+<td>Screening</td>
+<td>UNSC + ATA <strong>before</strong> relationship or payment-service use (<strong>A</strong>). One unverified credit allowed then <strong>close + STR</strong> if credentials fail</td>
+</tr>
+<tr>
+<td>Uniqueness</td>
+<td>One e-money instrument per CNIC <strong>per this EMI</strong> (<strong>A</strong>)</td>
+</tr>
+<tr>
+<td>Funds</td>
+<td>Trust account at ‘A’-rated bank; no co-mingling; 50% cap per trustee if OEB &gt; PKR 300 million</td>
+</tr>
+<tr>
+<td>Post-onboarding</td>
+<td>TMS (<strong>A</strong> for EMI); agent cash-in/out rules; KYC refresh; inward remittance only via Authorized Dealer after SBP FX approval</td>
+</tr>
+<tr>
+<td>Evidence</td>
+<td>Every <strong>A</strong> maps to a component, table, API, and control (<a href="12-sbp-compliance-mapping.html">12-sbp-compliance-mapping</a>)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="emi-cohort-working-summary">EMI cohort (working summary)</h2>
+<p>Statuses <strong>change</strong>. Prefer SBP press / Payment Systems Review. Cut-off <strong>September 2026</strong>; re-verify.</p>
+<table>
+<thead>
+<tr>
+<th>Status (working)</th>
+<th>Names (public)</th>
+<th>Confidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Commercial / live (reported six as of Feb 2025 SBP statement)</td>
+<td>NayaPay; Finja (OPay Pakistan reported); SadaPay; Akhtar Fuiou (Digitt+); E-Processing Systems (OneZapp); Wemsol (Keenu)</td>
+<td>High for the Feb 2025 six-name list (SBP statement via press); Medium for later brand aliases</td>
+</tr>
+<tr>
+<td>Pilot (reported)</td>
+<td>HubPay; YAP Pakistan (FY25 review: pilot approvals)</td>
+<td>Medium–High (SBP publications + press)</td>
+</tr>
+<tr>
+<td>In-principle (reported)</td>
+<td>Cerisma; Toko Lab; PaySa (industry lists — confirm SBP)</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>Exited / revoked / withdrawn (industry)</td>
+<td>TAG Innovation; Careem Payment Solutions; Checkout; CMPECC</td>
+<td>Medium (not a substitute for SBP register)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Not EMIs:</strong> JazzCash and EasyPaisa (branchless banking / bank). Mashreq NEO / Easypaisa Bank / Raqami are <strong>digital banks</strong>.</p>
+<p>Details: <a href="01-regulatory-landscape-and-emis.html">01-regulatory-landscape-and-emis</a>.</p>
+<h2 id="critical-design-principles">Critical design principles</h2>
+<ol>
+<li><strong>Wallet ≠ bank account.</strong> Do not copy DRB STP-to-ACTIVE deposit logic. Activation is <strong>e-money issuance</strong> against received funds at par, with a <strong>verification tier</strong> that sets load limits.  </li>
+<li><strong>Separate A vs B vs C vs D.</strong> In-app fingerprint BVS is how several EMIs implement NADRA BV (<strong>C/D</strong> channel). NADRA BV itself is <strong>A</strong> for the 400k ladder. Liveness/selfie is <strong>not</strong> a BV substitute.  </li>
+<li><strong>No invented NADRA APIs.</strong> Adapters only.  </li>
+<li><strong>Fail closed on sanctions.</strong> Fail controlled on NADRA outage (hold / Verisys / video KYC — not silent upgrade).  </li>
+<li><strong>Agents must not open wallets.</strong> Cash-in/out and distribution/redemption only, after SBP agent approval.  </li>
+<li><strong>Audit everything.</strong> Reconstruct CDD, limit upgrades, trust-account movements, and STRs.</li>
+</ol>
+<h2 id="open-questions-close-before-build-freeze">Open questions (close before build freeze)</h2>
+<ul>
+<li>Exact Shared e-KYC onboarding for <strong>EMIs</strong> (CL 22 is addressed to banks; Consolidated Framework still points REs at the platform when operational).  </li>
+<li>NADRA product mix: Verisys vs BioVerisys finger/facial vs MSISDN pairing — contracts.  </li>
+<li>Whether our licence phase is <strong>pilot</strong> (200k BV load) or <strong>commercial</strong> (400k BV load).  </li>
+<li>Enhanced 1M wallet: PSP&amp;OD approval package and Annexure-J evidence list.  </li>
+<li>Merchant / entity wallets vs individual-only in Phase 1.  </li>
+<li>Cross-border cards / remittance: Exchange Policy Department approval via an Authorized Dealer.</li>
+</ul>
+<h2 id="reading-path">Reading path</h2>
+<ol>
+<li>This summary  </li>
+<li><a href="02-sbp-emi-kyc-cdd-framework.html">02-sbp-emi-kyc-cdd-framework</a>  </li>
+<li><a href="05a-emi-user-journey.html">05a-emi-user-journey</a> + <a href="05b-emi-user-journeys-catalog.html">05b-emi-user-journeys-catalog</a>  </li>
+<li><a href="06-architecture-and-services.html">06-architecture-and-services</a> + <a href="08-state-machine.html">08-state-machine</a>  </li>
+<li><a href="12-sbp-compliance-mapping.html">12-sbp-compliance-mapping</a></li>
+</ol>
+</article>
+<div class="pager"><a href="README.html">← README</a><span></span><a href="01-regulatory-landscape-and-emis.html">01-regulatory-landscape-and-emis →</a></div>
+<footer class="note">Rendered preview of 00-executive-summary.md. Markdown remains the source of truth. Not legal advice.</footer>
+
+</body>
+</html>
